@@ -22,8 +22,10 @@ AX_COMPILER_FLAGS([], [], [], [-Wall -Wextra -Werror -Wvla -pedantic -std=c99])
 # List Makefile in subdirectories
 AC_CONFIG_FILES([
                     Makefile
+                    tests/Makefile
                     src/Makefile
                     src/ast/Makefile
                     src/parser/Makefile
+                    src/IO_backend/Makefile
                 ])
 AC_OUTPUT

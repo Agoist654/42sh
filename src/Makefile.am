@@ -1,6 +1,8 @@
 # define the sub directories
-SUBDIRS = ast \
-      parser
+SUBDIRS = \
+	ast \
+	parser \
+	IO_backend
 
 bin_PROGRAMS = 42sh
 
@@ -11,5 +13,6 @@ bin_PROGRAMS = 42sh
 42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 42sh_LDADD =  \
-       ast/libast.a \
-       parser/libparser.a
+	ast/libast.a \
+	parser/libparser.a \
+	IO_backend/libio.a
