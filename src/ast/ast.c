@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "ast.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -7,41 +7,81 @@
 
 #include "../lexer/lexer.h"
 
-void ast_destroy(void *ast)
+void ast_destroy_list(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+void ast_destroy_if(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+
+void ast_destroy_simple_cmd(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+void ast_print_list(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+void ast_print_if(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+
+void ast_print_simple_cmd(struct ast *ast)
+{
+    free(ast);
+    return ;
+}
+
+
+
+void ast_destroy(struct ast *ast)
 {
     if (ast == NULL)
         return;
     for (enum ast_type type = AST_LIST; type < NB_AST; type++)
     {
-        if (asts[type] == ast->type)
+        if (type == ast->type)
             asts[type].destroy(ast);
     }
 }
 
 
-void ast_print(void *ast)
+void ast_print(struct ast *ast)
 {
     if (ast == NULL)
         return;
     for (enum ast_type type = AST_LIST; type < NB_AST; type++)
     {
-        if (asts[type] == ast->type)
+        if (type == ast->type)
             asts[type].print(ast);
     }
 }
 
-void ast_init(void *ast)
+struct ast *ast_init(void)
 {
-    if (ast == NULL)
-        return;
-    for (enum ast_type type = AST_LIST; type < NB_AST; type++)
-    {
-        if (asts[type] == ast->type)
-            asts[type].init(ast);
-    }
+    struct ast *res = malloc(sizeof(struct ast));
+    //for (enum ast_type type = AST_LIST; type < NB_AST; type++)
+    //{
+    //    if (asts[type] == ast->type)
+    //        asts[type].init(ast);
+    //}
+    return res;
 }
 
-
+/*
 static void ast_list_free(struct ast_list *ast)
 {
     if (ast != NULL)
@@ -69,6 +109,7 @@ static void ast_if_free(struct ast_if *ast)
     }
 }
 
+
 static void ast_simple_cmd_free(struct ast_simple_cmd *ast)
 {
     if (ast != NULL)
@@ -81,6 +122,7 @@ static void ast_simple_cmd_free(struct ast_simple_cmd *ast)
         free(ast);
     }
 }
+
 
 static void ast_cmd_list(struct ast_cmd_list *ast)
 {
@@ -107,4 +149,4 @@ struct ast *input(void)
     }
     return NULL;
 }
-
+*/
