@@ -7,6 +7,7 @@ bin_PROGRAMS = 42sh
 42sh_LDADD = \
 	$(top_build)/src/parser/libparser.a \
 	$(top_build)/src/ast/libast.a \
+	$(top_build)/src/lexer/liblexer.a \
 	$(top_build)/src/IO_backend/libio.a
 
-SUBDIRS = src/parser src/ast src/IO_backend
+SUBDIRS = src/parser src/ast src/IO_backend src/lexer
