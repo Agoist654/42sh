@@ -16,14 +16,33 @@
 //    .len = BUFFER_SIZE
 //};
 
-static struct token token_eof = {
-    .type = TOKEN_EOF,
-    .buffer = NULL,
-    .len = BUFFER_SIZE
+static 
+char *tokens[NB_TOKENS] = 
+{
+    [TOKEN_IF        ] = "if",
+    [TOKEN_THEN      ] = "then",
+    [TOKEN_ELIF      ] = "elif",
+    [TOKEN_ELSE      ] = "else",
+    [TOKEN_FI        ] = "fi",
+    [TOKEN_SEMI_COLON] = ";",
+    [TOKEN_NEWLINE   ] = "\n",
+    [TOKEN_QUOTE     ] = "'"
+    //[TOKEN_WORD      ] = "",
+    //[TOKEN_EOF       ] = ""
+    //[TOKEN_ERROR     ] = ""
 };
 
 
-static struct token token_error= {
+
+//static struct token token_eof = {
+//    .type = TOKEN_EOF,
+//    .buffer = NULL,
+//    .len = BUFFER_SIZE
+//};
+
+
+static 
+struct token token_error= {
     .type = TOKEN_ERROR,
     .buffer = NULL,
     .len = BUFFER_SIZE
@@ -52,7 +71,8 @@ static struct token token_init_error(void)
 }
 */
 
-static struct token token_init(void)
+static 
+struct token token_init(void)
 {
     char *buffer = calloc(BUFFER_SIZE, sizeof(char));
     if (!buffer)
@@ -65,7 +85,8 @@ static struct token token_init(void)
     return res;
 }
 
-static int check_token(enum token_type type)
+//static 
+int check_token(enum token_type type)
 {
     if (type == TOKEN_WORD || type == TOKEN_EOF || type == TOKEN_ERROR)
         return 0;
@@ -81,7 +102,8 @@ struct lexer *lexer_init(void)
     return res;
 }
 
-static struct token lex(void)
+static 
+struct token lex(void)
 {
     struct token res = token_init();
     while (io_peek() != EOF)
@@ -122,7 +144,7 @@ static struct token lex(void)
 struct token lexer_peek(struct lexer *lexer)
 {
     if (lexer->current_token.type == TOKEN_NULL)
-        lex();
+        lexer->current_token = lex();
     return lexer->current_token;
 }
 
@@ -134,7 +156,8 @@ struct token lexer_pop(struct lexer *lexer)
     return lexer->current_token;
 }
 
-static void print_token(struct token token)
+//static 
+void print_token(struct token token)
 {
     for (enum token_type type = TOKEN_IF; type < NB_TOKENS; type++)
     {
@@ -148,19 +171,3 @@ static void print_token(struct token token)
     }
 }
 
-int main(int argc, char *argv[])
-{
-    io_backend(argc, argv);
-    struct lexer *lexer = lexer_init();
-    if (!lexer)
-        return -1;
-    struct token token = lexer_pop(lexer);
-    print_token(token);
-    while (token.type != TOKEN_EOF)
-    {
-        token = lexer_pop(lexer);
-        print_token(token);
-    }
-    free(lexer);
-    return 0;
-}

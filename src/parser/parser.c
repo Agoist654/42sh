@@ -6,90 +6,83 @@
 #include <string.h>
 
 #include "../lexer/lexer.h"
+#include "../io_backend/io_backend.h"
 
-void ast_free(void *ast)
+void parse_element(struct lexer *lexer)
 {
-    if (ast == NULL)
+    if (lexer_peek(lexer).type == TOKEN_WORD)
     {
+        lexer_pop(lexer);
+    }
+    else
+    {
+        printf("KO");
+    }
+}
+
+void parse_simple_command(struct lexer *lexer)
+{
+    if (lexer_peek(lexer).type == TOKEN_WORD)
+    {
+        lexer_pop(lexer);
+        while(lexer_peek(lexer).type == TOKEN_WORD)
+        {
+            parse_element(lexer);
+        }
+    }
+    else
+    {
+        printf("KO");
+    }
+}
+
+void parse_command(struct lexer *lexer)
+{
+    parse_simple_command(lexer);
+}
+
+void parse_pipeline(struct lexer *lexer)
+{
+    parse_command(lexer);
+}
+
+void parse_and_or(struct lexer *lexer)
+{
+    parse_pipeline(lexer);
+}
+
+void parse_list(struct lexer *lexer)
+{
+    parse_and_or(lexer);
+
+}
+
+void parse_input(struct lexer *lexer)
+{
+    if (lexer_peek(lexer).type == TOKEN_NEWLINE || lexer_peek(lexer).type == TOKEN_EOF)
+    {
+        lexer_pop(lexer);
+        printf("OK");
         return;
     }
-    struct ast_list *cast = ast;
-    if (cast->type == AST_LIST)
+    else
     {
-        ast_list_free(ast);
-    }
-    else if (cast->type == AST_IF)
-    {
-        ast_if_free(ast);
-    }
-    else if (cast->type == AST_SIMPLE_CMD)
-    {
-        ast_simple_cmd_free(ast);
-    }
-}
-
-static void ast_list_free(struct ast_list *ast)
-{
-    if (ast != NULL)
-    {
-        for (int i = 0; i < ast->nb_child; i++)
+        parse_list(lexer);
+        if (lexer_peek(lexer).type == TOKEN_NEWLINE || lexer_peek(lexer).type == TOKEN_EOF)
         {
-            ast_free(ast->child[i]);
+            lexer_pop(lexer);
+            printf("OK");
+            return;
         }
-        free(ast);
     }
+    printf("KO");
+    return;
 }
 
-static void ast_if_free(struct ast_if *ast)
+int main(int argc, char *argv[])
 {
-    if (ast != NULL)
-    {
-        ast_free(ast->condition);
-        ast_free(ast->then);
-        for(int i = 0; i < ast->nb_elif; i++)
-        {
-            ast_free(ast->elif[i]);
-        }
-        ast_free(ast->lse);
-        free(ast);
-    }
-}
-
-static void ast_simple_cmd_free(struct ast_simple_cmd *ast)
-{
-    if (ast != NULL)
-    {
-        for(int i = 0; i < ast->nb_args; i++)
-        {
-            free(ast->args[i].//to complete);
-        }
-        free(ast->cmd_name.//to complete);
-        free(ast);
-    }
-}
-
-static void ast_cmd_list(struct ast_cmd_list *ast)
-{
-    if (ast != NULL)
-    {
-        for (int i = 0; i < ast->nb_cmd; i++)
-        {
-            ast_free(ast->cmd_list[i]);
-        }
-        free(ast);
-    }
-}
-
-struct ast *get_ast(void)
-{
-    return input();
-}
-
-struct ast *input(void)
-{
-    if (lexer_peek().type == TOKEN_NEWLINE || lexer_peek().type == TOKEN_EOF)
-    {
-        return NULL;
-    }
-    return NULL;
+    io_backend(argc, argv);
+    struct lexer *lexer = lexer_init();
+    parse_input(lexer);
+    return 0;
 }

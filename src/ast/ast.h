@@ -9,7 +9,7 @@ enum ast_type
 {
     AST_LIST,
     AST_IF,
-    AST_SIMPLE_CMD
+    AST_SIMPLE_CMD,
 };
 
 struct ast_list
@@ -64,6 +64,7 @@ struct ast
     printer print;
     initer init;
 };
+
 void ast_destroy_list(struct ast *ast);
 void ast_destroy_if(struct ast *ast);
 void ast_destroy_simple_cmd(struct ast *ast);

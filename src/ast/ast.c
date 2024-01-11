@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../lexer/lexer.h"
-
 void ast_destroy_list(struct ast *ast)
 {
     free(ast);
@@ -19,7 +17,6 @@ void ast_destroy_if(struct ast *ast)
     return ;
 }
 
-
 void ast_destroy_simple_cmd(struct ast *ast)
 {
     free(ast);
@@ -28,24 +25,19 @@ void ast_destroy_simple_cmd(struct ast *ast)
 
 void ast_print_list(struct ast *ast)
 {
-    free(ast);
-    return ;
+    return;
 }
 
 void ast_print_if(struct ast *ast)
 {
-    free(ast);
     return ;
 }
 
 
 void ast_print_simple_cmd(struct ast *ast)
 {
-    free(ast);
     return ;
 }
-
-
 
 void ast_destroy(struct ast *ast)
 {
@@ -57,7 +49,6 @@ void ast_destroy(struct ast *ast)
             asts[type].destroy(ast);
     }
 }
-
 
 void ast_print(struct ast *ast)
 {
