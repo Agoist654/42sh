@@ -1,7 +1,7 @@
-liblexer_a-lexer.o: lexer.c /run/current-system/sw/include/stdc-predef.h \
- lexer.h \
+libparser_a-parser.o: parser.c \
+ /run/current-system/sw/include/stdc-predef.h parser.h \
  /nix/store/b7hvml0m3qmqraz1022fwvyyg6fc1vdy-gcc-12.2.0/lib/gcc/x86_64-unknown-linux-gnu/12.2.0/include/stddef.h \
- ../io_backend/io_backend.h /run/current-system/sw/include/stdio.h \
+ /run/current-system/sw/include/stdio.h \
  /run/current-system/sw/include/bits/libc-header-start.h \
  /run/current-system/sw/include/features.h \
  /run/current-system/sw/include/features-time64.h \
@@ -25,17 +25,13 @@ liblexer_a-lexer.o: lexer.c /run/current-system/sw/include/stdc-predef.h \
  /run/current-system/sw/include/bits/floatn.h \
  /run/current-system/sw/include/bits/floatn-common.h \
  /run/current-system/sw/include/bits/stdio.h \
- /run/current-system/sw/include/string.h \
  /run/current-system/sw/include/stdlib.h \
  /run/current-system/sw/include/bits/stdlib-bsearch.h \
  /run/current-system/sw/include/bits/stdlib-float.h \
- /run/current-system/sw/include/ctype.h \
- /run/current-system/sw/include/bits/endian.h \
- /run/current-system/sw/include/bits/endianness.h
+ /run/current-system/sw/include/string.h ../lexer/lexer.h
 /run/current-system/sw/include/stdc-predef.h:
-lexer.h:
+parser.h:
 /nix/store/b7hvml0m3qmqraz1022fwvyyg6fc1vdy-gcc-12.2.0/lib/gcc/x86_64-unknown-linux-gnu/12.2.0/include/stddef.h:
-../io_backend/io_backend.h:
 /run/current-system/sw/include/stdio.h:
 /run/current-system/sw/include/bits/libc-header-start.h:
 /run/current-system/sw/include/features.h:
@@ -60,10 +56,8 @@ lexer.h:
 /run/current-system/sw/include/bits/floatn.h:
 /run/current-system/sw/include/bits/floatn-common.h:
 /run/current-system/sw/include/bits/stdio.h:
-/run/current-system/sw/include/string.h:
 /run/current-system/sw/include/stdlib.h:
 /run/current-system/sw/include/bits/stdlib-bsearch.h:
 /run/current-system/sw/include/bits/stdlib-float.h:
-/run/current-system/sw/include/ctype.h:
-/run/current-system/sw/include/bits/endian.h:
-/run/current-system/sw/include/bits/endianness.h:
+/run/current-system/sw/include/string.h:
+../lexer/lexer.h:

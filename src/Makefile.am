@@ -2,8 +2,9 @@
 SUBDIRS = \
 	ast \
 	parser \
-	IO_backend \
-	lexer
+	io_backend \
+	lexer \
+	builtin
 
 bin_PROGRAMS = 42sh
 
@@ -16,5 +17,6 @@ bin_PROGRAMS = 42sh
 42sh_LDADD =  \
 	ast/libast.a \
 	parser/libparser.a \
-	IO_backend/libio.a \
+	io_backend/libio.a \
+	builtin/libbuilt.a \
 	lexer/liblexer.a

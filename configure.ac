@@ -24,9 +24,10 @@ AC_CONFIG_FILES([
                     Makefile
                     tests/Makefile
                     src/Makefile
+                    src/builtin/Makefile
                     src/ast/Makefile
                     src/parser/Makefile
-                    src/IO_backend/Makefile
+                    src/io_backend/Makefile
                     src/lexer/Makefile
                 ])
 AC_OUTPUT
