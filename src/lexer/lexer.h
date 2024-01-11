@@ -47,8 +47,8 @@ struct lexer
     struct token current_token;
 };
 
-//struct token lexer_peek(void);
-//struct token lexer_pop(void);
+
+struct lexer *lexer_init(void);
 struct token lexer_peek(struct lexer *lexer);
 struct token lexer_pop( struct lexer *lexer);
 

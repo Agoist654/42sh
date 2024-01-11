@@ -52,7 +52,7 @@ static struct token token_init_error(void)
 }
 */
 
-struct token token_init(void)
+static struct token token_init(void)
 {
     char *buffer = calloc(BUFFER_SIZE, sizeof(char));
     if (!buffer)
@@ -70,10 +70,9 @@ static int check_token(enum token_type type)
     if (type == TOKEN_WORD || type == TOKEN_EOF || type == TOKEN_ERROR)
         return 0;
     return 1;
-
 }
 
-static struct lexer *lexer_init(void)
+struct lexer *lexer_init(void)
 {
     struct lexer *res = malloc(sizeof(struct lexer));
     if (!res)
@@ -92,15 +91,17 @@ static struct token lex(void)
             if (check_token(type) && strcmp(tokens[type], res.buffer) == 0)
             {
                 res.type = type;
-                io_pop();
+                if (res.type != TOKEN_SEMI_COLON)
+                    io_pop();
                 return res;
             }
         }
 
         if (isspace(io_peek()))
         {
-            res.type = TOKEN_WORD;
             io_pop();
+            if (strcmp(res.buffer, "") == 0)
+                continue;
             break;
         }
 
@@ -108,10 +109,13 @@ static struct token lex(void)
         {
             //realloc
         }
+
         res.buffer[strlen(res.buffer)] = io_pop();
     }
-    if (io_peek() == EOF)
-        res = token_eof;
+    if (io_peek() == EOF && strcmp(res.buffer, "") == 0 && res.type == TOKEN_NULL)
+        res.type = TOKEN_EOF;
+    else
+        res.type = TOKEN_WORD;
     return res;
 }
 
@@ -151,13 +155,12 @@ int main(int argc, char *argv[])
     if (!lexer)
         return -1;
     struct token token = lexer_pop(lexer);
+    print_token(token);
     while (token.type != TOKEN_EOF)
     {
-        print_token(token);
         token = lexer_pop(lexer);
+        print_token(token);
     }
-    free(token.buffer);
-    //free(lexer->current_token.buffer);
     free(lexer);
     return 0;
 }
