@@ -24,7 +24,7 @@ char *tokens[NB_TOKENS] =
     [TOKEN_ELIF             ] = "elif",
     [TOKEN_ELSE             ] = "else",
     [TOKEN_FI               ] = "fi",
-    [TOKEN_SEMI_COLON       ] = ";",
+    [TOKEN_SEMICOLON       ] = ";",
     [TOKEN_NEWLINE          ] = "\n"
     //[TOKEN_SINGLE_QUOTE     ] = "'",
     //[TOKEN_COMMENT          ] = "#"
@@ -211,10 +211,9 @@ struct token lexer_peek(struct lexer *lexer)
 
 struct token lexer_pop(struct lexer *lexer)
 {
-    char *tofree = lexer->current_token.buffer;
+    struct token save_token = lexer->current_token;
     lexer->current_token = lex();
-    free(tofree);
-    return lexer->current_token;
+    return save_token;
 }
 
 //static 
@@ -230,16 +229,42 @@ void print_token(struct token token)
     }
 }
 
+
+
+//int main(int argc, char *argv[])
+//{
+//    io_backend(argc, argv);
+//    struct lexer *lexer = lexer_init();
+//    for (int k = 0; k < 5; k++)
+//    {
+//        printf("1peek >\n");
+//        print_token(lexer_peek(lexer));
+//        //printf("pop>\n");
+//        //print_token(lexer_pop(lexer));
+//    }
+//    return 0;
+//}
+
 int main(int argc, char *argv[])
 {
     io_backend(argc, argv);
     struct lexer *lexer = lexer_init();
+    printf("1peek >\n");
+    print_token(lexer_peek(lexer));
+    printf("<\n");
     struct token token = lexer_pop(lexer);
+    printf("1pop >\n");
     print_token(token);
+    printf("<\n");
     while (token.type != TOKEN_EOF)
     {
+        printf("peek >\n");
+        print_token(lexer_peek(lexer));
+        printf("<\n");
         token = lexer_pop(lexer);
+        printf("pop >\n");
         print_token(token);
+        printf("<\n");
     }
     free(token.buffer);
     //free(lexer->current_token.buffer);

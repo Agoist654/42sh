@@ -12,7 +12,7 @@ enum token_type
     TOKEN_ELSE        ,
     TOKEN_FI          ,
     TOKEN_OPERATOR    ,
-    TOKEN_SEMI_COLON  ,
+    TOKEN_SEMICOLON  ,
     TOKEN_NEWLINE     ,
     TOKEN_SINGLE_QUOTE,
     TOKEN_COMMENT     ,
