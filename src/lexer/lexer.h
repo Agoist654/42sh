@@ -1,23 +1,25 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 10
+#define NB_TOKENS 14
 
 #include <stddef.h>
 enum token_type
 {
-    TOKEN_IF        ,
-    TOKEN_THEN      ,
-    TOKEN_ELIF      ,
-    TOKEN_ELSE      ,
-    TOKEN_FI        ,
-    TOKEN_SEMI_COLON,
-    TOKEN_NEWLINE   ,
-    TOKEN_QUOTE     ,
-    TOKEN_WORD      ,
-    TOKEN_EOF       ,
-    TOKEN_ERROR     ,
-    TOKEN_NULL     
+    TOKEN_IF          ,
+    TOKEN_THEN        ,
+    TOKEN_ELIF        ,
+    TOKEN_ELSE        ,
+    TOKEN_FI          ,
+    TOKEN_OPERATOR    ,
+    TOKEN_SEMI_COLON  ,
+    TOKEN_NEWLINE     ,
+    TOKEN_SINGLE_QUOTE,
+    TOKEN_COMMENT     ,
+    TOKEN_WORD        ,
+    TOKEN_EOF         ,
+    TOKEN_ERROR       ,
+    TOKEN_NULL        
 };
 
 struct token
