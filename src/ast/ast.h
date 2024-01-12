@@ -14,24 +14,53 @@ enum ast_type
 
 struct ast_list
 {
-    enum ast_type type;
     int nb_child;
-    void **child;
+    struct ast **child;
 };
 
-struct ast_if
+struct ast_rule_if
 {
-    enum ast_type type;
-    struct ast_list *condition;
-    struct ast_list *then;
-    int nb_elif;
-    struct ast_if **elif;
-    struct ast_list *lse;
+    struct ast *cond;
+    struct ast *then;
+    struct ast *else_clause;
+};
+
+struct ast_else_clause
+{
+    struct ast *cond;
+    struct ast *then;
+    struct ast *else_clause;
+};
+
+struct ast_shell_command
+{
+    struct ast *rule_if;
+};
+
+struct ast_and_or
+{
+    struct ast *pipeline;
+};
+
+struct ast_pipeline
+{
+    struct ast *command;
+};
+
+struct ast_command
+{
+    struct ast *simple_command;
+    struct ast *shell_command;
+};
+
+struct ast_coumpond_list
+{
+    struct ast *and_or;
+    struct ast **and_or_list;
 };
 
 struct ast_simple_cmd
 {
-    enum ast_type type;
     struct token cmd_name;
     int nb_args;
     struct token *args;
@@ -39,7 +68,6 @@ struct ast_simple_cmd
 
 struct ast_cmd_list
 {
-    enum ast_type type;
     int nb_cmd;
     void **cmd_list;
 };
