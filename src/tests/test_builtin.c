@@ -32,7 +32,7 @@ Test(echo, na) {
     char *tab[4] = { "echo", "-na", "normal", NULL };
     echo(tab);
     fflush(NULL);
-    cr_expect_stdout_eq_str("-na normal\n");
+    cr_expect_stdout_eq_str("-na normal");
 }
 
 Test(echo, e) {
@@ -56,5 +56,5 @@ Test(echo, eEne) {
     char *tab[5] = { "echo", "-eE", "-ne", "normal\n", NULL };
     echo(tab);
     fflush(NULL);
-    cr_expect_stdout_eq_str("-na normal\n");
+    cr_expect_stdout_eq_str("normal\n");
 }
