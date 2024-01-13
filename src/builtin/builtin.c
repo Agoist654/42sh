@@ -11,14 +11,6 @@ int false_f(void)
     return 1;
 }
 
-//static 
-int space(char *ec, int pos, int len)
-{
-    while (ec[pos] == ' ' && pos != len)
-        pos++;
-    return pos;
-}
-
 static int len(char **ec)
 {
     int len = 1;
@@ -74,9 +66,10 @@ void echo(char **ec)
     int pl = 1;
     size_t pos = 0;
     int n = 1;
-    int tmpn = 0;
+    int tmpn = 1;
     int eE = 1;
     int valid = 0;
+    int same_n = 0;
 
     while (pl < len(ec))
     {
@@ -89,7 +82,7 @@ void echo(char **ec)
                 if (tmp == 'n')
                 {
                     n = 0;
-                    tmpn = 1;
+                    tmpn = 0;
                 }
                 else if (tmp == 'e')
                     eE = 1;
@@ -98,14 +91,18 @@ void echo(char **ec)
                 else
                 {
                     valid = 1;
-                    if (tmpn == 1)
+                    if (!tmpn && !same_n)
+                    {
+                        tmpn = 1;
                         n = 1;
+                    }
                     break;
                 }
             }
         }
         pos = 0;
-        tmpn = 0;
+        if (!n)
+            same_n = 1;
         if (valid || ec[pl][pos] != '-')
         {
             prt(ec, pl, eE);
