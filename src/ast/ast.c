@@ -31,7 +31,7 @@ static void ast_and_or_destroy(struct ast *ast)
         free(ast);
     }
     return;
-};
+}
 
 static void ast_pipeline_destroy(struct ast *ast)
 {

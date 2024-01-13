@@ -11,7 +11,8 @@ int false_f(void)
     return 1;
 }
 
-static int space(char *ec, int pos, int len)
+//static 
+int space(char *ec, int pos, int len)
 {
     while (ec[pos] == ' ' && pos != len)
         pos++;
