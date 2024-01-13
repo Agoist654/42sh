@@ -39,27 +39,6 @@ void parse_simple_command(struct lexer *lexer)
 }
 
 static
-void parse_rule_if(struct lexer *lexer)
-{
-    if (lexer_peek(lexer).type == TOKEN_ELSE || lexer_peek(lexer).type == TOKEN_ELIF)
-    {
-        parse_compound_list(lexer);
-    }
-    if (lexer_peek(lexer).type == TOKEN_THEN)
-    {
-        parse_compound_list(lexer);
-        //if (is_in(lexer_peek(lexer), first_else_clause))
-        //    parse_else_clause(lexer);
-    }
-}
-
-static
-void parse_shell_command(struct lexer *lexer)
-{
-    parse_rule_if(lexer);
-}
-
-static
 void parse_command(struct lexer *lexer)
 {
     // if (is_in(lexer_peek(lexer), first_simple_command)
@@ -110,6 +89,29 @@ void parse_compound_list(struct lexer *lexer)
         lexer_pop(lexer);
     }
 }
+
+static
+void parse_rule_if(struct lexer *lexer)
+{
+    if (lexer_peek(lexer).type == TOKEN_ELSE || lexer_peek(lexer).type == TOKEN_ELIF)
+    {
+        parse_compound_list(lexer);
+    }
+    if (lexer_peek(lexer).type == TOKEN_THEN)
+    {
+        parse_compound_list(lexer);
+        //if (is_in(lexer_peek(lexer), first_else_clause))
+        //    parse_else_clause(lexer);
+    }
+}
+
+//static
+void parse_shell_command(struct lexer *lexer)
+{
+    parse_rule_if(lexer);
+}
+
+
 
 static
 void parse_list(struct lexer *lexer)
