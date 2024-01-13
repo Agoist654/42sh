@@ -60,6 +60,7 @@ Test(echo, eEne) {
 }
 
 Test(echo, nton) {
+
     cr_redirect_stdout();
     char *tab[5] = { "echo", "-n", "-na", "normal", NULL };
     echo(tab);

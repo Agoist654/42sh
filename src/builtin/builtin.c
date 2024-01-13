@@ -100,7 +100,9 @@ void echo(char **ec)
                 }
             }
         }
+
         pos = 0;
+
         if (!n)
             same_n = 1;
         if (valid || ec[pl][pos] != '-')
