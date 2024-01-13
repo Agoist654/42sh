@@ -4,6 +4,7 @@ SUBDIRS = \
 	parser \
 	io_backend \
 	lexer \
+	exec \
 	builtin
 
 bin_PROGRAMS = 42sh
@@ -19,4 +20,5 @@ bin_PROGRAMS = 42sh
 	parser/libparser.a \
 	io_backend/libio.a \
 	builtin/libbuilt.a \
+	exec/libexec.a \
 	lexer/liblexer.a
