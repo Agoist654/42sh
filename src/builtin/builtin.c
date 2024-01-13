@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <string.h>
 
-int truef(void)
+int true_f(void)
 {
     return 0;
 }
 
-int falsef(void)
+int false_f(void)
 {
     return 1;
 }
 
-int space(char *ec, int pos, int len)
+static int space(char *ec, int pos, int len)
 {
     while (ec[pos] == ' ' && pos != len)
         pos++;
     return pos;
 }
 
-int len(char **ec)
+static int len(char **ec)
 {
     int len = 1;
     while (ec[len] != NULL)
@@ -26,7 +26,7 @@ int len(char **ec)
     return len;
 }
 
-void prt(char **ec, int pl, int eE)
+static void prt(char **ec, int pl, int eE)
 {
     if (eE)
         printf("%s", ec[pl]);
