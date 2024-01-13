@@ -11,6 +11,7 @@
 
 #include "../ast/ast.h"
 #include "../builtin/builtin.h"
+#include "../expansion/expansion.h"
 
 int ast_list_exec(struct ast *ast)
 {
@@ -62,7 +63,10 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SIMPLE_COMMAND);
-        // need to call expansion
+        for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+        {
+            ast->ast_union.ast_simple_command.argv[i] = expansion(ast->ast_union.ast_simple_command.argv[i]);
+        }
         if (strcmp(ast->ast_union.ast_simple_command.argv[0], "echo") == 0)
         {
             echo(ast->ast_union.ast_simple_command.argv);
