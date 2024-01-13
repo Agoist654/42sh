@@ -24,16 +24,36 @@ char *tokens[NB_TOKENS] =
     [TOKEN_ELIF             ] = "elif",
     [TOKEN_ELSE             ] = "else",
     [TOKEN_FI               ] = "fi",
-    [TOKEN_OPERATOR         ] = NULL,
     [TOKEN_SEMICOLON        ] = ";",
-    [TOKEN_NEWLINE          ] = "\n",
-    [TOKEN_SINGLE_QUOTE     ] = NULL,
-    [TOKEN_COMMENT          ] = NULL,
-    [TOKEN_WORD           ] = NULL,
-    [TOKEN_EOF            ] = NULL,
-    [TOKEN_ERROR          ] = NULL,
-    [TOKEN_NULL           ] = NULL
+    [TOKEN_NEWLINE          ] = "\n"
+    //[TOKEN_OPERATOR         ] = NULL,
+    //[TOKEN_SINGLE_QUOTE     ] = NULL,
+    //[TOKEN_COMMENT          ] = NULL,
+    //[TOKEN_WORD           ] = NULL,
+    //[TOKEN_EOF            ] = NULL,
+    //[TOKEN_ERROR          ] = NULL,
+    //[TOKEN_NULL           ] = NULL
 
+};
+
+
+static 
+char *print_tokens[NB_TOKENS] = 
+{
+    [TOKEN_IF                 ] = "TOKEN_IF",
+    [TOKEN_THEN               ] = "TOKEN_THEN",
+    [TOKEN_ELIF               ] = "TOKEN_ELIF",
+    [TOKEN_ELSE               ] = "TOKEN_ELSE",
+    [TOKEN_FI                 ] = "TOKEN_FI",
+    [TOKEN_SEMICOLON          ] = "TOKEN_SEMICOLON",
+    [TOKEN_NEWLINE            ] = "TOKEN_NEWLINE",
+    [TOKEN_OPERATOR           ] = "TOKEN_OPERATOR",
+    [TOKEN_SINGLE_QUOTE       ] = "TOKEN_SINGLE_QUOTE",
+    [TOKEN_COMMENT            ] = "TOKEN_COMMENT",
+    [TOKEN_WORD               ] = "TOKEN_WORD",
+    [TOKEN_EOF                ] = "TOKEN_EOF",
+    [TOKEN_ERROR              ] = "TOKEN_ERROR",
+    [TOKEN_NULL               ] = "TOKEN_NULL"
 };
 
 
@@ -158,7 +178,7 @@ struct token token_reg(void)
 
         //rule 5: sub shell
     //    //rule 6: if not quoted therfore: start of a new operator
-        if (io_peek() == ';')
+        if (io_peek() == ';' || io_peek() == '\n')
         {
             if (res.type == TOKEN_WORD)
                 return res;
@@ -171,8 +191,9 @@ struct token token_reg(void)
         if (isspace(io_peek()))
         {
             io_pop();
-            if (strcmp(res.buffer, "") != 0)
+            if (strcmp(res.buffer, "") != 0 && strcmp(res.buffer, " ") != 0)
                 return res;
+            continue;
         }
     //    //rule 8: if TOKEN_WORD : res.buffer[strlen(res.buffer)] = io_pop();
         if (res.type == TOKEN_WORD)
@@ -197,7 +218,7 @@ struct token lex(void)
     //for (enum token_type type = TOKEN_IF; type < NB_TOKENS; type++)
     for (int type = 0; type < NB_TOKENS; type++)
     {
-        if (strcmp(tokens[type], res.buffer) == 0)
+        if (tokens[type] && strcmp(tokens[type], res.buffer) == 0)
         {
             res.type = type;
             break;
@@ -209,14 +230,14 @@ struct token lex(void)
 struct token lexer_peek(struct lexer *lexer)
 {
     if (lexer->current_token.type == TOKEN_NULL)
-        lexer->current_token = token_reg();
+        lexer->current_token = lex();
     return lexer->current_token;
 }
 
 struct token lexer_pop(struct lexer *lexer)
 {
     struct token save_token = lexer->current_token;
-    lexer->current_token = token_reg();
+    lexer->current_token = lex();
         return lexer->current_token;
     return save_token;
 }
@@ -224,13 +245,46 @@ struct token lexer_pop(struct lexer *lexer)
 //static 
 void print_token(struct token token)
 {
+    if (token.type == TOKEN_WORD)
+    {
+        printf("buffer >%s<\n", token.buffer);
+        printf("type >TOKEN_WORD<\n");
+    }
+    else if(token.type == TOKEN_EOF)
+    {
+        printf("buffer >%s<\n", token.buffer);
+        printf("type >TOKEN_EOF<\n");
+    }
+    else if(token.type == TOKEN_COMMENT)
+    {
+        printf("buffer >%s<\n", token.buffer);
+        printf("type >TOKEN_COMMENT<\n");
+    }
+    else if(token.type == TOKEN_SINGLE_QUOTE)
+    {
+        printf("buffer >%s<\n", token.buffer);
+        printf("type >TOKEN_SINGLE_QUOTE<\n");
+    }
+    else if(token.type == TOKEN_ERROR)
+    {
+        printf("type >TOKEN_ERROR<\n");
+    }
+    else if(token.type == TOKEN_OPERATOR)
+    {
+        printf("buffer >%s<\n", token.buffer);
+        printf("type >TOKEN_OPERATOR<\n");
+    }
+    else
+    {
+
     for (enum token_type type = TOKEN_IF; type < NB_TOKENS; type++)
     {
         if (token.type == type)
         {
-            //printf("buffer >%s<\n", token.buffer);
-            printf("type >%s<\n", tokens[type]);
+            printf("buffer >%s<\n", token.buffer);
+            printf("type >%s<\n", print_tokens[type]);
         }
+    }
     }
 }
 
