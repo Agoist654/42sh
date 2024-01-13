@@ -1,2 +1,0 @@
-src/42sh-42sh.o: src/42sh.c /run/current-system/sw/include/stdc-predef.h
-/run/current-system/sw/include/stdc-predef.h:
