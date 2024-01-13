@@ -73,6 +73,7 @@ void echo(char **ec)
     int pl = 1;
     size_t pos = 0;
     int n = 1;
+    int tmpn = 0;
     int eE = 1;
     int valid = 0;
 
@@ -85,7 +86,10 @@ void echo(char **ec)
             {
                 char tmp = ec[pl][pos++];
                 if (tmp == 'n')
+                {
                     n = 0;
+                    tmpn = 1;
+                }
                 else if (tmp == 'e')
                     eE = 1;
                 else if (tmp == 'E')
@@ -93,11 +97,14 @@ void echo(char **ec)
                 else
                 {
                     valid = 1;
+                    if (tmpn == 1)
+                        n = 1;
                     break;
                 }
             }
         }
         pos = 0;
+        tmpn = 0;
         if (valid || ec[pl][pos] != '-')
         {
             prt(ec, pl, eE);
