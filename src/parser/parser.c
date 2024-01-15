@@ -127,14 +127,14 @@ void parse_list(struct lexer *lexer)
         lexer_pop(lexer);
 }
 
-void parse_input(struct lexer *lexer)
+struct ast *parse_input(struct lexer *lexer)
 {
     if (lexer_peek(lexer).type == TOKEN_NEWLINE || lexer_peek(lexer).type == TOKEN_EOF)
     {
         lexer_pop(lexer);
-        //printf("OK");
-        return;
+        return NULL;
     }
+
     parse_list(lexer);
     if (lexer_peek(lexer).type == TOKEN_NEWLINE || lexer_peek(lexer).type == TOKEN_EOF)
     {

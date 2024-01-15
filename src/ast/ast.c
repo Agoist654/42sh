@@ -8,7 +8,7 @@
 
 #include "../exec/exec1.h"
 
-static void ast_list_destroy(struct ast *ast)
+void ast_list_destroy(struct ast *ast)
 {
     if (ast != NULL)
     {
@@ -62,9 +62,12 @@ static void ast_simple_command_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SIMPLE_COMMAND);
-        for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+        if (ast->ast_union.ast_simple_command.argv != NULL)
         {
-            free(ast->ast_union.ast_simple_command.argv[i]);
+            for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+            {
+                free(ast->ast_union.ast_simple_command.argv[i]);
+            }
         }
         free(ast);
     }

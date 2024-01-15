@@ -101,4 +101,6 @@ struct ast
     struct ftable *ftable;
 };
 
+void ast_list_destroy(struct ast *ast);
+
 #endif /* !AST_H */
