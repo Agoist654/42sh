@@ -1,7 +1,7 @@
 #ifndef AST_H
 #define AST_H
 
-#include "../lexer/lexer.h"
+#include "lexer/lexer.h"
 
 #define NB_AST 9
 
@@ -67,6 +67,7 @@ struct ast_compound_list
 struct ast_simple_command
 {
     char **argv;
+    size_t len;
 };
 
 union ast_union
@@ -102,5 +103,6 @@ struct ast
 };
 
 void ast_list_destroy(struct ast *ast);
+struct ast *ast_init(enum ast_type type);
 
 #endif /* !AST_H */

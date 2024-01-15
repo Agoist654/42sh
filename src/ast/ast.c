@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../exec/exec1.h"
+#include "exec/exec1.h"
 
 void ast_list_destroy(struct ast *ast)
 {

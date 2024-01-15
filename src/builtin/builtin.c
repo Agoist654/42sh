@@ -61,7 +61,7 @@ static void prt(char **argv, int pl, int eE)
     }
 }
 
-void argvho(char **argv)
+void echo(char **argv)
 {
     int pl = 1;
     size_t pos = 0;

@@ -1,7 +1,7 @@
 //#include "lexer/lexer.h"
 //#include "io_backend/io_backend.h"
 #include "lexer.h"
-#include "../io_backend/io_backend.h"
+#include "io_backend/io_backend.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -238,7 +238,7 @@ struct token lexer_pop(struct lexer *lexer)
 {
     struct token save_token = lexer->current_token;
     lexer->current_token = lex();
-        return lexer->current_token;
+//        return lexer->current_token;
     return save_token;
 }
 
@@ -290,23 +290,23 @@ void print_token(struct token token)
 
 
 
-int main(int argc, char *argv[])
-{
-    io_backend(argc, argv);
-    struct lexer *lexer = lexer_init();
-    struct token token = lexer_pop(lexer);
-    while (token.type != TOKEN_EOF)
-    {
-        //        printf("1peek >\n");
-        //        print_token(lexer_peek(lexer));
-        printf("pop>\n");
-        print_token(token);
-        token = lexer_pop(lexer);
-    }
-        printf("pop>\n");
-        print_token(token);
-    return 0;
-}
+//int main(int argc, char *argv[])
+//{
+//    io_backend(argc, argv);
+//    struct lexer *lexer = lexer_init();
+//    struct token token = lexer_pop(lexer);
+//    while (token.type != TOKEN_EOF)
+//    {
+//        //        printf("1peek >\n");
+//        //        print_token(lexer_peek(lexer));
+//        printf("pop>\n");
+//        print_token(token);
+//        token = lexer_pop(lexer);
+//    }
+//        printf("pop>\n");
+//        print_token(token);
+//    return 0;
+//}
 
 //int main(int argc, char *argv[])
 //{

@@ -1,7 +1,7 @@
 #ifndef EXEC1_H
 #define EXEC1_H
 
-#include "../ast/ast.h"
+#include "ast/ast.h"
 
 int ast_list_exec(struct ast *ast);
 int ast_and_or_exec(struct ast *ast);

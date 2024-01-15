@@ -5,6 +5,7 @@ SUBDIRS = \
 	io_backend \
 	lexer \
 	exec \
+	expansion \
 	builtin
 
 bin_PROGRAMS = 42sh
@@ -13,12 +14,13 @@ bin_PROGRAMS = 42sh
 
 42sh_CPPFLAGS = -I%D%
 
-42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic #-fsanitize=address
 
 42sh_LDADD =  \
-	ast/libast.a \
-	parser/libparser.a \
-	io_backend/libio.a \
-	builtin/libbuilt.a \
 	exec/libexec.a \
-	lexer/liblexer.a
+	builtin/libbuilt.a \
+	expansion/libexp.a \
+	parser/libparser.a \
+	ast/libast.a \
+	lexer/liblexer.a \
+	io_backend/libio.a

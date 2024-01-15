@@ -9,9 +9,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "../ast/ast.h"
-#include "../builtin/builtin.h"
-#include "../expansion/expansion.h"
+#include "builtin/builtin.h"
+#include "expansion/expansion.h"
 
 int ast_list_exec(struct ast *ast)
 {
@@ -58,7 +57,6 @@ int ast_command_exec(struct ast *ast)
 //    { .command_name = "false", .void_ppchar = false_f, .int_void = NULL }
 //};
 
-    static 
 int ast_simple_command_exec(struct ast *ast)
 {
     if (ast == NULL)
@@ -94,7 +92,7 @@ int ast_simple_command_exec(struct ast *ast)
         if (pid == 0)
         {
             execvp(ast->ast_union.ast_simple_command.argv[0], ast->ast_union.ast_simple_command.argv);
-            err(1, "failed");
+            err(1, "failedd");
         }
         else
         {
