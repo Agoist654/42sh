@@ -188,7 +188,7 @@ struct token token_reg(void)
         }
 
     //    //rule 7: if not quoted : is a >blank< return token
-        if (isspace(io_peek()))
+        if (isblank(io_peek()))
         {
             io_pop();
             if (strcmp(res.buffer, "") != 0 && strcmp(res.buffer, " ") != 0)

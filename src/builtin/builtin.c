@@ -11,57 +11,57 @@ int false_f(void)
     return 1;
 }
 
-static int len(char **ec)
+static int len(char **argv)
 {
     int len = 1;
-    while (ec[len] != NULL)
+    while (argv[len] != NULL)
         len++;
     return len;
 }
 
-static void prt(char **ec, int pl, int eE)
+static void prt(char **argv, int pl, int eE)
 {
     if (eE)
-        printf("%s", ec[pl]);
+        printf("%s", argv[pl]);
     else
     {
-        for (size_t dep = 0; dep < strlen(ec[pl]); dep++)
+        for (size_t dep = 0; dep < strlen(argv[pl]); dep++)
         {
-            if (ec[pl][dep] == '\n')
+            if (argv[pl][dep] == '\n')
                 printf("\\n");
-            else if (ec[pl][dep] == '\t')
+            else if (argv[pl][dep] == '\t')
                 printf("\\t");
-            else if (ec[pl][dep] == '\\')
+            else if (argv[pl][dep] == '\\')
                 printf("\\");
             else
-                printf("%c", ec[pl][dep]);
+                printf("%c", argv[pl][dep]);
         }
     }
     pl++;
-    while (pl < len(ec))
+    while (pl < len(argv))
     {
         printf(" ");
         if (eE)
-            printf("%s", ec[pl]);
+            printf("%s", argv[pl]);
         else
         {
-            for (size_t dep = 0; dep < strlen(ec[pl]); dep++)
+            for (size_t dep = 0; dep < strlen(argv[pl]); dep++)
             {
-                if (ec[pl][dep] == '\n')
+                if (argv[pl][dep] == '\n')
                     printf("\\n");
-                else if (ec[pl][dep] == '\t')
+                else if (argv[pl][dep] == '\t')
                     printf("\\t");
-                else if (ec[pl][dep] == '\\')
+                else if (argv[pl][dep] == '\\')
                     printf("\\");
                 else
-                    printf("%c", ec[pl][dep]);
+                    printf("%c", argv[pl][dep]);
             }
         }
         pl++;
     }
 }
 
-void echo(char **ec)
+void argvho(char **argv)
 {
     int pl = 1;
     size_t pos = 0;
@@ -71,14 +71,14 @@ void echo(char **ec)
     int valid = 0;
     int same_n = 0;
 
-    while (pl < len(ec))
+    while (pl < len(argv))
     {
-        if (ec[pl][pos] == '-')
+        if (argv[pl][pos] == '-')
         {
             pos++;
-            while (pos != strlen(ec[pl]))
+            while (pos != strlen(argv[pl]))
             {
-                char tmp = ec[pl][pos++];
+                char tmp = argv[pl][pos++];
                 if (tmp == 'n')
                 {
                     n = 0;
@@ -105,9 +105,9 @@ void echo(char **ec)
 
         if (!n)
             same_n = 1;
-        if (valid || ec[pl][pos] != '-')
+        if (valid || argv[pl][pos] != '-')
         {
-            prt(ec, pl, eE);
+            prt(argv, pl, eE);
             break;
         }
         pl++;
