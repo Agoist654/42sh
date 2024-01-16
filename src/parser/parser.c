@@ -147,6 +147,7 @@ static struct ast *parse_else_clause(struct lexer *lexer)
     if (!res)
         goto error;
     free(lexer_pop(lexer).buffer);
+    res->ast_union.ast_rule_if.else_clause = NULL;
 
     res->ast_union.ast_else_clause.cond = parse_compound_list(lexer);
     if (error.res != 0)
@@ -180,6 +181,8 @@ static struct ast *parse_rule_if(struct lexer *lexer)
         error.res = -42;
         return NULL;
     }
+    res->ast_union.ast_else_clause.then = NULL;
+    res->ast_union.ast_else_clause.else_clause = NULL;
 
     free(lexer_pop(lexer).buffer);
     // if (isin compound_list)
@@ -230,7 +233,8 @@ error:
     return NULL;
 }
 
-static struct ast *parse_list(struct lexer *lexer)
+static
+struct ast *parse_list(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_LIST);
 
@@ -241,15 +245,15 @@ static struct ast *parse_list(struct lexer *lexer)
     res->ast_union.ast_list.current = parse_and_or(lexer);
     if (error.res != 0)
         return res;
-    while (lexer_peek(lexer).type == TOKEN_SEMICOLON)
+    if (lexer_peek(lexer).type == TOKEN_SEMICOLON)
     {
         free(lexer_pop(lexer).buffer);
-        res->ast_union.ast_list.next = parse_list(lexer);
-        if (error.res != 0)
-            return res;
     }
-    if (lexer_peek(lexer).type == TOKEN_SEMICOLON)
-        free(lexer_pop(lexer).buffer);
+    //isin and or
+    if (lexer_peek(lexer).type != TOKEN_EOF && lexer_peek(lexer).type != TOKEN_NEWLINE)
+    {
+        res->ast_union.ast_list.next = parse_list(lexer);
+    }
     return res;
 error:
     error.msg = "ast_list init\n";
@@ -262,7 +266,7 @@ struct ast *parse_input(struct lexer *lexer)
     if (lexer_peek(lexer).type == TOKEN_NEWLINE
         || lexer_peek(lexer).type == TOKEN_EOF)
     {
-        free(lexer_peek(lexer).buffer);
+        free(lexer_pop(lexer).buffer);
         return NULL;
     }
 
@@ -277,18 +281,11 @@ struct ast *parse_input(struct lexer *lexer)
     if (lexer_peek(lexer).type == TOKEN_NEWLINE
         || lexer_peek(lexer).type == TOKEN_EOF)
     {
-        free(lexer_peek(lexer).buffer);
+        free(lexer_pop(lexer).buffer);
         return res;
     }
     ast_list_destroy(res);
     free(lexer_peek(lexer).buffer);
+    errx(1, "wrong parse_input\n");
     return NULL;
 }
-
-// int main(int argc, char *argv[])
-//{
-//     io_backend(argc, argv);
-//     struct lexer *lexer = lexer_init();
-//     parse_input(lexer);
-//     return 0;
-// }

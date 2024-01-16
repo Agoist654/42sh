@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "ast/ast.h"
 #include "builtin/builtin.h"
@@ -10,9 +12,14 @@ int main(int argc, char *argv[])
 {
     io_backend(argc, argv);
     struct lexer *lexer = lexer_init();
-    struct ast *ast = parse_input(lexer);
-    int res = ast_list_exec(ast);
-    // ast_list_destroy(ast);
+    int res = 0;
+    while (lexer_peek(lexer).type != TOKEN_EOF)
+    {
+        struct ast *ast = parse_input(lexer);
+        res = ast_list_exec(ast);
+        ast_list_destroy(ast);
+    }
+    free(lexer_peek(lexer).buffer);
     io_close();
     return res;
 }

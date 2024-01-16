@@ -14,8 +14,11 @@ void ast_list_destroy(struct ast *ast)
     {
         assert(ast->type == AST_LIST);
         ast_list_destroy(ast->ast_union.ast_list.next);
-        ast->ast_union.ast_list.current->ftable->destroy(
-            ast->ast_union.ast_list.current);
+        if (ast->ast_union.ast_list.current != NULL)
+        {
+            ast->ast_union.ast_list.current->ftable->destroy(
+                ast->ast_union.ast_list.current);
+        }
         free(ast);
     }
     return;
@@ -26,8 +29,11 @@ static void ast_and_or_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_AND_OR);
-        ast->ast_union.ast_and_or.pipeline->ftable->destroy(
-            ast->ast_union.ast_and_or.pipeline);
+        if (ast->ast_union.ast_and_or.pipeline != NULL)
+        {
+            ast->ast_union.ast_and_or.pipeline->ftable->destroy(
+                ast->ast_union.ast_and_or.pipeline);
+        }
         free(ast);
     }
     return;
@@ -38,8 +44,11 @@ static void ast_pipeline_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_PIPELINE);
-        ast->ast_union.ast_pipeline.command->ftable->destroy(
-            ast->ast_union.ast_pipeline.command);
+        if (ast->ast_union.ast_pipeline.command != NULL)
+        {
+            ast->ast_union.ast_pipeline.command->ftable->destroy(
+                ast->ast_union.ast_pipeline.command);
+        }
         free(ast);
     }
     return;
@@ -50,8 +59,11 @@ static void ast_command_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_COMMAND);
-        ast->ast_union.ast_command.first->ftable->destroy(
-            ast->ast_union.ast_command.first);
+        if (ast->ast_union.ast_command.first != NULL)
+        {
+            ast->ast_union.ast_command.first->ftable->destroy(
+                ast->ast_union.ast_command.first);
+        }
         free(ast);
     }
     return;
@@ -69,6 +81,7 @@ static void ast_simple_command_destroy(struct ast *ast)
             {
                 free(ast->ast_union.ast_simple_command.argv[i]);
             }
+            free(ast->ast_union.ast_simple_command.argv);
         }
         free(ast);
     }
@@ -80,8 +93,11 @@ static void ast_shell_command_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SHELL_COMMAND);
-        ast->ast_union.ast_shell_command.rule_if->ftable->destroy(
-            ast->ast_union.ast_shell_command.rule_if);
+        if (ast->ast_union.ast_shell_command.rule_if != NULL)
+        {
+            ast->ast_union.ast_shell_command.rule_if->ftable->destroy(
+                ast->ast_union.ast_shell_command.rule_if);
+        }
         free(ast);
     }
     return;
@@ -92,12 +108,21 @@ static void ast_rule_if_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_RULE_IF);
-        ast->ast_union.ast_rule_if.cond->ftable->destroy(
-            ast->ast_union.ast_rule_if.cond);
-        ast->ast_union.ast_rule_if.then->ftable->destroy(
-            ast->ast_union.ast_rule_if.then);
-        ast->ast_union.ast_rule_if.else_clause->ftable->destroy(
-            ast->ast_union.ast_rule_if.else_clause);
+        if (ast->ast_union.ast_rule_if.cond != NULL)
+        {
+            ast->ast_union.ast_rule_if.cond->ftable->destroy(
+                ast->ast_union.ast_rule_if.cond);
+        }
+        if (ast->ast_union.ast_rule_if.then != NULL)
+        {
+            ast->ast_union.ast_rule_if.then->ftable->destroy(
+                ast->ast_union.ast_rule_if.then);
+        }
+        if (ast->ast_union.ast_rule_if.else_clause != NULL)
+        {
+            ast->ast_union.ast_rule_if.else_clause->ftable->destroy(
+                ast->ast_union.ast_rule_if.else_clause);
+        }
         free(ast);
     }
     return;
@@ -108,12 +133,21 @@ static void ast_else_clause_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_ELSE_CLAUSE);
-        ast->ast_union.ast_else_clause.cond->ftable->destroy(
-            ast->ast_union.ast_else_clause.cond);
-        ast->ast_union.ast_else_clause.then->ftable->destroy(
-            ast->ast_union.ast_else_clause.then);
-        ast->ast_union.ast_else_clause.else_clause->ftable->destroy(
-            ast->ast_union.ast_else_clause.else_clause);
+        if (ast->ast_union.ast_else_clause.cond != NULL)
+        {
+            ast->ast_union.ast_else_clause.cond->ftable->destroy(
+                ast->ast_union.ast_else_clause.cond);
+        }
+        if (ast->ast_union.ast_else_clause.then != NULL)
+        {
+            ast->ast_union.ast_else_clause.then->ftable->destroy(
+                ast->ast_union.ast_else_clause.then);
+        }
+        if (ast->ast_union.ast_else_clause.else_clause != NULL)
+        {
+            ast->ast_union.ast_else_clause.else_clause->ftable->destroy(
+                ast->ast_union.ast_else_clause.else_clause);
+        }
         free(ast);
     }
     return;
@@ -125,14 +159,17 @@ static void ast_compound_list_destroy(struct ast *ast)
     {
         assert(ast->type == AST_COMPOUND_LIST);
         ast_compound_list_destroy(ast->ast_union.ast_compound_list.next);
-        ast->ast_union.ast_compound_list.and_or->ftable->destroy(
-            ast->ast_union.ast_compound_list.and_or);
+        if (ast->ast_union.ast_compound_list.and_or != NULL)
+        {
+            ast->ast_union.ast_compound_list.and_or->ftable->destroy(
+                ast->ast_union.ast_compound_list.and_or);
+        }
         free(ast);
     }
     return;
 }
 
-static void ast_list_print(struct ast *ast)
+void ast_list_print(struct ast *ast)
 {
     if (ast != NULL)
     {
