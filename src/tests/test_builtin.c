@@ -1,9 +1,11 @@
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
 #include <stddef.h>
+
 #include "builtin/builtin.h"
 
-Test(echo, normal) {
+Test(echo, normal)
+{
     cr_redirect_stdout();
     char *tab[3] = { "echo", "normal", NULL };
     echo(tab);
@@ -11,7 +13,8 @@ Test(echo, normal) {
     cr_expect_stdout_eq_str("normal\n");
 }
 
-Test(echo, n) {
+Test(echo, n)
+{
     cr_redirect_stdout();
     char *tab[4] = { "echo", "-n", "normal", NULL };
     echo(tab);
@@ -19,7 +22,8 @@ Test(echo, n) {
     cr_expect_stdout_eq_str("normal");
 }
 
-Test(echo, eE) {
+Test(echo, eE)
+{
     cr_redirect_stdout();
     char *tab[4] = { "echo", "-eE", "normal\n", NULL };
     echo(tab);
@@ -27,7 +31,8 @@ Test(echo, eE) {
     cr_expect_stdout_eq_str("normal\\n\n");
 }
 
-Test(echo, na) {
+Test(echo, na)
+{
     cr_redirect_stdout();
     char *tab[4] = { "echo", "-na", "normal", NULL };
     echo(tab);
@@ -35,7 +40,8 @@ Test(echo, na) {
     cr_expect_stdout_eq_str("-na normal\n");
 }
 
-Test(echo, e) {
+Test(echo, e)
+{
     cr_redirect_stdout();
     char *tab[4] = { "echo", "-e", "normal\n", NULL };
     echo(tab);
@@ -43,7 +49,8 @@ Test(echo, e) {
     cr_expect_stdout_eq_str("normal\n\n");
 }
 
-Test(echo, eeEeEe) {
+Test(echo, eeEeEe)
+{
     cr_redirect_stdout();
     char *tab[4] = { "echo", "-eeEeEe", "normal\n", NULL };
     echo(tab);
@@ -51,7 +58,8 @@ Test(echo, eeEeEe) {
     cr_expect_stdout_eq_str("normal\n\n");
 }
 
-Test(echo, eEne) {
+Test(echo, eEne)
+{
     cr_redirect_stdout();
     char *tab[5] = { "echo", "-eE", "-ne", "normal\n", NULL };
     echo(tab);
@@ -59,12 +67,11 @@ Test(echo, eEne) {
     cr_expect_stdout_eq_str("normal\n");
 }
 
-Test(echo, nton) {
-
+Test(echo, nton)
+{
     cr_redirect_stdout();
     char *tab[5] = { "echo", "-n", "-na", "normal", NULL };
     echo(tab);
     fflush(NULL);
     cr_expect_stdout_eq_str("-na normal");
 }
-

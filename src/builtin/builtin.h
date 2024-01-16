@@ -1,11 +1,8 @@
 #ifndef BUILTIN_H
 #define BUILTIN_H
 
-
-
-typedef int (*int_void_f) (void);
-typedef void (*void_ppchar_f) (char **argv);
-
+typedef int (*int_void_f)(void);
+typedef void (*void_ppchar_f)(char **argv);
 
 struct builtin
 {

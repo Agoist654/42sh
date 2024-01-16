@@ -64,7 +64,8 @@ static void ast_simple_command_destroy(struct ast *ast)
         assert(ast->type == AST_SIMPLE_COMMAND);
         if (ast->ast_union.ast_simple_command.argv != NULL)
         {
-            for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+            for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL;
+                 i++)
             {
                 free(ast->ast_union.ast_simple_command.argv[i]);
             }
@@ -199,7 +200,8 @@ static void ast_shell_command_print(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SHELL_COMMAND);
-        ast->ast_union.ast_shell_command.rule_if->ftable->print(ast->ast_union.ast_shell_command.rule_if);
+        ast->ast_union.ast_shell_command.rule_if->ftable->print(
+            ast->ast_union.ast_shell_command.rule_if);
     }
     return;
 }
@@ -210,12 +212,15 @@ static void ast_rule_if_print(struct ast *ast)
     {
         assert(ast->type == AST_RULE_IF);
         printf(" IF ");
-        ast->ast_union.ast_rule_if.cond->ftable->print(ast->ast_union.ast_rule_if.cond);
+        ast->ast_union.ast_rule_if.cond->ftable->print(
+            ast->ast_union.ast_rule_if.cond);
         printf(" THEN ");
-        ast->ast_union.ast_rule_if.then->ftable->print(ast->ast_union.ast_rule_if.then);
+        ast->ast_union.ast_rule_if.then->ftable->print(
+            ast->ast_union.ast_rule_if.then);
         if (ast->ast_union.ast_rule_if.else_clause != NULL)
         {
-            ast->ast_union.ast_rule_if.else_clause->ftable->print(ast->ast_union.ast_rule_if.else_clause);
+            ast->ast_union.ast_rule_if.else_clause->ftable->print(
+                ast->ast_union.ast_rule_if.else_clause);
         }
         printf(" FI ");
     }
@@ -230,17 +235,21 @@ static void ast_else_clause_print(struct ast *ast)
         if (ast->ast_union.ast_else_clause.then == NULL)
         {
             printf(" ELSE ");
-            ast->ast_union.ast_else_clause.cond->ftable->print(ast->ast_union.ast_else_clause.cond);
+            ast->ast_union.ast_else_clause.cond->ftable->print(
+                ast->ast_union.ast_else_clause.cond);
         }
         else
         {
             printf(" ELIF ");
-            ast->ast_union.ast_else_clause.cond->ftable->print(ast->ast_union.ast_else_clause.cond);
+            ast->ast_union.ast_else_clause.cond->ftable->print(
+                ast->ast_union.ast_else_clause.cond);
             printf(" THEN ");
-            ast->ast_union.ast_else_clause.then->ftable->print(ast->ast_union.ast_else_clause.then);
+            ast->ast_union.ast_else_clause.then->ftable->print(
+                ast->ast_union.ast_else_clause.then);
             if (ast->ast_union.ast_else_clause.else_clause != NULL)
             {
-                ast->ast_union.ast_else_clause.else_clause->ftable->print(ast->ast_union.ast_else_clause.else_clause);
+                ast->ast_union.ast_else_clause.else_clause->ftable->print(
+                    ast->ast_union.ast_else_clause.else_clause);
             }
         }
     }
@@ -252,7 +261,8 @@ static void ast_compound_list_print(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_COMPOUND_LIST);
-        ast->ast_union.ast_compound_list.and_or->ftable->print(ast->ast_union.ast_compound_list.and_or);
+        ast->ast_union.ast_compound_list.and_or->ftable->print(
+            ast->ast_union.ast_compound_list.and_or);
         if (ast->ast_union.ast_compound_list.next != NULL)
         {
             printf(" ; ");

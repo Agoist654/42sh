@@ -17,7 +17,7 @@ char *expansion(char *str)
     }
     else if (str[0] == 39)
     {
-        //simple-quote
+        // simple-quote
         int current = 0;
         char *ret_str = malloc(strlen(str) * sizeof(char));
         for (int i = 0; str[i] != '\0'; i++)
@@ -35,7 +35,7 @@ char *expansion(char *str)
     }
     else
     {
-        //double-quote
+        // double-quote
         return str;
     }
 }

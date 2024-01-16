@@ -16,7 +16,7 @@ void io_backend(int argc, char *argv[])
     {
         stream = fdopen(0, "r");
     }
-    else if(strcmp(argv[1], "-c") == 0 && argv[2] != NULL)
+    else if (strcmp(argv[1], "-c") == 0 && argv[2] != NULL)
     {
         stream = fmemopen(argv[2], strlen(argv[2]), "r");
     }
