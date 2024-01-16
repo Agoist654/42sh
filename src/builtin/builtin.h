@@ -15,4 +15,4 @@ int true_f(void);
 int false_f(void);
 void echo(char **argv);
 
-#endif
+#endif /* !BUILTIN_H */

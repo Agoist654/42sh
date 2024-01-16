@@ -14,7 +14,7 @@ bin_PROGRAMS = 42sh
 
 42sh_CPPFLAGS = -I%D%
 
-42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic #-fsanitize=address
+42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g
 
 42sh_LDADD =  \
 	exec/libexec.a \
