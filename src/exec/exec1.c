@@ -1,5 +1,3 @@
-#include "exec1.h"
-
 #include <assert.h>
 #include <err.h>
 #include <stddef.h>
@@ -10,6 +8,7 @@
 #include <unistd.h>
 
 #include "builtin/builtin.h"
+#include "exec.h"
 #include "expansion/expansion.h"
 
 int ast_list_exec(struct ast *ast)

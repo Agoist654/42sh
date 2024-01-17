@@ -19,6 +19,12 @@ enum ast_type
     AST_RULE_FOR
 };
 
+enum element_type
+{
+    WORD,
+    REDIR
+};
+
 struct ast_list
 {
     struct ast *current;
@@ -110,6 +116,12 @@ union ast_union
     struct ast_rule_for ast_rule_for;
 };
 
+union element_union
+{
+    char *word;
+    struct redirection redir;
+};
+
 struct ast;
 typedef void (*destroy_f)(struct ast *ast);
 typedef void (*print_f)(struct ast *ast);
@@ -127,6 +139,18 @@ struct ast
     enum ast_type type;
     union ast_union ast_union;
     struct ftable *ftable;
+};
+
+struct element
+{
+    enum element_type type;
+    union element_union;
+};
+
+struct redirection
+{
+    char *op;
+    char *word;
 };
 
 void ast_list_destroy(struct ast *ast);
