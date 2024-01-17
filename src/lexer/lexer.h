@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 31
+#define NB_TOKENS 32
 
 #include <stddef.h>
 enum token_type
@@ -33,6 +33,7 @@ enum token_type
     TOKEN_NEGATION               ,
     TOKEN_AND                    ,
     TOKEN_OR                     ,
+    TOKEN_IONUMBER               ,
     TOKEN_REDIRECTION_RIGHT      ,
     TOKEN_REDIRECTION_LEFT       ,
     TOKEN_REDIRECTION_RIGHT_RIGHT,
