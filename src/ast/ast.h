@@ -3,8 +3,6 @@
 
 #include "lexer/lexer.h"
 
-#define NB_AST 9
-
 enum ast_type
 {
     AST_LIST,
@@ -15,7 +13,9 @@ enum ast_type
     AST_AND_OR,
     AST_PIPELINE,
     AST_COMMAND,
-    AST_COMPOUND_LIST
+    AST_COMPOUND_LIST,
+    AST_RULE_WHILE,
+    AST_RULE_UNTIL
 };
 
 struct ast_list
@@ -46,16 +46,19 @@ struct ast_shell_command
 struct ast_and_or
 {
     struct ast *pipeline;
+    struct ast *next;
 };
 
 struct ast_pipeline
 {
     struct ast *command;
+    struct ast *next;
 };
 
 struct ast_command
 {
     struct ast *first;
+    struct redirection **redirection;
 };
 
 struct ast_compound_list
@@ -68,6 +71,20 @@ struct ast_simple_command
 {
     char **argv;
     size_t len;
+    struct redirection **redirection;
+    struct prefix **prefix;
+};
+
+struct ast_rule_while
+{
+    struct ast *cond;
+    struct ast *then;
+};
+
+struct ast_rule_until
+{
+    struct ast *cond;
+    struct ast *then;
 };
 
 union ast_union
@@ -81,6 +98,8 @@ union ast_union
     struct ast_pipeline ast_pipeline;
     struct ast_command ast_command;
     struct ast_compound_list ast_compound_list;
+    struct ast_rule_while ast_rule_while;
+    struct ast_rule_until ast_rule_until;
 };
 
 struct ast;
