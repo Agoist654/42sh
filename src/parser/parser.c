@@ -9,22 +9,11 @@
 #include <string.h>
 
 #include "ast/ast.h"
-#include "io_backend/io_backend.h"
 #include "lexer/lexer.h"
 
 static struct error error = { .res = 0, .msg = NULL };
 
 static struct ast *parse_shell_command(struct lexer *lexer);
-
-// static
-// char *parse_element(struct lexer *lexer)
-//{
-//     //if (is_in(io_peek(), redirection)
-//     //{
-//     //parse_redirection();
-//     //}
-//     return lexer_pop(lexer).buffer;
-// }
 
 static int isseparator(struct token token)
 {
