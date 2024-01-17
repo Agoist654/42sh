@@ -1,11 +1,12 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 14
+#define NB_TOKENS 31
 
 #include <stddef.h>
 enum token_type
 {
+    //step1
     TOKEN_IF,
     TOKEN_THEN,
     TOKEN_ELIF,
@@ -19,7 +20,27 @@ enum token_type
     TOKEN_COMMENT,
     TOKEN_EOF,
     TOKEN_ERROR,
-    TOKEN_NULL
+    TOKEN_NULL,
+
+    //step2
+    TOKEN_WHILE                  ,
+    TOKEN_FOR                    ,
+    TOKEN_UNTIL                  ,
+    TOKEN_DO                     ,
+    TOKEN_DONE                   ,
+    TOKEN_IN                     ,
+    TOKEN_PIPE                   ,
+    TOKEN_NEGATION               ,
+    TOKEN_AND                    ,
+    TOKEN_OR                     ,
+    TOKEN_REDIRECTION_RIGHT      ,
+    TOKEN_REDIRECTION_LEFT       ,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND  ,
+    TOKEN_REDIRECTION_LEFT_AND   ,
+    TOKEN_REDIRECTION_RIGHT_PIPE ,
+    TOKEN_REDIRECTION_LEFT_RIGHT
+
 };
 
 struct token

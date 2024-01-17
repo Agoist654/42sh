@@ -18,9 +18,30 @@
 // };
 
 static char *tokens[NB_TOKENS] = {
+    //step 1
     [TOKEN_IF] = "if",     [TOKEN_THEN] = "then", [TOKEN_ELIF] = "elif",
     [TOKEN_ELSE] = "else", [TOKEN_FI] = "fi",     [TOKEN_SEMICOLON] = ";",
-    [TOKEN_NEWLINE] = "\n"
+    [TOKEN_NEWLINE] = "\n",
+
+    //step2
+    [TOKEN_WHILE                  ] = "while",
+    [TOKEN_FOR                    ] = "for",
+    [TOKEN_UNTIL                  ] = "until",
+    [TOKEN_DO                     ] = "do",
+    [TOKEN_DONE                   ] = "done",
+    [TOKEN_IN                     ] = "in",
+    [TOKEN_PIPE                   ] = "|",
+    [TOKEN_NEGATION               ] = "!",
+    [TOKEN_AND                    ] = "&&",
+    [TOKEN_OR                     ] = "||",
+    [TOKEN_REDIRECTION_RIGHT      ] = ">",
+    [TOKEN_REDIRECTION_LEFT       ] = "<",
+    [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>",
+    [TOKEN_REDIRECTION_RIGHT_AND  ] = ">&",
+    [TOKEN_REDIRECTION_LEFT_AND   ] = "<&",
+    [TOKEN_REDIRECTION_RIGHT_PIPE ] = ">|",
+    [TOKEN_REDIRECTION_LEFT_RIGHT ] = "<>"
+
     //[TOKEN_OPERATOR         ] = NULL,
     //[TOKEN_SINGLE_QUOTE     ] = NULL,
     //[TOKEN_COMMENT          ] = NULL,
@@ -31,7 +52,9 @@ static char *tokens[NB_TOKENS] = {
 
 };
 
-static char *print_tokens[NB_TOKENS] = { [TOKEN_IF] = "TOKEN_IF",
+static char *print_tokens[NB_TOKENS] = { 
+                                         /*start step1*/
+                                         [TOKEN_IF] = "TOKEN_IF",
                                          [TOKEN_THEN] = "TOKEN_THEN",
                                          [TOKEN_ELIF] = "TOKEN_ELIF",
                                          [TOKEN_ELSE] = "TOKEN_ELSE",
@@ -45,7 +68,30 @@ static char *print_tokens[NB_TOKENS] = { [TOKEN_IF] = "TOKEN_IF",
                                          [TOKEN_WORD] = "TOKEN_WORD",
                                          [TOKEN_EOF] = "TOKEN_EOF",
                                          [TOKEN_ERROR] = "TOKEN_ERROR",
-                                         [TOKEN_NULL] = "TOKEN_NULL" };
+                                         [TOKEN_NULL] = "TOKEN_NULL",
+                                         /*end step1*/
+
+                                         /*start step2*/
+                                         [TOKEN_WHILE                  ] = "TOKEN_WHILE",
+                                         [TOKEN_FOR                    ] = "TOKEN_FOR",
+                                         [TOKEN_UNTIL                  ] = "TOKEN_UNTIL",
+                                         [TOKEN_DO                     ] = "TOKEN_DO",
+                                         [TOKEN_DONE                   ] = "TOKEN_DONE",
+                                         [TOKEN_IN                     ] = "TOKEN_IN",
+                                         [TOKEN_PIPE                   ] = "TOKEN_PIPE",
+                                         [TOKEN_NEGATION               ] = "TOKEN_NEGATION",
+                                         [TOKEN_AND                    ] = "TOKEN_AND",
+                                         [TOKEN_OR                     ] = "TOKEN_OR",
+                                         [TOKEN_REDIRECTION_RIGHT      ] = "TOKEN_REDIRECTION_RIGHT",
+                                         [TOKEN_REDIRECTION_LEFT       ] = "TOKEN_REDIRECTION_LEFT",
+                                         [TOKEN_REDIRECTION_RIGHT_RIGHT] = "TOKEN_REDIRECTION_RIGHT_RIGHT",
+                                         [TOKEN_REDIRECTION_RIGHT_AND  ] = "TOKEN_REDIRECTION_RIGHT_AND",
+                                         [TOKEN_REDIRECTION_LEFT_AND   ] = "TOKEN_REDIRECTION_LEFT_AND",
+                                         [TOKEN_REDIRECTION_RIGHT_PIPE ] = "TOKEN_REDIRECTION_RIGHT_PIPE",
+                                         [TOKEN_REDIRECTION_LEFT_RIGHT ] = "TOKEN_REDIRECTION_LEFT_RIGHT"
+                                         /*end step2*/
+
+};
 
 // static struct token token_eof = {
 //     .type = TOKEN_EOF,
@@ -102,12 +148,12 @@ struct lexer *lexer_init(void)
     return res;
 }
 
-static struct token handle_comment(struct token token)
+static 
+void handle_comment()
 {
-    token.type = TOKEN_COMMENT;
     while (io_peek() != EOF && io_peek() != '\n')
-        token.buffer[strlen(token.buffer)] = io_pop();
-    return token;
+        io_pop();
+    return ;
 }
 
 static struct token handle_single_quote(struct token token)
@@ -128,41 +174,63 @@ static struct token handle_single_quote(struct token token)
     return token;
 }
 
+static 
+int ispart_prev_op(char io_peek, char *buffer)
+{
+    if (buffer[strlen(buffer) - 1] == '<' && (io_peek == '&' || io_peek == '>'))
+        return 1;
+    if (buffer[strlen(buffer) - 1] == '>' && (io_peek == '>' || io_peek == '&' || io_peek == '|'))
+        return 1;
+    if (buffer[strlen(buffer) - 1] == '&' && io_peek == '&')
+        return 1;
+    if (buffer[strlen(buffer) - 1] == '|' && io_peek == '|')
+        return 1;
+    return 0;
+}
+
+static
+int isoperator(char io_peek)
+{
+    if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>' || io_peek == '&' || io_peek == '|') // also check if IONUMBER
+        return 1;
+    return 0;
+}
+
 static struct token token_reg(void)
 {
     struct token res = token_init();
     // rule 1
     while (io_peek() != EOF)
     {
-        // rule 2: if peek is part of the current operator
-        // res.buffer[strlen(res.buffer)] = io_pop();
+        // rule 2: if peek is part of the current operator and not quoted
+        if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR && ispart_prev_op(io_peek(), res.buffer))
+            res.buffer[strlen(res.buffer)] = io_pop();
+
         //  //rule 3: if peek is not part of current operator return the token
         //  (the operator)
-        /*
-         * if (is_part_prev_op(io_peek(), res.buffer))
-         * {
-         *
-         * }
-         */
-        // rule 4: backslash/quote/double-quote and not quoted
+        else if (res.type == TOKEN_OPERATOR && !ispart_prev_op(io_peek(), res.buffer))
+            return res;
+
+        // step1  // rule 4: backslash/quote/double-quote and not quoted
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '\'')
             return handle_single_quote(res);
 
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
-            return handle_comment(res);
+            handle_comment();
 
         // rule 5: sub shell
-        //    //rule 6: if not quoted therfore: start of a new operator
-        if (io_peek() == ';' || io_peek() == '\n')
+        // step1   //rule 6: if not quoted therfore: start of a new operator
+        if (isoperator(io_peek()))
         {
             if (res.type == TOKEN_WORD)
                 return res;
             res.type = TOKEN_OPERATOR;
             res.buffer[strlen(res.buffer)] = io_pop();
-            return res;
+            continue;
+            //return res;
         }
 
-        //    //rule 7: if not quoted : is a >blank< return token
+        // step1   //rule 7: if not quoted : is a >blank< return token
         if (isblank(io_peek()))
         {
             io_pop();
@@ -170,13 +238,13 @@ static struct token token_reg(void)
                 return res;
             continue;
         }
-        //    //rule 8: if TOKEN_WORD : res.buffer[strlen(res.buffer)] =
+        // step1   //rule 8: if TOKEN_WORD : res.buffer[strlen(res.buffer)] =
         //    io_pop();
         if (res.type == TOKEN_WORD)
             res.buffer[strlen(res.buffer)] = io_pop();
-        //    //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of it
+        // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of it
 
-        //    //rule 10: start of a TOKEN_WORD
+        // step1   //rule 10: start of a TOKEN_WORD
         res.type = TOKEN_WORD;
     }
     if (res.type != TOKEN_WORD && res.type != TOKEN_EOF)
@@ -209,11 +277,14 @@ struct token lexer_peek(struct lexer *lexer)
     return lexer->current_token;
 }
 
+/*
+ * marche uniquement si on a fait un lexer_peek() avant 
+ * si non renvoie un TOKEN_NULL au premier appel
+ */
 struct token lexer_pop(struct lexer *lexer)
 {
     struct token save_token = lexer->current_token;
     lexer->current_token = lex();
-    //        return lexer->current_token;
     return save_token;
 }
 
@@ -262,21 +333,20 @@ void print_token(struct token token)
     }
 }
 
-// int main(int argc, char *argv[])
+//int main(int argc, char *argv[])
 //{
 //     io_backend(argc, argv);
 //     struct lexer *lexer = lexer_init();
-//     struct token token = lexer_pop(lexer);
+//     struct token token;
+//     lexer_peek(lexer);
 //     while (token.type != TOKEN_EOF)
 //     {
 //         //        printf("1peek >\n");
 //         //        print_token(lexer_peek(lexer));
-//         printf("pop>\n");
-//         print_token(token);
 //         token = lexer_pop(lexer);
-//     }
 //         printf("pop>\n");
 //         print_token(token);
+//     }
 //     return 0;
 // }
 
