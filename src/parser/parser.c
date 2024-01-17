@@ -275,7 +275,7 @@ struct ast *parse_input(struct lexer *lexer)
     {
         ast_list_destroy(res);
         free(lexer_peek(lexer).buffer);
-        errx(1, error.msg);
+        errx(2, "parse input - bad parsing\n");
     }
 
     if (lexer_peek(lexer).type == TOKEN_NEWLINE
@@ -286,6 +286,6 @@ struct ast *parse_input(struct lexer *lexer)
     }
     ast_list_destroy(res);
     free(lexer_peek(lexer).buffer);
-    errx(1, "wrong parse_input\n");
+    errx(2, "wrong parse_input\n");
     return NULL;
 }
