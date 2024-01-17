@@ -15,7 +15,8 @@ enum ast_type
     AST_COMMAND,
     AST_COMPOUND_LIST,
     AST_RULE_WHILE,
-    AST_RULE_UNTIL
+    AST_RULE_UNTIL,
+    AST_RULE_FOR
 };
 
 struct ast_list
@@ -87,6 +88,12 @@ struct ast_rule_until
     struct ast *then;
 };
 
+struct ast_rule_for
+{
+    struct ast *count;
+    struct ast *then;
+};
+
 union ast_union
 {
     struct ast_list ast_list;
@@ -100,6 +107,7 @@ union ast_union
     struct ast_compound_list ast_compound_list;
     struct ast_rule_while ast_rule_while;
     struct ast_rule_until ast_rule_until;
+    struct ast_rule_for ast_rule_for;
 };
 
 struct ast;
