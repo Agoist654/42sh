@@ -1,5 +1,3 @@
-//#include "lexer/lexer.h"
-//#include "io_backend/io_backend.h"
 #include "lexer.h"
 
 #include <ctype.h>
@@ -7,7 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "io_backend/io_backend.h"
+//#include "io_backend/io_backend.h"
+#include "../io_backend/io_backend.h"
 
 #define BUFFER_SIZE 512
 
@@ -25,21 +24,21 @@ static char *tokens[NB_TOKENS] = {
 
     //step2
     [TOKEN_WHILE                  ] = "while",
-    [TOKEN_FOR                    ] = "for",
+    [TOKEN_FOR                    ] = "for"  ,
     [TOKEN_UNTIL                  ] = "until",
-    [TOKEN_DO                     ] = "do",
-    [TOKEN_DONE                   ] = "done",
-    [TOKEN_IN                     ] = "in",
-    [TOKEN_PIPE                   ] = "|",
-    [TOKEN_NEGATION               ] = "!",
-    [TOKEN_AND                    ] = "&&",
-    [TOKEN_OR                     ] = "||",
-    [TOKEN_REDIRECTION_RIGHT      ] = ">",
-    [TOKEN_REDIRECTION_LEFT       ] = "<",
-    [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>",
-    [TOKEN_REDIRECTION_RIGHT_AND  ] = ">&",
-    [TOKEN_REDIRECTION_LEFT_AND   ] = "<&",
-    [TOKEN_REDIRECTION_RIGHT_PIPE ] = ">|",
+    [TOKEN_DO                     ] = "do"   ,
+    [TOKEN_DONE                   ] = "done" ,
+    [TOKEN_IN                     ] = "in"   ,
+    [TOKEN_PIPE                   ] = "|"    ,
+    [TOKEN_NEGATION               ] = "!"    ,
+    [TOKEN_AND                    ] = "&&"   ,
+    [TOKEN_OR                     ] = "||"   ,
+    [TOKEN_REDIRECTION_RIGHT      ] = ">"    ,
+    [TOKEN_REDIRECTION_LEFT       ] = "<"    ,
+    [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>"   ,
+    [TOKEN_REDIRECTION_RIGHT_AND  ] = ">&"   ,
+    [TOKEN_REDIRECTION_LEFT_AND   ] = "<&"   ,
+    [TOKEN_REDIRECTION_RIGHT_PIPE ] = ">|"   ,
     [TOKEN_REDIRECTION_LEFT_RIGHT ] = "<>"
 
     //[TOKEN_OPERATOR         ] = NULL,
@@ -49,48 +48,6 @@ static char *tokens[NB_TOKENS] = {
     //[TOKEN_EOF            ] = NULL,
     //[TOKEN_ERROR          ] = NULL,
     //[TOKEN_NULL           ] = NULL
-
-};
-
-static char *print_tokens[NB_TOKENS] = { 
-                                         /*start step1*/
-                                         [TOKEN_IF] = "TOKEN_IF",
-                                         [TOKEN_THEN] = "TOKEN_THEN",
-                                         [TOKEN_ELIF] = "TOKEN_ELIF",
-                                         [TOKEN_ELSE] = "TOKEN_ELSE",
-                                         [TOKEN_FI] = "TOKEN_FI",
-                                         [TOKEN_SEMICOLON] = "TOKEN_SEMICOLON",
-                                         [TOKEN_NEWLINE] = "TOKEN_NEWLINE",
-                                         [TOKEN_OPERATOR] = "TOKEN_OPERATOR",
-                                         [TOKEN_SINGLE_QUOTE] =
-                                             "TOKEN_SINGLE_QUOTE",
-                                         [TOKEN_COMMENT] = "TOKEN_COMMENT",
-                                         [TOKEN_WORD] = "TOKEN_WORD",
-                                         [TOKEN_EOF] = "TOKEN_EOF",
-                                         [TOKEN_ERROR] = "TOKEN_ERROR",
-                                         [TOKEN_NULL] = "TOKEN_NULL",
-                                         /*end step1*/
-
-                                         /*start step2*/
-                                         [TOKEN_WHILE                  ] = "TOKEN_WHILE",
-                                         [TOKEN_FOR                    ] = "TOKEN_FOR",
-                                         [TOKEN_UNTIL                  ] = "TOKEN_UNTIL",
-                                         [TOKEN_DO                     ] = "TOKEN_DO",
-                                         [TOKEN_DONE                   ] = "TOKEN_DONE",
-                                         [TOKEN_IN                     ] = "TOKEN_IN",
-                                         [TOKEN_PIPE                   ] = "TOKEN_PIPE",
-                                         [TOKEN_NEGATION               ] = "TOKEN_NEGATION",
-                                         [TOKEN_AND                    ] = "TOKEN_AND",
-                                         [TOKEN_OR                     ] = "TOKEN_OR",
-                                         [TOKEN_REDIRECTION_RIGHT      ] = "TOKEN_REDIRECTION_RIGHT",
-                                         [TOKEN_REDIRECTION_LEFT       ] = "TOKEN_REDIRECTION_LEFT",
-                                         [TOKEN_REDIRECTION_RIGHT_RIGHT] = "TOKEN_REDIRECTION_RIGHT_RIGHT",
-                                         [TOKEN_REDIRECTION_RIGHT_AND  ] = "TOKEN_REDIRECTION_RIGHT_AND",
-                                         [TOKEN_REDIRECTION_LEFT_AND   ] = "TOKEN_REDIRECTION_LEFT_AND",
-                                         [TOKEN_REDIRECTION_RIGHT_PIPE ] = "TOKEN_REDIRECTION_RIGHT_PIPE",
-                                         [TOKEN_REDIRECTION_LEFT_RIGHT ] = "TOKEN_REDIRECTION_LEFT_RIGHT"
-                                         /*end step2*/
-
 };
 
 // static struct token token_eof = {
@@ -191,10 +148,26 @@ int ispart_prev_op(char io_peek, char *buffer)
 static
 int isoperator(char io_peek)
 {
-    if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>' || io_peek == '&' || io_peek == '|') // also check if IONUMBER
+    if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>' || io_peek == '&' || io_peek == '|')
         return 1;
     return 0;
 }
+
+//static
+//int handle_io_number(char *buffer, char io_peek)
+//{
+//    if (strlen(buffer) != 1)
+//    {
+//        printf("handleionumredir wtf should only have a single op/num in it\n");
+//        return 0;
+//    }
+//    if (isdigit(buffer[0]) && (io_peek == '<' || io_peek == '>'))
+//    {
+//        buffer[strlen(buffer)] = io_pop();
+//        return 1;
+//    }
+//    return 0;
+//}
 
 static struct token token_reg(void)
 {
@@ -204,7 +177,10 @@ static struct token token_reg(void)
     {
         // rule 2: if peek is part of the current operator and not quoted
         if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR && ispart_prev_op(io_peek(), res.buffer))
+        {
             res.buffer[strlen(res.buffer)] = io_pop();
+            continue;
+        }
 
         //  //rule 3: if peek is not part of current operator return the token
         //  (the operator)
@@ -215,15 +191,16 @@ static struct token token_reg(void)
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '\'')
             return handle_single_quote(res);
 
-        if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
-            handle_comment();
-
         // rule 5: sub shell
         // step1   //rule 6: if not quoted therfore: start of a new operator
         if (isoperator(io_peek()))
         {
             if (res.type == TOKEN_WORD)
+            {
+                if (strlen(res.buffer) == 1 && isdigit(res.buffer[0]))
+                    res.type = TOKEN_IONUMBER;
                 return res;
+            }
             res.type = TOKEN_OPERATOR;
             res.buffer[strlen(res.buffer)] = io_pop();
             continue;
@@ -243,7 +220,11 @@ static struct token token_reg(void)
         if (res.type == TOKEN_WORD)
             res.buffer[strlen(res.buffer)] = io_pop();
         // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of it
-
+        if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
+        {
+            handle_comment();
+            continue;
+        }
         // step1   //rule 10: start of a TOKEN_WORD
         res.type = TOKEN_WORD;
     }
@@ -267,6 +248,8 @@ struct token lex(void)
             break;
         }
     }
+    if (res.type == TOKEN_OPERATOR)
+        res.type = TOKEN_ERROR;
     return res;
 }
 
@@ -287,68 +270,6 @@ struct token lexer_pop(struct lexer *lexer)
     lexer->current_token = lex();
     return save_token;
 }
-
-// static
-void print_token(struct token token)
-{
-    if (token.type == TOKEN_WORD)
-    {
-        printf("buffer >%s<\n", token.buffer);
-        printf("type >TOKEN_WORD<\n");
-    }
-    else if (token.type == TOKEN_EOF)
-    {
-        printf("buffer >%s<\n", token.buffer);
-        printf("type >TOKEN_EOF<\n");
-    }
-    else if (token.type == TOKEN_COMMENT)
-    {
-        printf("buffer >%s<\n", token.buffer);
-        printf("type >TOKEN_COMMENT<\n");
-    }
-    else if (token.type == TOKEN_SINGLE_QUOTE)
-    {
-        printf("buffer >%s<\n", token.buffer);
-        printf("type >TOKEN_SINGLE_QUOTE<\n");
-    }
-    else if (token.type == TOKEN_ERROR)
-    {
-        printf("type >TOKEN_ERROR<\n");
-    }
-    else if (token.type == TOKEN_OPERATOR)
-    {
-        printf("buffer >%s<\n", token.buffer);
-        printf("type >TOKEN_OPERATOR<\n");
-    }
-    else
-    {
-        for (enum token_type type = TOKEN_IF; type < NB_TOKENS; type++)
-        {
-            if (token.type == type)
-            {
-                printf("buffer >%s<\n", token.buffer);
-                printf("type >%s<\n", print_tokens[type]);
-            }
-        }
-    }
-}
-
-//int main(int argc, char *argv[])
-//{
-//     io_backend(argc, argv);
-//     struct lexer *lexer = lexer_init();
-//     struct token token;
-//     lexer_peek(lexer);
-//     while (token.type != TOKEN_EOF)
-//     {
-//         //        printf("1peek >\n");
-//         //        print_token(lexer_peek(lexer));
-//         token = lexer_pop(lexer);
-//         printf("pop>\n");
-//         print_token(token);
-//     }
-//     return 0;
-// }
 
 // int main(int argc, char *argv[])
 //{
