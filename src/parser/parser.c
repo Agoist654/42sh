@@ -220,6 +220,84 @@ static struct ast *parse_rule_if(struct lexer *lexer)
     return res;
 }
 
+static struct ast *parse_rule_while(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_RULE_WHILE);
+    if (!res)
+    {
+        error.msg = "ast_shell_command init\n";
+        error.res = -42;
+        return NULL;
+    }
+
+    free(lexer_pop(lexer).buffer);
+    // if (isin compound_list)
+    res->ast_union.ast_rule_while.cond = parse_compound_list(lexer);
+    if (error.res != 0)
+        return res;
+    if (lexer_peek(lexer).type != TOKEN_DO)
+    {
+        error.res = 2;
+        error.msg = "parse_rule_while: syntax error near unexpected token do";
+        return res;
+    }
+
+    else
+        free(lexer_pop(lexer).buffer);
+    // if isin
+    res->ast_union.ast_rule_while.then = parse_compound_list(lexer);
+    if (error.res != 0)
+        return res;
+    // if isin
+    if (lexer_peek(lexer).type != TOKEN_DONE)
+    {
+        error.res = 2;
+        error.msg = "parse_rule_while: syntax error near unexpected token done";
+        return res;
+    }
+    free(lexer_pop(lexer).buffer);
+    return res;
+}
+
+static struct ast *parse_rule_until(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_RULE_UNTIL);
+    if (!res)
+    {
+        error.msg = "ast_shell_command init\n";
+        error.res = -42;
+        return NULL;
+    }
+
+    free(lexer_pop(lexer).buffer);
+    // if (isin compound_list)
+    res->ast_union.ast_rule_until.cond = parse_compound_list(lexer);
+    if (error.res != 0)
+        return res;
+    if (lexer_peek(lexer).type != TOKEN_DO)
+    {
+        error.res = 2;
+        error.msg = "parse_rule_until: syntax error near unexpected token do";
+        return res;
+    }
+
+    else
+        free(lexer_pop(lexer).buffer);
+    // if isin
+    res->ast_union.ast_rule_until.then = parse_compound_list(lexer);
+    if (error.res != 0)
+        return res;
+    // if isin
+    if (lexer_peek(lexer).type != TOKEN_DONE)
+    {
+        error.res = 2;
+        error.msg = "parse_rule_until: syntax error near unexpected token done";
+        return res;
+    }
+    free(lexer_pop(lexer).buffer);
+    return res;
+}
+
 static struct ast *parse_shell_command(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_SHELL_COMMAND);
