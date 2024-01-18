@@ -1,5 +1,5 @@
-#ifndef EXEC1_H
-#define EXEC1_H
+#ifndef EXEC_H
+#define EXEC_H
 
 #include "ast/ast.h"
 
@@ -13,4 +13,4 @@ int ast_rule_if_exec(struct ast *ast);
 int ast_else_clause_exec(struct ast *ast);
 int ast_compound_list_exec(struct ast *ast);
 
-#endif /* !EXEC1_H */
+#endif /* !EXEC_H */
