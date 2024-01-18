@@ -1,3 +1,12 @@
+#include <assert.h>
+#include <err.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include "builtin/builtin.h"
 #include "exec.h"
 #include "expansion/expansion.h"

@@ -292,7 +292,12 @@ static struct ast *parse_shell_command(struct lexer *lexer)
     struct ast *res = ast_init(AST_SHELL_COMMAND);
     if (!res)
         goto error;
-    res->ast_union.ast_shell_command.rule_if = parse_rule_if(lexer);
+    if (lexer->current_token.type == TOKEN_IF)
+        res->ast_union.ast_shell_command.rule_if = parse_rule_if(lexer);
+    else if (lexer->current_token.type == TOKEN_WHILE)
+        res->ast_union.ast_shell_command.rule_if = parse_rule_while(lexer);
+    else if (lexer->current_token.type == TOKEN_UNTIL)
+        res->ast_union.ast_shell_command.rule_if = parse_rule_until(lexer);
     return res;
 error:
     error.msg = "ast_shell_command init\n";
