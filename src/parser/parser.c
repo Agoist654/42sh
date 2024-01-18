@@ -11,14 +11,234 @@
 #include "ast/ast.h"
 #include "lexer/lexer.h"
 
+static int first_list[] =
+{
+    TOKEN_NEGATION,
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    TOKEN_WHILE,
+    TOKEN_UNTIL,
+    TOKEN_IF,
+    -1;
+};
+
+static int first_and_or[] =
+{
+    TOKEN_NEGATION,
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    TOKEN_WHILE,
+    TOKEN_UNTIL,
+    TOKEN_IF,
+    -1;
+};
+
+static int first_pipeline[] =
+{
+    TOKEN_NEGATION,
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    TOKEN_WHILE,
+    TOKEN_UNTIL,
+    TOKEN_IF,
+    -1;
+};
+
+static int first_command[] =
+{
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    TOKEN_WHILE,
+    TOKEN_UNTIL,
+    TOKEN_IF,
+    -1;
+};
+
+static int first_simple_command[] =
+{
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    -1
+};
+
+static int first_shell_command[] =
+{
+    TOKEN_WHILE,
+    TOKEN_UNTIL,
+    TOKEN_IF,
+    -1
+};
+
+static int first_element[] =
+{
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    -1
+};
+
+static int first_redirection[] =
+{
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    -1
+};
+
+static int first_compound_list[] =
+{
+    TOKEN_WORD,
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_IONUMBER,
+    TOKEN_NEGATION,
+    TOKEN_NEWLINE,
+    -1
+};
+
+static int first_else_clause[] =
+{
+    TOKEN_ELSE,
+    TOKEN_ELIF,
+    -1
+};
+
+static int op[] =
+{
+    TOKEN_REDIRECTION_RIGHT,
+    TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT,
+    TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,
+    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    -1
+};
+
 static struct error error = { .res = 0, .msg = NULL };
 
 static struct ast *parse_shell_command(struct lexer *lexer);
+
+static int is_in(int token_type, const int *first)
+{
+    for (int i = 0; first[i] != -1; i++)
+    {
+        if (first[i] == token_type)
+            return 1;
+    }
+    return 0;
+}
 
 static int isseparator(struct token token)
 {
     return (token.type == TOKEN_EOF || token.type == TOKEN_NEWLINE
             || token.type == TOKEN_SEMICOLON);
+}
+
+static struct redirection *parse_redirection(struct lexer *lexer)
+{
+    struct redirection *redir = malloc(sizeof(struct redirection));
+    if (redir == NULL)
+        return NULL;
+    if (lexer_peek(lexer).type == TOKEN_IONUMBER)
+        redir->io_number = lexer_pop(lexer);
+    else
+    {
+        error.res = 2;
+        return redir;
+    }
+    if (is_in(lexer_peek(lexer).type, op))
+    {
+        struct token token = lexer_pop(lexer);
+        redir->op = token.type;
+        free(token.buffer);
+    }
+    else
+    {
+        error.res = 2;
+        return redir;
+    }
+    if (!isseparator(lexer_peek(lexer)))
+        redir->word = lexer_pop(lexer).buffer;
+    else
+    {
+        error.res = 2;
+        return redir;
+    }
+}
+
+static struct element *parse_element(struct lexer *lexer)
+{
+    struct element *elt = malloc(sizeof(struct element));
+    if (elt == NULL)
+        return NULL;
+    if (is_in(lexer_peek(lexer).type, first_redirection))
+    {
+        elt->element_type = REDIR;
+        elt->element_union.redir = parse_redirection(lexer);
+        if (error.res)
+        {
+            free(elt);
+            return NULL;
+        }
+    }
+    else
+    {
+        elt->element_tyep = WORD;
+        elt->element_union.word = lexer_pop(lexer).buffer;
+    }
+    return elt;
 }
 
 static struct ast *parse_simple_command(struct lexer *lexer)
@@ -29,18 +249,40 @@ static struct ast *parse_simple_command(struct lexer *lexer)
     res->ast_union.ast_simple_command.argv = calloc(LEN, sizeof(char *));
     if (!res->ast_union.ast_simple_command.argv)
         goto error;
-    res->ast_union.ast_simple_command.len = LEN;
+    res->ast_union.ast_simple_command.redirection = calloc(LEN, sizeof(struct redirection *));
+    if (!res->ast_union.ast_simple_command.redirection)
+        goto error;
+    res->ast_union.ast_simple_command.len_argv = LEN;
+    res->ast_union.ast_simple_command.len_redir = LEN;
     size_t nb_arg = 0;
+    size_t nb_redir = 0;
     while (!isseparator(lexer_peek(lexer)))
     {
-        if (nb_arg == res->ast_union.ast_simple_command.len - 1)
+        if (nb_arg == res->ast_union.ast_simple_command.len_argv - 1)
+        {
             res->ast_union.ast_simple_command.argv =
                 realloc(res->ast_union.ast_simple_command.argv,
-                        res->ast_union.ast_simple_command.len * 2);
-        res->ast_union.ast_simple_command.argv[nb_arg++] =
-            lexer_pop(lexer).buffer;
+                        res->ast_union.ast_simple_command.len_argv * 2);
+            res->ast_union.ast_simple_command.len_argv *= 2;
+        }
+        if (nb_arg == res->ast_union.ast_simple_command.len_redir - 1)
+        {
+            res->ast_union.ast_simple_command.redirection =
+                realloc(res->ast_union.ast_simple_command.redirection,
+                        res->ast_union.ast_simple_command.len_redir * 2);
+            res->ast_union.ast_simple_command.len_redir *= 2;
+        }
+        struct element *elt = parse_element(lexer);
+        if (elt == NULL)
+            continue;
+        if (elt->type == WORD)
+            res.ast_union.ast_simple_command.argv[nb_arg++] = elt->element_union.word;
+        if (elt->type == REDIR)
+            res.ast_union.ast_simple_command.redirection[nb_redir++] = elt->element_union.redir;
+        free(elt);
     }
     res->ast_union.ast_simple_command.argv[nb_arg] = NULL;
+    res->ast_union.ast_simple_command.redirection[nb_redir] = NULL;
     return res;
 error:
     error.msg = "ast_pipeline init\n";
@@ -66,12 +308,62 @@ error:
     return NULL;
 }
 
+static struct ast *parse_pipeline_aux(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_PIPELINE);
+    if (!res)
+        goto error;
+    res->ast_union.ast_pipeline.neg = 0;
+    res->ast_union.ast_pipeline.next = NULL;
+    res->ast_union.ast_pipeline.command = parse_command(lexer);
+    if (error.res)
+        return res;
+    if (lexer_peek(lexer).type == TOKEN_PIPE)
+    {
+        free(lexer_pop(lexer).buffer);
+        while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        {
+            free(lexer_pop(lexer).buffer);
+        }
+        if (is_in(lexer_peek(lexer).type, first_command))
+            res->ast_union.ast_pipeline.next = parse_pipeline_aux(lexer);
+        else
+            error.res = 2;
+    }
+    return res;
+error:
+    error.msg = "ast_pipeline init\n";
+    error.res = -42;
+    return NULL;
+}
+
 static struct ast *parse_pipeline(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_PIPELINE);
     if (!res)
         goto error;
+    res->ast_union.ast_pipeline.neg = 0;
+    res->ast_union.ast_pipeline.next = NULL;
+    if (lexer_peek(lexer).type == TOKEN_NEGATION)
+    {
+        free(lexr_pop(lexer).buffer);
+        res->ast_union.ast_pipeline.neg = 1;
+    }
     res->ast_union.ast_pipeline.command = parse_command(lexer);
+    if (error.res)
+        return res;
+    if (lexer_peek(lexer).type == TOKEN_PIPE)
+    {
+        free(lexer_pop(lexer).buffer);
+        while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        {
+            free(lexer_pop(lexer).buffer);
+        }
+        if (is_in(lexer_peek(lexer).type, first_command))
+            res->ast_union.ast_pipeline.next = parse_pipeline_aux(lexer);
+        else
+            error.res = 2;
+    }
     return res;
 error:
     error.msg = "ast_pipeline init\n";
