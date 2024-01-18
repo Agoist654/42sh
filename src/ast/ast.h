@@ -67,6 +67,7 @@ struct ast_command
 {
     struct ast *first;
     struct redirection **redirection;
+    int len_redir;
 };
 
 struct ast_compound_list
@@ -145,7 +146,7 @@ struct ast
 struct element
 {
     enum element_type type;
-    union element_union;
+    union element_union element_union;
 };
 
 struct redirection

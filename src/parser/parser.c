@@ -295,12 +295,42 @@ static struct ast *parse_command(struct lexer *lexer)
     struct ast *res = ast_init(AST_COMMAND);
     if (!res)
         goto error;
-    // if (is_in(lexer_peek(lexer), first_shell_command)
-    if (lexer_peek(lexer).type == TOKEN_IF)
+    res->ast_union.ast_command.redirection = NULL;
+    if (is_in(lexer_peek(lexer).type, first_shell_command))
         res->ast_union.ast_command.first = parse_shell_command(lexer);
-    // if (is_in(lexer_peek(lexer), first_simple_command)
-    else
+    else if (is_in(lexer_peek(lexer).type, first_simple_command))
+    {
         res->ast_union.ast_command.first = parse_simple_command(lexer);
+        if (error.res)
+            return res;
+        int nb_redir = 0;
+        while (is_in(lexer_peek(lexer).type, first_redirection))
+        {
+            if (res->ast_union.ast_command.redirection == NULL)
+            {
+                res->ast_union.ast_command.redirection = malloc(LEN * sizeof(struct redirection));
+                if (res->ast_union.ast_command.redirection == NULL)
+                {
+                    error.res = -42;
+                    return res;
+                }
+            }
+            if (res->ast_union.ast_command.len_redir - 1 == nb_redir)
+            {
+                res->ast_union.ast_command.redirection = realloc(res->ast_union.ast_command.redirection, res->ast_union.ast_command.len_redir * 2);
+                res->ast_union.ast_command.len_redir *= 2;
+            }
+            res->ast_union.ast_command.redirection[nb_redir++] = parse_redir(lexer);
+            if (error.res)
+            {
+                res->ast_union.ast_command.redirection[nb_redir] = NULL;
+                return res;
+            }
+        }
+        return res;
+    }
+    else
+        error.res = 2;
     return res;
 error:
     error.msg = "ast_pipeline init\n";
@@ -590,6 +620,8 @@ static struct ast *parse_shell_command(struct lexer *lexer)
         res->ast_union.ast_shell_command.rule_if = parse_rule_while(lexer);
     else if (lexer->current_token.type == TOKEN_UNTIL)
         res->ast_union.ast_shell_command.rule_if = parse_rule_until(lexer);
+    else
+        error.res = 2;
     return res;
 error:
     error.msg = "ast_shell_command init\n";
