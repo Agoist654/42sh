@@ -60,6 +60,7 @@ struct ast_pipeline
 {
     struct ast *command;
     struct ast *next;
+    int neg;
 };
 
 struct ast_command
@@ -77,9 +78,9 @@ struct ast_compound_list
 struct ast_simple_command
 {
     char **argv;
-    size_t len;
+    size_t len_argv;
     struct redirection **redirection;
-    struct prefix **prefix;
+    size_t len_redir;
 };
 
 struct ast_rule_while
@@ -119,7 +120,7 @@ union ast_union
 union element_union
 {
     char *word;
-    struct redirection redir;
+    struct redirection *redir;
 };
 
 struct ast;
@@ -149,7 +150,8 @@ struct element
 
 struct redirection
 {
-    char *op;
+    char *io_number;
+    enum token_type op;
     char *word;
 };
 

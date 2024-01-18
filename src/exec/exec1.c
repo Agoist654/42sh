@@ -39,8 +39,15 @@ int ast_pipeline_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_PIPELINE);
-    return ast->ast_union.ast_pipeline.command->ftable->exec(
+    int ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
         ast->ast_union.ast_pipeline.command);
+    if (ast->ast_union.ast_pipeline.next != NULL)
+    {
+        ret_value = ast->ast_union.ast_pipeline.next->ftable->exec(ast->ast_union.ast_pipeline.next);
+    }
+    if (ast->ast_union.ast_pipeline.neg)
+        return 1 - ret_value;
+    return ret_value;
 }
 
 int ast_command_exec(struct ast *ast)
