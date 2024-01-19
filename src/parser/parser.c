@@ -133,19 +133,26 @@ static int isseparator(struct token token)
             || token.type == TOKEN_SEMICOLON);
 }
 
+static 
+struct redirection *redirection_init(void)
+{
+    struct redirection *res = malloc(sizeof(struct redirection));
+    if (!res)
+        return NULL;
+    res->io_number = NULL;
+    res->word = NULL;
+
+    return res;
+}
+
 static struct redirection *parse_redirection(struct lexer *lexer)
 {
-    struct redirection *redir = malloc(sizeof(struct redirection));
+    struct redirection *redir = redirection_init();
     if (redir == NULL)
         return NULL;
     if (lexer_peek(lexer).type == TOKEN_IONUMBER)
         redir->io_number = lexer_pop(lexer).buffer;
-    else
-    {
-        error.res = 2;
-        return redir;
-    }
-    if (is_in(lexer_peek(lexer).type, op))
+    else if (is_in(lexer_peek(lexer).type, op))
     {
         struct token token = lexer_pop(lexer);
         redir->op = token.type;
