@@ -1,7 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
-#include "lexer/lexer.h"
+#include "../lexer/lexer.h"
+//#include "lexer/lexer.h"
 
 enum ast_type
 {

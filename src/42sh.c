@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
         ast_list_destroy(ast);
     }
     free(lexer_peek(lexer).buffer);
+    free(lexer);
     io_close();
     return res;
 }
