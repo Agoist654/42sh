@@ -122,3 +122,33 @@ print until_to_if.sh
 
 TEST_NAME="if with until"
 print if_to_until.sh
+
+TEST_NAME="if !true"
+print if_not_true.sh
+
+TEST_NAME="if !false"
+print if_not_false.sh
+
+TEST_NAME="while !true"
+print while_not_true.sh
+
+TEST_NAME="while !false"
+print while_not_false.sh
+
+TEST_NAME="until !true"
+print until_not_true.sh
+
+TEST_NAME="until !false"
+print until_not_false.sh
+
+TEST_NAME="simple pipe"
+print simple_pipe.sh
+
+TEST_NAME="if pipe"
+print if_pipe.sh
+
+TEST_NAME="while pipe"
+print while_pipe.sh
+
+TEST_NAME="until pipe"
+print until_pipe.sh
