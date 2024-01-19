@@ -8,10 +8,10 @@
 #include <unistd.h>
 
 #include "builtin/builtin.h"
-#include "dlist.h"
+//#include "dlist.h"
 #include "exec.h"
 #include "expansion/expansion.h"
-#include "redirection.h"
+//#include "redirection.h"
 
 int ast_list_exec(struct ast *ast)
 {
@@ -32,7 +32,7 @@ int ast_and_or_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_AND_OR);
-    res = ast->ast_union.ast_and_or.pipeline->ftable->exec(
+    int res = ast->ast_union.ast_and_or.pipeline->ftable->exec(
         ast->ast_union.ast_and_or.pipeline);
     if (ast->ast_union.ast_and_or.next != NULL)
     {
@@ -70,10 +70,10 @@ int ast_command_exec(struct ast *ast)
         return -1;
     assert(ast->type == AST_COMMAND);
     int to_close = 0;
+    struct dlist *dlist = dlist_init();
     if (ast->ast_union.ast_command.redirection != NULL)
     {
         to_close = 1;
-        struct dlist *dlist = dlist_init();
         for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
         {
             exec_redirection(dlist, ast->ast_union.ast_command.redirection[i]);
@@ -82,9 +82,9 @@ int ast_command_exec(struct ast *ast)
     int res = ast->ast_union.ast_command.first->ftable->exec(
         ast->ast_union.ast_command.first);
     if (to_close)
-    {
         restore_redirection(dlist);
-    }
+    else
+        free(dlist);
     return res;
 }
 
@@ -103,10 +103,10 @@ int ast_simple_command_exec(struct ast *ast)
     assert(ast->type == AST_SIMPLE_COMMAND);
     int to_close = 0;
     int res = 0;
+    struct dlist *dlist = dlist_init();
     if (ast->ast_union.ast_simple_command.redirection != NULL)
     {
         to_close = 1;
-        struct dlist *dlist = dlist_init();
         for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
         {
             exec_redirection(dlist, ast->ast_union.ast_simple_command.redirection[i]);
@@ -153,9 +153,9 @@ int ast_simple_command_exec(struct ast *ast)
         }
     }
     if (to_close)
-    {
         restore_redirection(dlist);
-    }
+    else
+        free(dlist);
     return res;
 }
 
