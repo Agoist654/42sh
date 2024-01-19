@@ -7,35 +7,36 @@
 
 char *expansion(char *str)
 {
-    if (str == NULL || strlen(str) == 0)
-    {
+    if (str == NULL)
         return str;
-    }
-    if (str[0] != 39 /* && str[0] != '"' */)
-    {
+    int simple_quote = 0;
+    int double_quote = 0;
+    char *new_str = calloc(512, 1);
+    if (new_str == NULL)
         return str;
-    }
-    else if (str[0] == 39)
+    int write = 0;
+    int current_size = 512;
+    for (int i = 0; str[i] != '\0'; i++)
     {
-        // simple-quote
-        int current = 0;
-        char *ret_str = malloc(strlen(str) * sizeof(char));
-        for (int i = 0; str[i] != '\0'; i++)
+        if (write == current_size - 1)
         {
-            if (str[i] == 39)
-            {
-                continue;
-            }
-            ret_str[current] = str[i];
-            current += 1;
+            new_str = realloc(new_str, 2 * current_size);
+            current_size *= 2;
         }
-        ret_str[current] = '\0';
-        free(str);
-        return ret_str;
+        if (simple_quote)
+            new_str[write++] = str[i];
+        else if (double_quote)
+        {
+            //handle_double_quote
+            continue;
+        }
+        else if (str[i] == 39) //39 is the ascii code for '
+            simple_quote = !simple_quote;
+        else if (str[i] == 34) //34 is the ascii code for "
+            double_quote = !double_quote;
+        else
+            new_str[write++] = str[i];
     }
-    else
-    {
-        // double-quote
-        return str;
-    }
+    free(str);
+    return new_str;
 }
