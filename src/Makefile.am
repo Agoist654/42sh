@@ -17,10 +17,10 @@ bin_PROGRAMS = 42sh
 42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g
 
 42sh_LDADD =  \
-	exec/libexec.a \
-	builtin/libbuilt.a \
-	expansion/libexp.a \
 	parser/libparser.a \
 	ast/libast.a \
+	exec/libexec.a \
 	lexer/liblexer.a \
-	io_backend/libio.a
+	io_backend/libio.a \
+	expansion/libexp.a \
+	builtin/libbuilt.a

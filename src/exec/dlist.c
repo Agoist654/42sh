@@ -48,10 +48,10 @@ int dlist_push_back(struct dlist *list, int save_fd, int io_number)
     return 1;
 }
 
-static int dlist_remove_at(struct dlist *list, size_t index)
+static void dlist_remove_at(struct dlist *list, size_t index)
 {
     if (index >= list->size || list->head == NULL)
-        return -1;
+        return;
     if (index == 0 && list->size == 1)
     {
         free(list->head);
@@ -61,7 +61,6 @@ static int dlist_remove_at(struct dlist *list, size_t index)
     }
     else if (index == list->size - 1)
     {
-        element = list->tail->data;
         list->tail = list->tail->prev;
         free(list->tail->next);
         list->tail->next = NULL;
@@ -85,12 +84,10 @@ static int dlist_remove_at(struct dlist *list, size_t index)
         tmp->prev->next = tmp->next;
         free(tmp);
         list->size--;
-        return element;
     }
-    return element;
 }
 
-static void dlist_destroy(struct dlist *list)
+void dlist_destroy(struct dlist *list)
 {
     if (!list || !list->head)
         return;
