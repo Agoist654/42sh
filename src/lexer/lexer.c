@@ -194,7 +194,10 @@ static struct token token_reg(void)
 
         // step1  // rule 4: backslash/quote/double-quote and not quoted
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '\'')
-            return handle_single_quote(res);
+        {
+            handle_single_quote(res);
+            continue;
+        }
 
         // rule 5: sub shell
         // step1   //rule 6: if not quoted therfore: start of a new operator

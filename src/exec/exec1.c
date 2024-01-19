@@ -82,8 +82,11 @@ int ast_command_exec(struct ast *ast)
     }
     int res = ast->ast_union.ast_command.first->ftable->exec(
         ast->ast_union.ast_command.first);
+    fflush(stdout);
     if (to_close)
+    {
         restore_redirection(dlist);
+    }
     else
         dlist_destroy(dlist);
     return res;
