@@ -8,10 +8,10 @@
 #include <unistd.h>
 
 #include "builtin/builtin.h"
-//#include "dlist.h"
+#include "dlist.h"
 #include "exec.h"
 #include "expansion/expansion.h"
-//#include "redirection.h"
+#include "redirection.h"
 
 int ast_list_exec(struct ast *ast)
 {
@@ -57,7 +57,8 @@ int ast_pipeline_exec(struct ast *ast)
         ast->ast_union.ast_pipeline.command);
     if (ast->ast_union.ast_pipeline.next != NULL)
     {
-        ret_value = ast->ast_union.ast_pipeline.next->ftable->exec(ast->ast_union.ast_pipeline.next);
+        ret_value = ast->ast_union.ast_pipeline.next->ftable->exec(
+            ast->ast_union.ast_pipeline.next);
     }
     if (ast->ast_union.ast_pipeline.neg)
         return 1 - ret_value;
@@ -107,9 +108,11 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast->ast_union.ast_simple_command.redirection != NULL)
     {
         to_close = 1;
-        for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
+        for (int i = 0;
+             ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
         {
-            exec_redirection(dlist, ast->ast_union.ast_simple_command.redirection[i]);
+            exec_redirection(dlist,
+                             ast->ast_union.ast_simple_command.redirection[i]);
         }
     }
     for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
