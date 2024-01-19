@@ -152,3 +152,27 @@ print while_pipe.sh
 
 TEST_NAME="until pipe"
 print until_pipe.sh
+
+TEST_NAME="simple and"
+print simple_and.sh
+
+TEST_NAME="simple or"
+print simple_or.sh
+
+TEST_NAME="if and"
+print if_and.sh
+
+TEST_NAME="while and"
+print while_and.sh
+
+TEST_NAME="until and"
+print until_and.sh
+
+TEST_NAME="if or"
+print if_or.sh
+
+TEST_NAME="until or"
+print while_or.sh
+
+TEST_NAME="while or"
+print until_or.sh
