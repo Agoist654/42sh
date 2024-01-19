@@ -490,8 +490,11 @@ static struct ftable ftable[] = { { .destroy = &ast_list_destroy,
                                     .exec = &ast_rule_while_exec },
                                   { .destroy = &ast_rule_until_destroy,
                                     .print = &ast_rule_until_print,
-                                    .exec = &ast_rule_until_exec },
-                                };
+                                    .exec = &ast_rule_until_exec }
+//                                  { .destroy = &ast_rule_until_destroy,
+//                                    .print = &ast_rule_until_print,
+//                                    .exec = &ast_rule_until_exec }
+};
 
 struct ast *ast_init(enum ast_type type)
 {
