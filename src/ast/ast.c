@@ -176,11 +176,13 @@ static void ast_rule_while_destroy(struct ast *ast)
         assert(ast->type == AST_RULE_WHILE);
         if (ast->ast_union.ast_rule_while.cond != NULL)
         {
-            ast->ast_union.ast_rule_while.cond->ftable->destroy(ast->ast_union.ast_rule_while.cond);
+            ast->ast_union.ast_rule_while.cond->ftable->destroy(
+                ast->ast_union.ast_rule_while.cond);
         }
         if (ast->ast_union.ast_rule_while.then != NULL)
         {
-            ast->ast_union.ast_rule_while.then->ftable->destroy(ast->ast_union.ast_rule_while.then);
+            ast->ast_union.ast_rule_while.then->ftable->destroy(
+                ast->ast_union.ast_rule_while.then);
         }
         free(ast);
     }
@@ -194,34 +196,36 @@ static void ast_rule_until_destroy(struct ast *ast)
         assert(ast->type == AST_RULE_UNTIL);
         if (ast->ast_union.ast_rule_until.cond != NULL)
         {
-            ast->ast_union.ast_rule_until.cond->ftable->destroy(ast->ast_union.ast_rule_until.cond);
+            ast->ast_union.ast_rule_until.cond->ftable->destroy(
+                ast->ast_union.ast_rule_until.cond);
         }
         if (ast->ast_union.ast_rule_until.then != NULL)
         {
-            ast->ast_union.ast_rule_until.then->ftable->destroy(ast->ast_union.ast_rule_until.then);
+            ast->ast_union.ast_rule_until.then->ftable->destroy(
+                ast->ast_union.ast_rule_until.then);
         }
         free(ast);
     }
     return;
 }
 
-//static void ast_rule_for_destroy(struct ast *ast)
+// static void ast_rule_for_destroy(struct ast *ast)
 //{
-//    if (ast != NULL)
-//    {
-//        assert(ast->type == AST_RULE_FOR);
-//        if (ast->ast_union.ast_rule_for.count != NULL)
-//        {
-//            ast->ast_union.ast_rule_for.count->ftable->destroy(ast->ast_union.ast_rule_for.count);
-//        }
-//        if (ast->ast_union.ast_rule_for.then != NULL)
-//        {
-//            ast->ast_union.ast_rule_for.then->ftable->destroy(ast->ast_union.ast_rule_for.then);
-//        }
-//        free(ast);
-//    }
-//    return;
-//}
+//     if (ast != NULL)
+//     {
+//         assert(ast->type == AST_RULE_FOR);
+//         if (ast->ast_union.ast_rule_for.count != NULL)
+//         {
+//             ast->ast_union.ast_rule_for.count->ftable->destroy(ast->ast_union.ast_rule_for.count);
+//         }
+//         if (ast->ast_union.ast_rule_for.then != NULL)
+//         {
+//             ast->ast_union.ast_rule_for.then->ftable->destroy(ast->ast_union.ast_rule_for.then);
+//         }
+//         free(ast);
+//     }
+//     return;
+// }
 
 void ast_list_print(struct ast *ast)
 {
@@ -293,7 +297,8 @@ static void ast_simple_command_print(struct ast *ast)
         assert(ast->type == AST_SIMPLE_COMMAND);
         if (ast->ast_union.ast_simple_command.argv != NULL)
         {
-            for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+            for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL;
+                 i++)
             {
                 printf(" %s ", ast->ast_union.ast_simple_command.argv[i]);
             }
@@ -407,12 +412,14 @@ static void ast_rule_while_print(struct ast *ast)
         printf(" WHILE ");
         if (ast->ast_union.ast_rule_while.cond != NULL)
         {
-            ast->ast_union.ast_rule_while.cond->ftable->print(ast->ast_union.ast_rule_while.cond);
+            ast->ast_union.ast_rule_while.cond->ftable->print(
+                ast->ast_union.ast_rule_while.cond);
         }
         printf(" DO ");
         if (ast->ast_union.ast_rule_while.then != NULL)
         {
-            ast->ast_union.ast_rule_while.then->ftable->print(ast->ast_union.ast_rule_while.then);
+            ast->ast_union.ast_rule_while.then->ftable->print(
+                ast->ast_union.ast_rule_while.then);
         }
         printf(" DONE ");
     }
@@ -427,73 +434,76 @@ static void ast_rule_until_print(struct ast *ast)
         printf(" UNTIL ");
         if (ast->ast_union.ast_rule_until.cond != NULL)
         {
-            ast->ast_union.ast_rule_until.cond->ftable->print(ast->ast_union.ast_rule_until.cond);
+            ast->ast_union.ast_rule_until.cond->ftable->print(
+                ast->ast_union.ast_rule_until.cond);
         }
         printf(" DO ");
         if (ast->ast_union.ast_rule_until.then != NULL)
         {
-            ast->ast_union.ast_rule_until.then->ftable->print(ast->ast_union.ast_rule_until.then);
+            ast->ast_union.ast_rule_until.then->ftable->print(
+                ast->ast_union.ast_rule_until.then);
         }
         printf(" DONE ");
     }
     return;
 }
 
-//static void ast_rule_for_print(struct ast *ast)
+// static void ast_rule_for_print(struct ast *ast)
 //{
-//    if (ast != NULL)
-//    {
-//        assert(ast->type == AST_RULE_IF);
-//        printf(" FOR ");
-//        if (ast->ast_union.ast_rule_for.count != NULL)
-//       {
-//            ast->ast_union.ast_rule_for.count->ftable->print(ast->ast_union.ast_rule_for.count);
-//        }
-//        printf(" DO ");
-//        if (ast->ast_union.ast_rule_for.then != NULL)
+//     if (ast != NULL)
+//     {
+//         assert(ast->type == AST_RULE_IF);
+//         printf(" FOR ");
+//         if (ast->ast_union.ast_rule_for.count != NULL)
 //        {
-//            ast->ast_union.ast_rule_for.then->ftable->print(ast->ast_union.ast_rule_for.then);
-//        }
-//    }
-//    return;
-//}
+//             ast->ast_union.ast_rule_for.count->ftable->print(ast->ast_union.ast_rule_for.count);
+//         }
+//         printf(" DO ");
+//         if (ast->ast_union.ast_rule_for.then != NULL)
+//         {
+//             ast->ast_union.ast_rule_for.then->ftable->print(ast->ast_union.ast_rule_for.then);
+//         }
+//     }
+//     return;
+// }
 
-static struct ftable ftable[] = { { .destroy = &ast_list_destroy,
-                                    .print = &ast_list_print,
-                                    .exec = &ast_list_exec },
-                                  { .destroy = &ast_rule_if_destroy,
-                                    .print = &ast_rule_if_print,
-                                    .exec = &ast_rule_if_exec },
-                                  { .destroy = &ast_simple_command_destroy,
-                                    .print = &ast_simple_command_print,
-                                    .exec = &ast_simple_command_exec },
-                                  { .destroy = &ast_else_clause_destroy,
-                                    .print = &ast_else_clause_print,
-                                    .exec = &ast_else_clause_exec },
-                                  { .destroy = &ast_shell_command_destroy,
-                                    .print = &ast_shell_command_print,
-                                    .exec = &ast_shell_command_exec },
-                                  { .destroy = &ast_and_or_destroy,
-                                    .print = &ast_and_or_print,
-                                    .exec = &ast_and_or_exec },
-                                  { .destroy = &ast_pipeline_destroy,
-                                    .print = &ast_pipeline_print,
-                                    .exec = &ast_pipeline_exec },
-                                  { .destroy = &ast_command_destroy,
-                                    .print = &ast_command_print,
-                                    .exec = &ast_command_exec },
-                                  { .destroy = &ast_compound_list_destroy,
-                                    .print = &ast_compound_list_print,
-                                    .exec = &ast_compound_list_exec },
-                                  { .destroy = &ast_rule_while_destroy,
-                                    .print = &ast_rule_while_print,
-                                    .exec = &ast_rule_while_exec },
-                                  { .destroy = &ast_rule_until_destroy,
-                                    .print = &ast_rule_until_print,
-                                    .exec = &ast_rule_until_exec }
-//                                  { .destroy = &ast_rule_until_destroy,
-//                                    .print = &ast_rule_until_print,
-//                                    .exec = &ast_rule_until_exec }
+static struct ftable ftable[] = {
+    { .destroy = &ast_list_destroy,
+      .print = &ast_list_print,
+      .exec = &ast_list_exec },
+    { .destroy = &ast_rule_if_destroy,
+      .print = &ast_rule_if_print,
+      .exec = &ast_rule_if_exec },
+    { .destroy = &ast_simple_command_destroy,
+      .print = &ast_simple_command_print,
+      .exec = &ast_simple_command_exec },
+    { .destroy = &ast_else_clause_destroy,
+      .print = &ast_else_clause_print,
+      .exec = &ast_else_clause_exec },
+    { .destroy = &ast_shell_command_destroy,
+      .print = &ast_shell_command_print,
+      .exec = &ast_shell_command_exec },
+    { .destroy = &ast_and_or_destroy,
+      .print = &ast_and_or_print,
+      .exec = &ast_and_or_exec },
+    { .destroy = &ast_pipeline_destroy,
+      .print = &ast_pipeline_print,
+      .exec = &ast_pipeline_exec },
+    { .destroy = &ast_command_destroy,
+      .print = &ast_command_print,
+      .exec = &ast_command_exec },
+    { .destroy = &ast_compound_list_destroy,
+      .print = &ast_compound_list_print,
+      .exec = &ast_compound_list_exec },
+    { .destroy = &ast_rule_while_destroy,
+      .print = &ast_rule_while_print,
+      .exec = &ast_rule_while_exec },
+    { .destroy = &ast_rule_until_destroy,
+      .print = &ast_rule_until_print,
+      .exec = &ast_rule_until_exec }
+    //                                  { .destroy = &ast_rule_until_destroy,
+    //                                    .print = &ast_rule_until_print,
+    //                                    .exec = &ast_rule_until_exec }
 };
 
 struct ast *ast_init(enum ast_type type)

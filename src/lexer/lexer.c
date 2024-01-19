@@ -17,29 +17,33 @@
 // };
 
 static char *tokens[NB_TOKENS] = {
-    //step 1
-    [TOKEN_IF] = "if",     [TOKEN_THEN] = "then", [TOKEN_ELIF] = "elif",
-    [TOKEN_ELSE] = "else", [TOKEN_FI] = "fi",     [TOKEN_SEMICOLON] = ";",
+    // step 1
+    [TOKEN_IF] = "if",
+    [TOKEN_THEN] = "then",
+    [TOKEN_ELIF] = "elif",
+    [TOKEN_ELSE] = "else",
+    [TOKEN_FI] = "fi",
+    [TOKEN_SEMICOLON] = ";",
     [TOKEN_NEWLINE] = "\n",
 
-    //step2
-    [TOKEN_WHILE                  ] = "while",
-    [TOKEN_FOR                    ] = "for"  ,
-    [TOKEN_UNTIL                  ] = "until",
-    [TOKEN_DO                     ] = "do"   ,
-    [TOKEN_DONE                   ] = "done" ,
-    [TOKEN_IN                     ] = "in"   ,
-    [TOKEN_PIPE                   ] = "|"    ,
-    [TOKEN_NEGATION               ] = "!"    ,
-    [TOKEN_AND                    ] = "&&"   ,
-    [TOKEN_OR                     ] = "||"   ,
-    [TOKEN_REDIRECTION_RIGHT      ] = ">"    ,
-    [TOKEN_REDIRECTION_LEFT       ] = "<"    ,
-    [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>"   ,
-    [TOKEN_REDIRECTION_RIGHT_AND  ] = ">&"   ,
-    [TOKEN_REDIRECTION_LEFT_AND   ] = "<&"   ,
-    [TOKEN_REDIRECTION_RIGHT_PIPE ] = ">|"   ,
-    [TOKEN_REDIRECTION_LEFT_RIGHT ] = "<>"
+    // step2
+    [TOKEN_WHILE] = "while",
+    [TOKEN_FOR] = "for",
+    [TOKEN_UNTIL] = "until",
+    [TOKEN_DO] = "do",
+    [TOKEN_DONE] = "done",
+    [TOKEN_IN] = "in",
+    [TOKEN_PIPE] = "|",
+    [TOKEN_NEGATION] = "!",
+    [TOKEN_AND] = "&&",
+    [TOKEN_OR] = "||",
+    [TOKEN_REDIRECTION_RIGHT] = ">",
+    [TOKEN_REDIRECTION_LEFT] = "<",
+    [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>",
+    [TOKEN_REDIRECTION_RIGHT_AND] = ">&",
+    [TOKEN_REDIRECTION_LEFT_AND] = "<&",
+    [TOKEN_REDIRECTION_RIGHT_PIPE] = ">|",
+    [TOKEN_REDIRECTION_LEFT_RIGHT] = "<>"
 
     //[TOKEN_OPERATOR         ] = NULL,
     //[TOKEN_SINGLE_QUOTE     ] = NULL,
@@ -105,12 +109,11 @@ struct lexer *lexer_init(void)
     return res;
 }
 
-static 
-void handle_comment()
+static void handle_comment()
 {
     while (io_peek() != EOF && io_peek() != '\n')
         io_pop();
-    return ;
+    return;
 }
 
 static struct token handle_single_quote(struct token token)
@@ -131,12 +134,12 @@ static struct token handle_single_quote(struct token token)
     return token;
 }
 
-static 
-int ispart_prev_op(char io_peek, char *buffer)
+static int ispart_prev_op(char io_peek, char *buffer)
 {
     if (buffer[strlen(buffer) - 1] == '<' && (io_peek == '&' || io_peek == '>'))
         return 1;
-    if (buffer[strlen(buffer) - 1] == '>' && (io_peek == '>' || io_peek == '&' || io_peek == '|'))
+    if (buffer[strlen(buffer) - 1] == '>'
+        && (io_peek == '>' || io_peek == '&' || io_peek == '|'))
         return 1;
     if (buffer[strlen(buffer) - 1] == '&' && io_peek == '&')
         return 1;
@@ -145,29 +148,29 @@ int ispart_prev_op(char io_peek, char *buffer)
     return 0;
 }
 
-static
-int isoperator(char io_peek)
+static int isoperator(char io_peek)
 {
-    if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>' || io_peek == '&' || io_peek == '|')
+    if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>'
+        || io_peek == '&' || io_peek == '|')
         return 1;
     return 0;
 }
 
-//static
-//int handle_io_number(char *buffer, char io_peek)
+// static
+// int handle_io_number(char *buffer, char io_peek)
 //{
-//    if (strlen(buffer) != 1)
-//    {
-//        printf("handleionumredir wtf should only have a single op/num in it\n");
-//        return 0;
-//    }
-//    if (isdigit(buffer[0]) && (io_peek == '<' || io_peek == '>'))
-//    {
-//        buffer[strlen(buffer)] = io_pop();
-//        return 1;
-//    }
-//    return 0;
-//}
+//     if (strlen(buffer) != 1)
+//     {
+//         printf("handleionumredir wtf should only have a single op/num in
+//         it\n"); return 0;
+//     }
+//     if (isdigit(buffer[0]) && (io_peek == '<' || io_peek == '>'))
+//     {
+//         buffer[strlen(buffer)] = io_pop();
+//         return 1;
+//     }
+//     return 0;
+// }
 
 static struct token token_reg(void)
 {
@@ -176,7 +179,8 @@ static struct token token_reg(void)
     while (io_peek() != EOF)
     {
         // rule 2: if peek is part of the current operator and not quoted
-        if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR && ispart_prev_op(io_peek(), res.buffer))
+        if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR
+            && ispart_prev_op(io_peek(), res.buffer))
         {
             res.buffer[strlen(res.buffer)] = io_pop();
             continue;
@@ -184,7 +188,8 @@ static struct token token_reg(void)
 
         //  //rule 3: if peek is not part of current operator return the token
         //  (the operator)
-        else if (res.type == TOKEN_OPERATOR && !ispart_prev_op(io_peek(), res.buffer))
+        else if (res.type == TOKEN_OPERATOR
+                 && !ispart_prev_op(io_peek(), res.buffer))
             return res;
 
         // step1  // rule 4: backslash/quote/double-quote and not quoted
@@ -204,7 +209,7 @@ static struct token token_reg(void)
             res.type = TOKEN_OPERATOR;
             res.buffer[strlen(res.buffer)] = io_pop();
             continue;
-            //return res;
+            // return res;
         }
 
         // step1   //rule 7: if not quoted : is a >blank< return token
@@ -219,7 +224,8 @@ static struct token token_reg(void)
         //    io_pop();
         if (res.type == TOKEN_WORD)
             res.buffer[strlen(res.buffer)] = io_pop();
-        // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of it
+        // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of
+        // it
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
         {
             handle_comment();
@@ -261,7 +267,7 @@ struct token lexer_peek(struct lexer *lexer)
 }
 
 /*
- * marche uniquement si on a fait un lexer_peek() avant 
+ * marche uniquement si on a fait un lexer_peek() avant
  * si non renvoie un TOKEN_NULL au premier appel
  */
 struct token lexer_pop(struct lexer *lexer)
