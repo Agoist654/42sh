@@ -32,8 +32,20 @@ int ast_and_or_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_AND_OR);
-    return ast->ast_union.ast_and_or.pipeline->ftable->exec(
+    res = ast->ast_union.ast_and_or.pipeline->ftable->exec(
         ast->ast_union.ast_and_or.pipeline);
+    if (ast->ast_union.ast_and_or.next != NULL)
+    {
+        if (ast->ast_union.ast_and_or.and_or == AND && res == 0)
+        {
+            res = ast_and_or_exec(ast->ast_union.ast_and_or.next);
+        }
+        if (ast->ast_union.ast_and_or.and_or == OR && res != 0)
+        {
+            res = ast_and_or_exec(ast->ast_union.ast_and_or.next);
+        }
+    }
+    return res;
 }
 
 int ast_pipeline_exec(struct ast *ast)

@@ -19,6 +19,12 @@ enum ast_type
     AST_RULE_FOR
 };
 
+enum and_or
+{
+    AND,
+    OR
+};
+
 enum element_type
 {
     WORD,
@@ -54,6 +60,7 @@ struct ast_and_or
 {
     struct ast *pipeline;
     struct ast *next;
+    enum and_or and_or;
 };
 
 struct ast_pipeline
