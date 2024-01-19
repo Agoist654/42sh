@@ -8,8 +8,10 @@
 #include <unistd.h>
 
 #include "builtin/builtin.h"
+#include "dlist.h"
 #include "exec.h"
 #include "expansion/expansion.h"
+#include "redirection.h"
 
 int ast_list_exec(struct ast *ast)
 {
@@ -55,8 +57,23 @@ int ast_command_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_COMMAND);
-    return ast->ast_union.ast_command.first->ftable->exec(
+    int to_close = 0;
+    if (ast->ast_union.ast_command.redirection != NULL)
+    {
+        to_close = 1;
+        struct dlist *dlist = dlist_init();
+        for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
+        {
+            exec_redirection(dlist, ast->ast_union.ast_command.redirection[i]);
+        }
+    }
+    int res = ast->ast_union.ast_command.first->ftable->exec(
         ast->ast_union.ast_command.first);
+    if (to_close)
+    {
+        restore_redirection(dlist);
+    }
+    return res;
 }
 
 //#define NB_BUILTINS 3
@@ -72,6 +89,17 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_SIMPLE_COMMAND);
+    int to_close = 0;
+    int res = 0;
+    if (ast->ast_union.ast_simple_command.redirection != NULL)
+    {
+        to_close = 1;
+        struct dlist *dlist = dlist_init();
+        for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
+        {
+            exec_redirection(dlist, ast->ast_union.ast_simple_command.redirection[i]);
+        }
+    }
     for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
     {
         ast->ast_union.ast_simple_command.argv[i] =
@@ -88,15 +116,15 @@ int ast_simple_command_exec(struct ast *ast)
     if (strcmp(ast->ast_union.ast_simple_command.argv[0], "echo") == 0)
     {
         echo(ast->ast_union.ast_simple_command.argv);
-        return 0;
+        res = 0;
     }
     else if (strcmp(ast->ast_union.ast_simple_command.argv[0], "true") == 0)
     {
-        return true_f();
+        res = true_f();
     }
     else if (strcmp(ast->ast_union.ast_simple_command.argv[0], "false") == 0)
     {
-        return false_f();
+        res = false_f();
     }
     else
     {
@@ -109,11 +137,14 @@ int ast_simple_command_exec(struct ast *ast)
         }
         else
         {
-            int ret = 0;
-            waitpid(pid, &ret, 0);
-            return ret;
+            waitpid(pid, &res, 0);
         }
     }
+    if (to_close)
+    {
+        restore_redirection(dlist);
+    }
+    return res;
 }
 
 int ast_shell_command_exec(struct ast *ast)
