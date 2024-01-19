@@ -98,3 +98,27 @@ print if_another_if.sh
 
 TEST_NAME="if execute file"
 print ./simple_echo.sh
+
+TEST_NAME="simple while"
+print simple_while.sh
+
+TEST_NAME="double while"
+print double_while.sh
+
+TEST_NAME="while with if"
+print while_to_if.sh
+
+TEST_NAME="if with while"
+print if_to_while.sh
+
+TEST_NAME="simple until"
+print simple_until.sh
+
+TEST_NAME="double until"
+print double_until.sh
+
+TEST_NAME="until with if"
+print until_to_if.sh
+
+TEST_NAME="if with until"
+print if_to_until.sh
