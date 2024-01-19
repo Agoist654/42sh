@@ -23,9 +23,9 @@ char *expansion(char *str)
             new_str = realloc(new_str, 2 * current_size);
             current_size *= 2;
         }
-        if (simple_quote)
+        if (simple_quote && str[i] != 39)
             new_str[write++] = str[i];
-        else if (double_quote)
+        else if (double_quote && str[i] != 39)
         {
             //handle_double_quote
             continue;
@@ -38,5 +38,6 @@ char *expansion(char *str)
             new_str[write++] = str[i];
     }
     free(str);
+    new_str[write] = '\0';
     return new_str;
 }

@@ -20,5 +20,6 @@ struct dlist
 struct dlist *dlist_init(void);
 int dlist_push_back(struct dlist *list, int save_fd, int io_number);
 int dlist_close_fd(struct dlist *dlist);
+void dlist_destroy(struct dlist *dlist);
 
 #endif // DLIST_H

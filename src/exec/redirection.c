@@ -1,12 +1,17 @@
+#define _POSIX_C_SOURCE 200809L
 #include "redirection.h"
 
+#include <ctype.h>
 #include <fcntl.h>
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "ast/ast.h"
 #include "dlist.h"
-#define NB_REDIRECTION 3
+#define NB_REDIRECTION 4
 
 static void my_close(int fd1, int fd2, int fd3)
 {
@@ -25,21 +30,22 @@ static int redirection_left(int io_number, char *word);
 static int redirection_right_right(int io_number, char *word);
 static int redirection_right_pipe(int io_number, char *word);
 
-redirection_f redirections[NB_REDIRECTION] = {
+redirection_f redirections[/*NB_REDIRECTION*/] = {
     [TOKEN_REDIRECTION_RIGHT - TOKEN_REDIRECTION_RIGHT] = redirection_right,
     [TOKEN_REDIRECTION_LEFT - TOKEN_REDIRECTION_RIGHT] = redirection_left,
     [TOKEN_REDIRECTION_RIGHT_RIGHT - TOKEN_REDIRECTION_RIGHT] =
         redirection_right_right,
-    [TOKEN_REDIRECTION_RIGHT_PIPE - TOKEN_REDIRECTION_RIGHT] = redirection_right
+    [TOKEN_REDIRECTION_RIGHT_PIPE - TOKEN_REDIRECTION_RIGHT] = redirection_right_pipe
     //[TOKEN_REDIRECTION_] =  ,
     //[TOKEN_REDIRECTION_] =  ,
     //[TOKEN_REDIRECTION_] =  ,
     //[TOKEN_REDIRECTION_] =
 };
 
-static int isnumber(char *word)
+//static
+int isnumber(char *word)
 {
-    for (int k = 0; k < strlen(word); k++)
+    for (size_t k = 0; k < strlen(word); k++)
     {
         if (!isdigit(word[k]))
             return 0;
@@ -47,7 +53,7 @@ static int isnumber(char *word)
     return 1;
 }
 
-int exec_redirection(struct dlist *list, struct redirection *redir)
+int exec_redirection(struct dlist *dlist, struct redirection *redir)
 {
     int io_number_int = 0;
     if (redir->io_number == NULL)
@@ -55,9 +61,8 @@ int exec_redirection(struct dlist *list, struct redirection *redir)
     else
         io_number_int = atoi(redir->io_number);
 
-    struct dlist *dlist = dlist_init();
     int save_fd = 0;
-    for (int op = 0; op < NB_REDIRECTION; op++)
+    for (enum token_type op = 0; op < NB_REDIRECTION; op++)
     {
         if (op == redir->op)
         {
@@ -160,7 +165,8 @@ static int redirection_left(int io_number, char *word)
     return save_fd;
 }
 
-static int redirection_right_pipe(int io_number, char *word)
+//static
+int redirection_right_pipe(int io_number, char *word)
 {
     int fd = open(word, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     if (fd == -1)
@@ -184,15 +190,17 @@ static int redirection_right_pipe(int io_number, char *word)
     return save_fd;
 }
 
-static int redirection_left(int io_number, char *word)
+//static
+int redirection_left_and(int io_number, char *word)
 {
     if (strcmp(word, "-") == 0)
     {
         close(io_number);
         return io_number;
     }
-    int fd = fdopen(atoi(word), "r");
-    if (fd == -1)
+    int fd = atoi(word);
+    FILE *test = fdopen(fd, "r");
+    if (test == NULL)
         return -1;
     if (io_number == -1)
         io_number = STDIN_FILENO;
@@ -213,7 +221,8 @@ static int redirection_left(int io_number, char *word)
     return save_fd;
 }
 
-static int redirection_right_and(int io_number, char *word)
+//static
+int redirection_right_and(int io_number, char *word)
 {
     // if (isnumber(word))
     //     return -1;
@@ -223,8 +232,9 @@ static int redirection_right_and(int io_number, char *word)
         close(io_number);
         return io_number;
     }
-    int fd = fdopen(atoi(word), "w");
-    if (fd == -1)
+    int fd = atoi(word);
+    FILE *test = fdopen(fd, "w");
+    if (test == NULL)
         return -1;
     if (io_number == -1)
         io_number = STDOUT_FILENO;
