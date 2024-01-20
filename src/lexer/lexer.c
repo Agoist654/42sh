@@ -16,8 +16,7 @@
 //     .len = BUFFER_SIZE
 // };
 
-static
-struct token io_eat(struct token token)
+static struct token io_eat(struct token token)
 {
     if (strlen(token.buffer) == token.len - 1)
     {
@@ -174,7 +173,6 @@ static int handle_double_quote(struct token token)
     return TOKEN_ERROR;
 }
 
-
 static int handle_quote(struct token token)
 {
     if (io_peek() == '\'')
@@ -183,7 +181,6 @@ static int handle_quote(struct token token)
         return handle_double_quote(token);
     return TOKEN_ERROR;
 }
-
 
 static int ispart_prev_op(char io_peek, char *buffer)
 {

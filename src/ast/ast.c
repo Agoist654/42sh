@@ -80,7 +80,8 @@ static void ast_command_destroy(struct ast *ast)
         }
         if (ast->ast_union.ast_command.redirection != NULL)
         {
-            for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
+            for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL;
+                 i++)
             {
                 redirection_destroy(ast->ast_union.ast_command.redirection[i]);
             }
@@ -107,9 +108,11 @@ static void ast_simple_command_destroy(struct ast *ast)
         }
         if (ast->ast_union.ast_simple_command.redirection != NULL)
         {
-            for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
+            for (int i = 0;
+                 ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
             {
-                redirection_destroy(ast->ast_union.ast_simple_command.redirection[i]);
+                redirection_destroy(
+                    ast->ast_union.ast_simple_command.redirection[i]);
             }
             free(ast->ast_union.ast_simple_command.redirection);
         }

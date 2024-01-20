@@ -70,11 +70,11 @@ int ast_command_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_COMMAND);
-//    int to_close = 0;
+    //    int to_close = 0;
     struct dlist *dlist = dlist_init();
     if (ast->ast_union.ast_command.redirection != NULL)
     {
-  //      to_close = 1;
+        //      to_close = 1;
         for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
         {
             exec_redirection(dlist, ast->ast_union.ast_command.redirection[i]);
@@ -99,12 +99,13 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_SIMPLE_COMMAND);
-    //int to_close = 0;
+    // int to_close = 0;
     int res = 0;
     struct dlist *dlist = dlist_init();
-    if (ast->ast_union.ast_simple_command.redirection != NULL && ast->ast_union.ast_simple_command.redirection[0] != NULL)
+    if (ast->ast_union.ast_simple_command.redirection != NULL
+        && ast->ast_union.ast_simple_command.redirection[0] != NULL)
     {
-       // to_close = 1;
+        // to_close = 1;
         for (int i = 0;
              ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
         {
@@ -152,7 +153,7 @@ int ast_simple_command_exec(struct ast *ast)
             waitpid(pid, &res, 0);
         }
     }
-        restore_redirection(dlist);
+    restore_redirection(dlist);
     return res;
 }
 

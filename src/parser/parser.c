@@ -133,8 +133,7 @@ static int isseparator(struct token token)
             || token.type == TOKEN_SEMICOLON);
 }
 
-static 
-struct redirection *redirection_init(void)
+static struct redirection *redirection_init(void)
 {
     struct redirection *res = malloc(sizeof(struct redirection));
     if (!res)
