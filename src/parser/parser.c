@@ -152,7 +152,7 @@ static struct redirection *parse_redirection(struct lexer *lexer)
         return NULL;
     if (lexer_peek(lexer).type == TOKEN_IONUMBER)
         redir->io_number = lexer_pop(lexer).buffer;
-    else if (is_in(lexer_peek(lexer).type, op))
+    if (is_in(lexer_peek(lexer).type, op))
     {
         struct token token = lexer_pop(lexer);
         redir->op = token.type;

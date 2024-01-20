@@ -16,6 +16,22 @@
 //     .len = BUFFER_SIZE
 // };
 
+static
+struct token io_eat(struct token token)
+{
+    if (strlen(token.buffer) == token.len - 1)
+    {
+        token.buffer = realloc(token.buffer, 2 * token.len * sizeof(char));
+        for (size_t k = token.len; k < token.len * 2; k++)
+        {
+            token.buffer[k] = '\0';
+        }
+        token.len = token.len * 2;
+    }
+    token.buffer[strlen(token.buffer)] = io_pop();
+    return token;
+}
+
 static char *tokens[NB_TOKENS] = {
     // step 1
     [TOKEN_IF] = "if",
@@ -116,23 +132,58 @@ static void handle_comment()
     return;
 }
 
-static struct token handle_single_quote(struct token token)
+static int isquote(char io_peek)
+{
+    if (io_peek == '\'' || io_peek == '\"')
+        return 1;
+
+    return 0;
+}
+
+static int handle_single_quote(struct token token)
 {
     // append the quote in the buffer
-    token.buffer[strlen(token.buffer)] = io_pop();
+    token = io_eat(token);
     token.type = TOKEN_SINGLE_QUOTE;
     while (io_peek() != EOF)
     {
-        token.buffer[strlen(token.buffer)] = io_pop();
+        token = io_eat(token);
         if (io_peek() == '\'')
         {
-            token.buffer[strlen(token.buffer)] = io_pop();
-            return token;
+            token = io_eat(token);
+            return TOKEN_SINGLE_QUOTE;
         }
     }
-    token.type = TOKEN_ERROR;
-    return token;
+    return TOKEN_ERROR;
 }
+
+static int handle_double_quote(struct token token)
+{
+    // append the quote in the buffer
+    token = io_eat(token);
+    token.type = TOKEN_DOUBLE_QUOTE;
+    while (io_peek() != EOF)
+    {
+        token = io_eat(token);
+        if (io_peek() == '\"')
+        {
+            token = io_eat(token);
+            return TOKEN_DOUBLE_QUOTE;
+        }
+    }
+    return TOKEN_ERROR;
+}
+
+
+static int handle_quote(struct token token)
+{
+    if (io_peek() == '\'')
+        return handle_single_quote(token);
+    if (io_peek() == '\"')
+        return handle_double_quote(token);
+    return TOKEN_ERROR;
+}
+
 
 static int ispart_prev_op(char io_peek, char *buffer)
 {
@@ -182,7 +233,7 @@ static struct token token_reg(void)
         if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR
             && ispart_prev_op(io_peek(), res.buffer))
         {
-            res.buffer[strlen(res.buffer)] = io_pop();
+            res = io_eat(res);
             continue;
         }
 
@@ -193,9 +244,11 @@ static struct token token_reg(void)
             return res;
 
         // step1  // rule 4: backslash/quote/double-quote and not quoted
-        if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '\'')
+        if (res.type != TOKEN_SINGLE_QUOTE && isquote(io_peek()))
         {
-            handle_single_quote(res);
+            res.type = handle_quote(res);
+            if (io_peek() == EOF)
+                return res;
             continue;
         }
 
@@ -210,7 +263,7 @@ static struct token token_reg(void)
                 return res;
             }
             res.type = TOKEN_OPERATOR;
-            res.buffer[strlen(res.buffer)] = io_pop();
+            res = io_eat(res);
             continue;
             // return res;
         }
@@ -226,7 +279,7 @@ static struct token token_reg(void)
         // step1   //rule 8: if TOKEN_WORD : res.buffer[strlen(res.buffer)] =
         //    io_pop();
         if (res.type == TOKEN_WORD)
-            res.buffer[strlen(res.buffer)] = io_pop();
+            res = io_eat(res);
         // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of
         // it
         if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')

@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 32
+#define NB_TOKENS 33
 
 #include <stddef.h>
 enum token_type
@@ -17,6 +17,7 @@ enum token_type
     TOKEN_NEWLINE,
     TOKEN_OPERATOR,
     TOKEN_SINGLE_QUOTE,
+    TOKEN_DOUBLE_QUOTE,
     TOKEN_COMMENT,
     TOKEN_EOF,
     TOKEN_ERROR,

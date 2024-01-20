@@ -11,7 +11,7 @@
 
 #include "ast/ast.h"
 #include "dlist.h"
-#define NB_REDIRECTION 4
+#define NB_REDIRECTION 7
 
 static void my_close(int fd1, int fd2, int fd3)
 {
@@ -64,7 +64,7 @@ static int redirection_right_right(struct dlist *dlist, int io_number, char *wor
     int save_fd = dup(io_number);
     if (save_fd == -1)
         return -1;
-    int fd = open(word, O_CREAT | O_TRUNC | O_APPEND, 0644);
+    int fd = open(word, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd == -1)
     {
         close(save_fd);
@@ -84,7 +84,7 @@ static int redirection_right_right(struct dlist *dlist, int io_number, char *wor
 static int redirection_left(struct dlist *dlist, int io_number, char *word)
 {
     if (io_number == -1)
-        io_number = STDOUT_FILENO;
+        io_number = STDIN_FILENO;
     int save_fd = dup(io_number);
     if (save_fd == -1)
         return -1;
@@ -131,7 +131,7 @@ int redirection_right_pipe(struct dlist *dlist, int io_number, char *word)
     return save_fd;
 }
 
-//static
+static
 int redirection_left_and(struct dlist *dlist, int io_number, char *word)
 {
     if (strcmp(word, "-") == 0)
@@ -163,7 +163,7 @@ int redirection_left_and(struct dlist *dlist, int io_number, char *word)
     return save_fd;
 }
 
-//static
+static
 int redirection_right_and(struct dlist *dlist, int io_number, char *word)
 {
     // if (isnumber(word))
@@ -198,12 +198,40 @@ int redirection_right_and(struct dlist *dlist, int io_number, char *word)
     return save_fd;
 }
 
+static int redirection_left_right(struct dlist *dlist, int io_number, char *word)
+{
+    if (io_number == -1)
+        io_number = STDIN_FILENO;
+    int save_fd = dup(io_number);
+    if (save_fd == -1)
+        return -1;
+    int fd = open(word, O_RDWR | O_CREAT | O_TRUNC, 0644);
+    if (fd == -1)
+    {
+        close(save_fd);
+        return -1;
+    }
+
+    dlist_push_back(dlist, save_fd, io_number);
+    int new_io_number = dup2(fd, io_number);
+    if (new_io_number == -1)
+    {
+        my_close(-1, save_fd, fd);
+        return -1;
+    }
+    return save_fd;
+}
+
+
 redirection_f redirections[/*NB_REDIRECTION*/] = {
     [TOKEN_REDIRECTION_RIGHT - TOKEN_REDIRECTION_RIGHT] = redirection_right,
     [TOKEN_REDIRECTION_LEFT - TOKEN_REDIRECTION_RIGHT] = redirection_left,
     [TOKEN_REDIRECTION_RIGHT_RIGHT - TOKEN_REDIRECTION_RIGHT] =
         redirection_right_right,
-    [TOKEN_REDIRECTION_RIGHT_PIPE - TOKEN_REDIRECTION_RIGHT] = redirection_right_pipe
+    [TOKEN_REDIRECTION_RIGHT_PIPE - TOKEN_REDIRECTION_RIGHT] = redirection_right_pipe,
+    [TOKEN_REDIRECTION_RIGHT_AND - TOKEN_REDIRECTION_RIGHT] = redirection_right_and,
+    [TOKEN_REDIRECTION_LEFT_AND - TOKEN_REDIRECTION_RIGHT] = redirection_left_and,
+    [TOKEN_REDIRECTION_LEFT_RIGHT - TOKEN_REDIRECTION_RIGHT] = redirection_left_right
     //[TOKEN_REDIRECTION_] =  ,
     //[TOKEN_REDIRECTION_] =  ,
     //[TOKEN_REDIRECTION_] =  ,
@@ -245,8 +273,12 @@ int exec_redirection(struct dlist *dlist, struct redirection *redir)
 
 int restore_redirection(struct dlist *dlist)
 {
+    fflush(NULL);
     if (!dlist->head)
+    {
+    dlist_destroy(dlist);
         return 1;
+    }
     struct dlist_item *tmp = dlist->tail;
     while (tmp->prev != NULL)
     {
