@@ -56,6 +56,18 @@ static void ast_pipeline_destroy(struct ast *ast)
     return;
 }
 
+static void redirection_destroy(struct redirection *redir)
+{
+    if (redir != NULL)
+    {
+        if (redir->io_number != NULL)
+            free(redir->io_number);
+        if (redir->word != NULL)
+            free(redir->word);
+        free(redir);
+    }
+}
+
 static void ast_command_destroy(struct ast *ast)
 {
     if (ast != NULL)
@@ -70,7 +82,7 @@ static void ast_command_destroy(struct ast *ast)
         {
             for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
             {
-                free(ast->ast_union.ast_command.redirection[i]);
+                redirection_destroy(ast->ast_union.ast_command.redirection[i]);
             }
             free(ast->ast_union.ast_command.redirection);
         }
@@ -97,7 +109,7 @@ static void ast_simple_command_destroy(struct ast *ast)
         {
             for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
             {
-                free(ast->ast_union.ast_simple_command.redirection[i]);
+                redirection_destroy(ast->ast_union.ast_simple_command.redirection[i]);
             }
             free(ast->ast_union.ast_simple_command.redirection);
         }
