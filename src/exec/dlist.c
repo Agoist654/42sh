@@ -76,7 +76,7 @@ int dlist_close_fd(struct dlist *dlist)
     while (tmp->prev != NULL)
     {
         close(tmp->save_fd);
-        close(tmp->io_number);
+        //close(tmp->io_number);
         tmp = tmp->prev;
     }
     return 1;

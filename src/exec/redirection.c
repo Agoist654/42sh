@@ -280,7 +280,7 @@ int restore_redirection(struct dlist *dlist)
         return 1;
     }
     struct dlist_item *tmp = dlist->tail;
-    while (tmp->prev != NULL)
+    while (tmp != NULL)
     {
         if (dup2(tmp->save_fd, tmp->io_number) == -1)
         {
