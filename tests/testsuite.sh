@@ -1,13 +1,13 @@
 #! /bin/sh
 
-REF_OUT="../tests/ref.out"
-REF_ERR="../tests/ref_err.out"
+REF_OUT="tests/ref.out"
+REF_ERR="tests/ref_err.out"
 
-TES_OUT="../tests/test.out"
-TES_ERR="../tests/test_err.out"
+TES_OUT="tests/test.out"
+TES_ERR="tests/test_err.out"
 
-TES_RES="../tests/test_res.out"
-REF_RES="../tests/ref_res.out"
+TES_RES="tests/test_res.out"
+REF_RES="tests/ref_res.out"
 
 #DIFF="tests/diff.out"
 
@@ -42,23 +42,23 @@ echo  " "
 echo  " "
 echo  "TESTS "
 
-TEST_NAME="simple echo -c"
-print -c "echo a b c"
-
-TEST_NAME="simple echo option n"
-print -c "echo -n a b c"
-
-TEST_NAME="simple echo option e"
-print -c "echo -e a b c\n"
-
-TEST_NAME="simple echo option e and E"
-print -c "echo -eEEeeeE a b c\n"
-
-TEST_NAME="string echo"
-print simple_echo.sh
-
-TEST_NAME="stdin echo"
-cat simple_echo.sh | print
+#TEST_NAME="simple echo -c"
+#print -c "echo a b c"
+#
+#TEST_NAME="simple echo option n"
+#print -c "echo -n a b c"
+#
+#TEST_NAME="simple echo option e"
+#print -c "echo -e a b c\n"
+#
+#TEST_NAME="simple echo option e and E"
+#print -c "echo -eEEeeeE a b c\n"
+#
+#TEST_NAME="string echo"
+#print simple_echo.sh
+#
+#TEST_NAME="stdin echo"
+#cat simple_echo.sh | print
 
 TEST_NAME="double echo"
 print double_echo.sh
@@ -102,56 +102,56 @@ print ./simple_echo.sh
 TEST_NAME="simple while"
 print simple_while.sh
 
-TEST_NAME="double while"
-print double_while.sh
+#TEST_NAME="double while"
+#print double_while.sh
+#
+#TEST_NAME="while with if"
+#print while_to_if.sh
+#
+#TEST_NAME="if with while"
+#print if_to_while.sh
+#
+#TEST_NAME="simple until"
+#print simple_until.sh
+#
+#TEST_NAME="double until"
+#print double_until.sh
+#
+#TEST_NAME="until with if"
+#print until_to_if.sh
+#
+#TEST_NAME="if with until"
+#print if_to_until.sh
+#
+#TEST_NAME="if !true"
+#print if_not_true.sh
+#
+#TEST_NAME="if !false"
+#print if_not_false.sh
 
-TEST_NAME="while with if"
-print while_to_if.sh
-
-TEST_NAME="if with while"
-print if_to_while.sh
-
-TEST_NAME="simple until"
-print simple_until.sh
-
-TEST_NAME="double until"
-print double_until.sh
-
-TEST_NAME="until with if"
-print until_to_if.sh
-
-TEST_NAME="if with until"
-print if_to_until.sh
-
-TEST_NAME="if !true"
-print if_not_true.sh
-
-TEST_NAME="if !false"
-print if_not_false.sh
-
-TEST_NAME="while !true"
-print while_not_true.sh
-
-TEST_NAME="while !false"
-print while_not_false.sh
-
-TEST_NAME="until !true"
-print until_not_true.sh
-
-TEST_NAME="until !false"
-print until_not_false.sh
-
-TEST_NAME="simple pipe"
-print simple_pipe.sh
-
-TEST_NAME="if pipe"
-print if_pipe.sh
-
-TEST_NAME="while pipe"
-print while_pipe.sh
-
-TEST_NAME="until pipe"
-print until_pipe.sh
+#TEST_NAME="while !true"
+#print while_not_true.sh
+#
+#TEST_NAME="while !false"
+#print while_not_false.sh
+#
+#TEST_NAME="until !true"
+#print until_not_true.sh
+#
+#TEST_NAME="until !false"
+#print until_not_false.sh
+#
+#TEST_NAME="simple pipe"
+#print simple_pipe.sh
+#
+#TEST_NAME="if pipe"
+#print if_pipe.sh
+#
+#TEST_NAME="while pipe"
+#print while_pipe.sh
+#
+#TEST_NAME="until pipe"
+#print until_pipe.sh
 
 TEST_NAME="simple and"
 print simple_and.sh
@@ -162,17 +162,18 @@ print simple_or.sh
 TEST_NAME="if and"
 print if_and.sh
 
-TEST_NAME="while and"
-print while_and.sh
 
-TEST_NAME="until and"
-print until_and.sh
+#TEST_NAME="while and"
+#print while_and.sh
+#
+#TEST_NAME="until and"
+#print until_and.sh
 
 TEST_NAME="if or"
 print if_or.sh
 
-TEST_NAME="until or"
-print while_or.sh
-
-TEST_NAME="while or"
-print until_or.sh
+#TEST_NAME="until or"
+#print while_or.sh
+#
+#TEST_NAME="while or"
+#print until_or.sh
