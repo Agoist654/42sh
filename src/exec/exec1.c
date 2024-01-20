@@ -105,7 +105,7 @@ int ast_simple_command_exec(struct ast *ast)
     int to_close = 0;
     int res = 0;
     struct dlist *dlist = dlist_init();
-    if (ast->ast_union.ast_simple_command.redirection != NULL)
+    if (ast->ast_union.ast_simple_command.redirection != NULL && ast->ast_union.ast_simple_command.redirection[0] != NULL)
     {
         to_close = 1;
         for (int i = 0;
