@@ -85,7 +85,7 @@ int ast_command_exec(struct ast *ast)
     if (to_close)
         restore_redirection(dlist);
     else
-        free(dlist);
+        dlist_destroy(dlist);
     return res;
 }
 
@@ -158,7 +158,7 @@ int ast_simple_command_exec(struct ast *ast)
     if (to_close)
         restore_redirection(dlist);
     else
-        free(dlist);
+        dlist_destroy(dlist);
     return res;
 }
 
