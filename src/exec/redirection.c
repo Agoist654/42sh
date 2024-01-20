@@ -64,7 +64,7 @@ static int redirection_right_right(struct dlist *dlist, int io_number, char *wor
     int save_fd = dup(io_number);
     if (save_fd == -1)
         return -1;
-    int fd = open(word, O_CREAT | O_TRUNC | O_APPEND, 0644);
+    int fd = open(word, O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd == -1)
     {
         close(save_fd);
@@ -84,7 +84,7 @@ static int redirection_right_right(struct dlist *dlist, int io_number, char *wor
 static int redirection_left(struct dlist *dlist, int io_number, char *word)
 {
     if (io_number == -1)
-        io_number = STDOUT_FILENO;
+        io_number = STDIN_FILENO;
     int save_fd = dup(io_number);
     if (save_fd == -1)
         return -1;
@@ -245,8 +245,12 @@ int exec_redirection(struct dlist *dlist, struct redirection *redir)
 
 int restore_redirection(struct dlist *dlist)
 {
+    fflush(NULL);
     if (!dlist->head)
+    {
+    dlist_destroy(dlist);
         return 1;
+    }
     struct dlist_item *tmp = dlist->tail;
     while (tmp->prev != NULL)
     {
