@@ -6,7 +6,7 @@
 struct dlist *dlist_init(void)
 {
     struct dlist *dl = malloc(sizeof(struct dlist));
-    if (!dl)
+    if (dl == NULL)
         return NULL;
     dl->size = 0;
     dl->head = NULL;
@@ -48,59 +48,24 @@ int dlist_push_back(struct dlist *list, int save_fd, int io_number)
     return 1;
 }
 
-static void dlist_remove_at(struct dlist *list, size_t index)
+static void dlist_item_destroy(struct dlist_item *item)
 {
-    if (index >= list->size || list->head == NULL)
-        return;
-    if (index == 0 && list->size == 1)
+    if (item != NULL)
     {
-        free(list->head);
-        list->head = NULL;
-        list->tail = NULL;
-        list->size--;
+        dlist_item_destroy(item->next);
+        free(item);
     }
-    else if (index == list->size - 1)
-    {
-        list->tail = list->tail->prev;
-        free(list->tail->next);
-        list->tail->next = NULL;
-        list->size--;
-    }
-    else if (index == 0)
-    {
-        list->head = list->head->next;
-        free(list->head->prev);
-        list->head->prev = NULL;
-        list->size--;
-    }
-    else
-    {
-        struct dlist_item *tmp = list->head;
-        for (size_t k = 0; k != index; k++)
-        {
-            tmp = tmp->next;
-        }
-        tmp->next->prev = tmp->prev;
-        tmp->prev->next = tmp->next;
-        free(tmp);
-        list->size--;
-    }
+    return;
 }
 
 void dlist_destroy(struct dlist *list)
 {
-    if (!list || !list->head)
-        return;
-    struct dlist_item *tmp = list->head;
-    struct dlist_item *ttmp = list->head;
-    while (ttmp->next != NULL)
+    if (list != NULL)
     {
-        ttmp = tmp->next;
-        dlist_remove_at(list, 0);
-        tmp = ttmp;
+        dlist_item_destroy(list->head);
+        free(list);
     }
-    dlist_remove_at(list, 0);
-    free(list);
+    return;
 }
 
 int dlist_close_fd(struct dlist *dlist)

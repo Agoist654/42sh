@@ -34,6 +34,7 @@ static void ast_and_or_destroy(struct ast *ast)
             ast->ast_union.ast_and_or.pipeline->ftable->destroy(
                 ast->ast_union.ast_and_or.pipeline);
         }
+        ast_and_or_destroy(ast->ast_union.ast_and_or.next);
         free(ast);
     }
     return;
@@ -49,6 +50,7 @@ static void ast_pipeline_destroy(struct ast *ast)
             ast->ast_union.ast_pipeline.command->ftable->destroy(
                 ast->ast_union.ast_pipeline.command);
         }
+        ast_pipeline_destroy(ast->ast_union.ast_pipeline.next);
         free(ast);
     }
     return;
@@ -63,6 +65,14 @@ static void ast_command_destroy(struct ast *ast)
         {
             ast->ast_union.ast_command.first->ftable->destroy(
                 ast->ast_union.ast_command.first);
+        }
+        if (ast->ast_union.ast_command.redirection != NULL)
+        {
+            for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
+            {
+                free(ast->ast_union.ast_command.redirection[i]);
+            }
+            free(ast->ast_union.ast_command.redirection);
         }
         free(ast);
     }
@@ -82,6 +92,14 @@ static void ast_simple_command_destroy(struct ast *ast)
                 free(ast->ast_union.ast_simple_command.argv[i]);
             }
             free(ast->ast_union.ast_simple_command.argv);
+        }
+        if (ast->ast_union.ast_simple_command.redirection != NULL)
+        {
+            for (int i = 0; ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
+            {
+                free(ast->ast_union.ast_simple_command.redirection[i]);
+            }
+            free(ast->ast_union.ast_simple_command.redirection);
         }
         free(ast);
     }
