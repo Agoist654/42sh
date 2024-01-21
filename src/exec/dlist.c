@@ -73,7 +73,7 @@ int dlist_close_fd(struct dlist *dlist)
     if (!dlist->head)
         return 1;
     struct dlist_item *tmp = dlist->tail;
-    while (tmp->prev != NULL)
+    while (tmp != NULL)
     {
         close(tmp->save_fd);
         // close(tmp->io_number);
