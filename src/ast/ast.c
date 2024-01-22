@@ -541,7 +541,7 @@ static struct ftable ftable[] = {
 
 struct ast *ast_init(enum ast_type type)
 {
-    struct ast *ast = malloc(sizeof(struct ast));
+    struct ast *ast = calloc(1, sizeof(struct ast));
     if (ast == NULL)
     {
         return NULL;
