@@ -5,6 +5,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void backslash(char *str, int *pos, char *new_str, int *write)
+{
+    if (str[*pos] == '\\' || str[*pos] == '$' || str[*pos] == '`' || str[*pos] == '"')
+        new_str[*write += 1] = str[*pos];
+    else if (str[*pos] != '\n')
+    {
+        new_str[*write += 1] = '\\';
+        new_str[*write += 1] = str[*pos];
+    }
+    *pos += 1;
+}
+
 char *expansion(char *str)
 {
     if (str == NULL)
@@ -27,6 +39,11 @@ char *expansion(char *str)
             new_str[write++] = str[i];
         else if (double_quote && str[i] != 39)
         {
+            if (str[i] == '\\')
+            {
+                i++;
+                backslash(str, &i, new_str, &write);
+            }
             // handle_double_quote
             continue;
         }
