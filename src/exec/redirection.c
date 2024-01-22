@@ -31,7 +31,6 @@ typedef int (*redirection_f)(struct dlist *dlist, int io_number, char *word);
 // *word); static int redirection_right_pipe(struct dlist *dlist, int io_number,
 // char *word);
 
-
 // for save -> dup2(save_fd, io_number)
 static int redirection_right(struct dlist *dlist, int io_number, char *word)
 {

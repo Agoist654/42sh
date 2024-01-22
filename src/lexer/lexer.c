@@ -95,6 +95,15 @@ static struct token token_init_error(void)
     return res;
 }
 */
+static int isnumber(char *buffer)
+{
+    for (size_t k = 0; k < strlen(buffer); k++)
+    {
+        if (!isdigit(buffer[k]))
+            return 0;
+    }
+    return 1;
+}
 
 static struct token token_init(void)
 {
@@ -204,6 +213,14 @@ static int isoperator(char io_peek)
     return 0;
 }
 
+static int isredir(char io_peek)
+{
+    if (io_peek == '>' || io_peek == '<')
+        return 1;
+    return 0;
+}
+
+
 // static
 // int handle_io_number(char *buffer, char io_peek)
 //{
@@ -255,7 +272,7 @@ static struct token token_reg(void)
         {
             if (res.type == TOKEN_WORD)
             {
-                if (strlen(res.buffer) == 1 && isdigit(res.buffer[0]))
+                if (isnumber(res.buffer) && isredir(io_peek()))
                     res.type = TOKEN_IONUMBER;
                 return res;
             }
