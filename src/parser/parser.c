@@ -93,18 +93,22 @@ static int first_redirection[] = { TOKEN_REDIRECTION_RIGHT,
                                    TOKEN_IONUMBER,
                                    -1 };
 
-static int first_compound_list[] = { TOKEN_WORD,
-                                     TOKEN_REDIRECTION_RIGHT,
-                                     TOKEN_REDIRECTION_LEFT,
-                                     TOKEN_REDIRECTION_RIGHT_RIGHT,
-                                     TOKEN_REDIRECTION_RIGHT_AND,
-                                     TOKEN_REDIRECTION_LEFT_AND,
-                                     TOKEN_REDIRECTION_RIGHT_PIPE,
-                                     TOKEN_REDIRECTION_LEFT_RIGHT,
-                                     TOKEN_IONUMBER,
-                                     TOKEN_NEGATION,
-                                     TOKEN_NEWLINE,
-                                     -1 };
+static int first_compound_list[] = { TOKEN_NEGATION,
+                              TOKEN_WORD,
+                              TOKEN_REDIRECTION_RIGHT,
+                              TOKEN_REDIRECTION_LEFT,
+                              TOKEN_REDIRECTION_RIGHT_RIGHT,
+                              TOKEN_REDIRECTION_RIGHT_AND,
+                              TOKEN_REDIRECTION_LEFT_AND,
+                              TOKEN_REDIRECTION_RIGHT_PIPE,
+                              TOKEN_REDIRECTION_LEFT_RIGHT,
+                              TOKEN_IONUMBER,
+                              TOKEN_WHILE,
+                              TOKEN_UNTIL,
+                              TOKEN_IF,
+                              TOKEN_NEWLINE,
+                              -1 };
+
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
 
