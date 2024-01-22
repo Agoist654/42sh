@@ -12,6 +12,7 @@
 #include "exec.h"
 #include "expansion/expansion.h"
 #include "redirection.h"
+#include "pipeline.h"
 
 #define NB_BUILTINS 3
 static struct builtin builtins[] =
@@ -61,11 +62,12 @@ int ast_pipeline_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_PIPELINE);
-    int ret_value = ast->ast_union.ast_pipeline.command->ftable->exec( ast->ast_union.ast_pipeline.command);
+    int ret_value = 0;
+    if (ast->ast_union.ast_pipeline.next == NULL)
+        ret_value = ast->ast_union.ast_pipeline.command->ftable->exec( ast->ast_union.ast_pipeline.command);
     if (ast->ast_union.ast_pipeline.next != NULL)
     {
-        ret_value = ast->ast_union.ast_pipeline.next->ftable->exec(
-            ast->ast_union.ast_pipeline.next);
+        ret_value = exec_pipe(ast);
     }
     if (ast->ast_union.ast_pipeline.neg)
         return 1 - ret_value;
