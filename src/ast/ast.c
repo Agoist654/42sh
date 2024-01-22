@@ -56,7 +56,7 @@ static void ast_pipeline_destroy(struct ast *ast)
     return;
 }
 
-static void redirection_destroy(struct redirection *redir)
+void redirection_destroy(struct redirection *redir)
 {
     if (redir != NULL)
     {
@@ -64,7 +64,7 @@ static void redirection_destroy(struct redirection *redir)
             free(redir->io_number);
         if (redir->word != NULL)
             free(redir->word);
-        free(redir);
+    free(redir);
     }
 }
 

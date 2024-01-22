@@ -180,6 +180,7 @@ static struct element *parse_element(struct lexer *lexer)
         elt->element_union.redir = parse_redirection(lexer);
         if (error.res)
         {
+            redirection_destroy(elt->element_union.redir);
             free(elt);
             return NULL;
         }
