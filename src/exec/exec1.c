@@ -13,6 +13,14 @@
 #include "expansion/expansion.h"
 #include "redirection.h"
 
+#define NB_BUILTINS 3
+static struct builtin builtins[] =
+{
+    { .command_name = "echo", .builtin = echo },
+    { .command_name = "true", .builtin = true_f },
+    { .command_name = "false", .builtin = false_f }
+};
+
 int ast_list_exec(struct ast *ast)
 {
     if (ast == NULL)
@@ -53,8 +61,7 @@ int ast_pipeline_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_PIPELINE);
-    int ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
-        ast->ast_union.ast_pipeline.command);
+    int ret_value = ast->ast_union.ast_pipeline.command->ftable->exec( ast->ast_union.ast_pipeline.command);
     if (ast->ast_union.ast_pipeline.next != NULL)
     {
         ret_value = ast->ast_union.ast_pipeline.next->ftable->exec(
@@ -86,14 +93,6 @@ int ast_command_exec(struct ast *ast)
     return res;
 }
 
-//#define NB_BUILTINS 3
-// static struct bultin builtins[NB_BUILTINS] =
-//{
-//    { .command_name = "echo", .void_ppchar = NULL, .int_void = echo },
-//    { .command_name = "true", .void_ppchar = true_f, .int_void = NULL },
-//    { .command_name = "false", .void_ppchar = false_f, .int_void = NULL }
-//};
-
 int ast_simple_command_exec(struct ast *ast)
 {
     if (ast == NULL)
@@ -118,41 +117,28 @@ int ast_simple_command_exec(struct ast *ast)
         ast->ast_union.ast_simple_command.argv[i] =
             expansion(ast->ast_union.ast_simple_command.argv[i]);
     }
-    // for (int k = 0; k < NB_BIULTINS; k++)
-    //{
-    //     if (strcmp(ast->ast_union.ast_simple_command.argv[0],
-    //     builtins[k].command_name) == 0)
-    //     {
-    //     }
-    // }
 
-    if (strcmp(ast->ast_union.ast_simple_command.argv[0], "echo") == 0)
+    for (int k = 0; k < NB_BUILTINS; k++)
     {
-        echo(ast->ast_union.ast_simple_command.argv);
-        res = 0;
+        if (strcmp(ast->ast_union.ast_simple_command.argv[0],
+                    builtins[k].command_name) == 0)
+        {
+            res = builtins[k].builtin(ast->ast_union.ast_simple_command.argv);
+            restore_redirection(dlist);
+            return res;
+        }
     }
-    else if (strcmp(ast->ast_union.ast_simple_command.argv[0], "true") == 0)
+
+    /* if it is not a builtin */
+    int pid = fork();
+    if (pid == 0)
     {
-        res = true_f();
-    }
-    else if (strcmp(ast->ast_union.ast_simple_command.argv[0], "false") == 0)
-    {
-        res = false_f();
+        execvp(ast->ast_union.ast_simple_command.argv[0],
+                ast->ast_union.ast_simple_command.argv);
+        err(1, "failedd");
     }
     else
-    {
-        int pid = fork();
-        if (pid == 0)
-        {
-            execvp(ast->ast_union.ast_simple_command.argv[0],
-                   ast->ast_union.ast_simple_command.argv);
-            err(1, "failedd");
-        }
-        else
-        {
-            waitpid(pid, &res, 0);
-        }
-    }
+        waitpid(pid, &res, 0);
     restore_redirection(dlist);
     return res;
 }

@@ -7,7 +7,9 @@ libexec_a_SOURCES =  \
   redirection.c \
   redirection.h \
   dlist.c \
-  dlist.h
+  dlist.h \
+  pipeline.c \
+  pipeline.h
 
 libexec_a_CPPFLAGS = -I$(top_srcdir)/src
 

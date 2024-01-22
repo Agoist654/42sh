@@ -279,7 +279,7 @@ static struct token token_reg(void)
             res = io_eat(res);
         // step1   //rule 9: comment until \n : TOKEN_COMMENT, the \n is part of
         // it
-        if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
+        else if (res.type != TOKEN_SINGLE_QUOTE && io_peek() == '#')
         {
             handle_comment();
             continue;

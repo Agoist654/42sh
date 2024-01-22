@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 
-int true_f(void)
+int true_f(char **argv)
 {
+    (void)argv;
     return 0;
 }
 
-int false_f(void)
+int false_f(char **argv)
 {
+    (void)argv;
     return 1;
 }
 
@@ -61,7 +63,7 @@ static void prt(char **argv, int pl, int eE)
     }
 }
 
-void echo(char **argv)
+int echo(char **argv)
 {
     int pl = 1;
     size_t pos = 0;
@@ -114,4 +116,5 @@ void echo(char **argv)
     }
     if (n)
         printf("\n");
+    return 0;
 }
