@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <errno.h>
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -135,14 +136,17 @@ int ast_simple_command_exec(struct ast *ast)
     int pid = fork();
     if (pid == 0)
     {
-        execvp(ast->ast_union.ast_simple_command.argv[0],
-                ast->ast_union.ast_simple_command.argv);
+        if (execvp(ast->ast_union.ast_simple_command.argv[0],
+                ast->ast_union.ast_simple_command.argv) == -1)
+        {
+            if (errno == ENOENT)
+                exit(127);
+        }
         err(1, "failedd");
     }
-    else
-        waitpid(pid, &res, 0);
+    waitpid(pid, &res, 0);
     restore_redirection(dlist);
-    return res;
+    return WEXITSTATUS(res);
 }
 
 int ast_shell_command_exec(struct ast *ast)
