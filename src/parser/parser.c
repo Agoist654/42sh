@@ -214,14 +214,14 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         {
             res->ast_union.ast_simple_command.argv =
                 realloc(res->ast_union.ast_simple_command.argv,
-                        res->ast_union.ast_simple_command.len_argv * 2);
+                        res->ast_union.ast_simple_command.len_argv * 2 * sizeof(char *));
             res->ast_union.ast_simple_command.len_argv *= 2;
         }
         if (nb_arg == res->ast_union.ast_simple_command.len_redir - 1)
         {
             res->ast_union.ast_simple_command.redirection =
                 realloc(res->ast_union.ast_simple_command.redirection,
-                        res->ast_union.ast_simple_command.len_redir * 2);
+                        res->ast_union.ast_simple_command.len_redir * 2 * sizeof(struct redirection *));
             res->ast_union.ast_simple_command.len_redir *= 2;
         }
         struct element *elt = parse_element(lexer);

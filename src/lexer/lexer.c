@@ -124,7 +124,7 @@ struct lexer *lexer_init(void)
     return res;
 }
 
-static void handle_comment()
+static void handle_comment(void)
 {
     while (io_peek() != EOF && io_peek() != '\n')
         io_pop();
