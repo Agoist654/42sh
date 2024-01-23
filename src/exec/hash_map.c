@@ -5,6 +5,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define HASHMAP_SIZE 8
+
+static struct hash_map *hm = NULL;
+
+struct hash_map *get_hm(void)
+{
+    if (hm == NULL)
+        hm = hash_map_init(HASHMAP_SIZE);
+    return hm;
+}
+
 struct hash_map *hash_map_init(size_t size)
 {
     struct hash_map *map = malloc(sizeof(struct hash_map));
@@ -75,7 +86,7 @@ static struct pair_list *is_in(struct pair_list *list, const char *key)
     return NULL;
 }
 
-bool hash_map_insert(struct hash_map *hash_map, const char *key, char *value,
+bool hash_map_insert(struct hash_map *hash_map, char *key, char *value,
                      bool *updated)
 {
     if (hash_map == NULL || hash_map->size == 0)

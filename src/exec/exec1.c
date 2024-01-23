@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200112L
 #include <assert.h>
 #include <errno.h>
 #include <err.h>
@@ -14,6 +15,7 @@
 #include "expansion/expansion.h"
 #include "redirection.h"
 #include "pipeline.h"
+#include "hash_map.h"
 
 #define NB_BUILTINS 3
 static struct builtin builtins[] =
@@ -96,6 +98,66 @@ int ast_command_exec(struct ast *ast)
     return res;
 }
 
+static
+char *get_value(char *buffer)
+{
+    return strchr(buffer, '=') + 1;
+}
+
+static
+size_t get_equal_index(char *buffer)
+{
+    size_t index = 0;
+    for (; index < strlen(buffer); index++)
+    {
+        if (buffer[index] == '=')
+            break;
+    }
+    return index;
+}
+
+static char *get_key(char *buffer)
+{
+    size_t equal_index = get_equal_index(buffer);
+    buffer[equal_index] = '\0';
+    return buffer;
+}
+
+static
+size_t get_len(char **argv)
+{
+    if (!argv)
+        return 0;
+    size_t res = 0;
+    while (argv[res] != NULL)
+        res++;
+    return res;
+}
+
+static int hash_map_add(struct ast *ast)
+{
+    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word); k++)
+    {
+        char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
+        char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
+        if (hash_map_insert(get_hm(), key, value, NULL))
+            printf("hm insert: key:>%s<, value>%s<", key, value);
+    }
+    return 1;
+}
+
+static int sent_env_add(struct ast *ast)
+{
+    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word); k++)
+    {
+        char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
+        char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
+        setenv(key, value, 1);
+        printf("setenv insert: initial:>%s<, setenv>%s<", ast->ast_union.ast_simple_command.ass_word[k], value);
+    }
+    return 1;
+}
+
 int ast_simple_command_exec(struct ast *ast)
 {
     if (ast == NULL)
@@ -103,6 +165,14 @@ int ast_simple_command_exec(struct ast *ast)
     assert(ast->type == AST_SIMPLE_COMMAND);
     // int to_close = 0;
     int res = 0;
+    if (get_len(ast->ast_union.ast_simple_command.argv) == 0)
+    {
+        hash_map_add(ast);
+        return 1;
+    }
+    else
+        sent_env_add(ast);
+
     struct dlist *dlist = dlist_init();
     if (ast->ast_union.ast_simple_command.redirection != NULL
         && ast->ast_union.ast_simple_command.redirection[0] != NULL)
@@ -121,7 +191,7 @@ int ast_simple_command_exec(struct ast *ast)
             expansion(ast->ast_union.ast_simple_command.argv[i]);
     }
 
-    for (int k = 0; k < NB_BUILTINS; k++)
+    for (int k = 0; /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */k < NB_BUILTINS; k++)
     {
         if (strcmp(ast->ast_union.ast_simple_command.argv[0],
                     builtins[k].command_name) == 0)

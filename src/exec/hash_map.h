@@ -19,11 +19,12 @@ struct hash_map
 
 size_t hash(const char *str);
 struct hash_map *hash_map_init(size_t size);
-bool hash_map_insert(struct hash_map *hash_map, const char *key, char *value,
+bool hash_map_insert(struct hash_map *hash_map, char *key, char *value,
                      bool *updated);
 void hash_map_free(struct hash_map *hash_map);
 void hash_map_dump(struct hash_map *hash_map);
 const char *hash_map_get(const struct hash_map *hash_map, const char *key);
 bool hash_map_remove(struct hash_map *hash_map, const char *key);
+struct hash_map *get_hm(void);
 
 #endif /* ! HASH_MAP_H */
