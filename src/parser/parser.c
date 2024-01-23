@@ -24,6 +24,7 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_WHILE,
                             TOKEN_UNTIL,
                             TOKEN_IF,
+                            TOKEN_ASSIGNMENT_WORD,
                             -1 };
 
 static int first_and_or[] = { TOKEN_NEGATION,
@@ -39,6 +40,7 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_WHILE,
                               TOKEN_UNTIL,
                               TOKEN_IF,
+                            TOKEN_ASSIGNMENT_WORD,
                               -1 };
 
 static int first_pipeline[] = { TOKEN_NEGATION,
@@ -54,6 +56,7 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_WHILE,
                                 TOKEN_UNTIL,
                                 TOKEN_IF,
+                            TOKEN_ASSIGNMENT_WORD,
                                 -1 };
 
 static int first_command[] = { TOKEN_WORD,
@@ -68,6 +71,7 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_WHILE,
                                TOKEN_UNTIL,
                                TOKEN_IF,
+                            TOKEN_ASSIGNMENT_WORD,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -79,6 +83,7 @@ static int first_simple_command[] = { TOKEN_WORD,
                                       TOKEN_REDIRECTION_RIGHT_PIPE,
                                       TOKEN_REDIRECTION_LEFT_RIGHT,
                                       TOKEN_IONUMBER,
+                            TOKEN_ASSIGNMENT_WORD,
                                       -1 };
 
 static int first_shell_command[] = { TOKEN_WHILE, TOKEN_UNTIL, TOKEN_IF, -1 };
