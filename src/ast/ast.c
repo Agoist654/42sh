@@ -116,6 +116,15 @@ static void ast_simple_command_destroy(struct ast *ast)
             }
             free(ast->ast_union.ast_simple_command.redirection);
         }
+        if (ast->ast_union.ast_simple_command.ass_word != NULL)
+        {
+            for (int i = 0;
+                 ast->ast_union.ast_simple_command.ass_word[i] != NULL; i++)
+            {
+                free(ast->ast_union.ast_simple_command.ass_word[i]);
+            }
+            free(ast->ast_union.ast_simple_command.ass_word);
+        }
         free(ast);
     }
     return;
