@@ -60,21 +60,7 @@ static char *tokens[NB_TOKENS] = {
     [TOKEN_REDIRECTION_RIGHT_PIPE] = ">|",
     [TOKEN_REDIRECTION_LEFT_RIGHT] = "<>"
 
-    //[TOKEN_OPERATOR         ] = NULL,
-    //[TOKEN_SINGLE_QUOTE     ] = NULL,
-    //[TOKEN_COMMENT          ] = NULL,
-    //[TOKEN_WORD           ] = NULL,
-    //[TOKEN_EOF            ] = NULL,
-    //[TOKEN_ERROR          ] = NULL,
-    //[TOKEN_NULL           ] = NULL
 };
-
-// static struct token token_eof = {
-//     .type = TOKEN_EOF,
-//     .buffer = NULL,
-//     .len = BUFFER_SIZE
-// };
-
 static struct token token_error = { .type = TOKEN_ERROR,
                                     .buffer = NULL,
                                     .len = BUFFER_SIZE };
@@ -83,18 +69,17 @@ static struct token token_null = { .type = TOKEN_NULL,
                                    .buffer = NULL,
                                    .len = BUFFER_SIZE };
 
-/*
-static struct token token_init_error(void)
+static
+int isanyequal(char *buffer)
 {
-    struct token res = {
-    .type = TOKEN_ERROR,
-    .buffer = NULL,
-    .len = BUFFER_SIZE
-
-    };
-    return res;
+    for (size_t k = 0; k < strlen(buffer); k++)
+    {
+        if (buffer[k] == '=')
+            return 1;
+    }
+    return 0;
 }
-*/
+
 static int isnumber(char *buffer)
 {
     for (size_t k = 0; k < strlen(buffer); k++)
@@ -114,14 +99,6 @@ static struct token token_init(void)
                          .buffer = buffer,
                          .len = BUFFER_SIZE };
     return res;
-}
-
-// static
-int check_token(enum token_type type)
-{
-    if (type == TOKEN_WORD || type == TOKEN_EOF || type == TOKEN_ERROR)
-        return 0;
-    return 1;
 }
 
 struct lexer *lexer_init(void)
@@ -144,7 +121,6 @@ static int isquote(char io_peek)
 {
     if (io_peek == '\'' || io_peek == '\"')
         return 1;
-
     return 0;
 }
 
@@ -219,23 +195,6 @@ static int isredir(char io_peek)
         return 1;
     return 0;
 }
-
-
-// static
-// int handle_io_number(char *buffer, char io_peek)
-//{
-//     if (strlen(buffer) != 1)
-//     {
-//         printf("handleionumredir wtf should only have a single op/num in
-//         it\n"); return 0;
-//     }
-//     if (isdigit(buffer[0]) && (io_peek == '<' || io_peek == '>'))
-//     {
-//         buffer[strlen(buffer)] = io_pop();
-//         return 1;
-//     }
-//     return 0;
-// }
 
 static struct token token_reg(void)
 {
@@ -313,6 +272,8 @@ static struct token token_reg(void)
 struct token lex(void)
 {
     struct token res = token_reg();
+    if (res.type == TOKEN_WORD && isanyequal(res.buffer))
+        res.type = TOKEN_ASSIGNMENT_WORD;
     if (res.type != TOKEN_WORD && res.type != TOKEN_OPERATOR)
         return res;
     // for (enum token_type type = TOKEN_IF; type < NB_TOKENS; type++)
@@ -346,30 +307,3 @@ struct token lexer_pop(struct lexer *lexer)
     lexer->current_token = lex();
     return save_token;
 }
-
-// int main(int argc, char *argv[])
-//{
-//     io_backend(argc, argv);
-//     struct lexer *lexer = lexer_init();
-//     printf("1peek >\n");
-//     print_token(lexer_peek(lexer));
-//     printf("<\n");
-//     struct token token = lexer_pop(lexer);
-//     printf("1pop >\n");
-//     print_token(token);
-//     printf("<\n");
-//     while (token.type != TOKEN_EOF)
-//     {
-//         printf("peek >\n");
-//         print_token(lexer_peek(lexer));
-//         printf("<\n");
-//         token = lexer_pop(lexer);
-//         printf("pop >\n");
-//         print_token(token);
-//         printf("<\n");
-//     }
-//     //free(token.buffer);
-//     //free(lexer->current_token.buffer);
-//     free(lexer);
-//     return 0;
-// }
