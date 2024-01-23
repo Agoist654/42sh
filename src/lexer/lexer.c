@@ -70,14 +70,27 @@ static struct token token_null = { .type = TOKEN_NULL,
                                    .len = BUFFER_SIZE };
 
 static
-int isanyequal(char *buffer)
+int isassignment_word(char *buffer)
 {
-    for (size_t k = 0; k < strlen(buffer); k++)
+    if (buffer && isdigit(buffer[0]))
+        return 0;
+    size_t index = 0;
+    while(index < strlen(buffer))
     {
-        if (buffer[k] == '=')
-            return 1;
+        if (buffer[index] == '=')
+            break;
+        index++;
     }
-    return 0;
+
+    if (index == strlen(buffer))
+        return 0;
+
+    for (size_t k = 0; k < index; k++)
+    {
+        if (buffer[k] != '_' && !isalnum(buffer[k]))
+            return 0;
+    }
+    return 1;
 }
 
 static int isnumber(char *buffer)
@@ -272,7 +285,7 @@ static struct token token_reg(void)
 struct token lex(void)
 {
     struct token res = token_reg();
-    if (res.type == TOKEN_WORD && isanyequal(res.buffer))
+    if (res.type == TOKEN_WORD && isassignment_word(res.buffer))
         res.type = TOKEN_ASSIGNMENT_WORD;
     if (res.type != TOKEN_WORD && res.type != TOKEN_OPERATOR)
         return res;
