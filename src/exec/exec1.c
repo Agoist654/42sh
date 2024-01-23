@@ -71,7 +71,7 @@ int ast_pipeline_exec(struct ast *ast)
         ret_value = exec_pipe(ast);
     }
     if (ast->ast_union.ast_pipeline.neg)
-        return 1 - ret_value;
+        return !ret_value;
     return ret_value;
 }
 
