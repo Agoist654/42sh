@@ -140,9 +140,9 @@ int ast_simple_command_exec(struct ast *ast)
                 ast->ast_union.ast_simple_command.argv) == -1)
         {
             if (errno == ENOENT)
-                exit(127);
+                errx(127, "commandd not found");
         }
-        err(1, "failedd");
+        errx(1, "failedd");
     }
     waitpid(pid, &res, 0);
     restore_redirection(dlist);

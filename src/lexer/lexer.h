@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 33
+#define NB_TOKENS 34
 
 #include <stddef.h>
 enum token_type
@@ -41,8 +41,8 @@ enum token_type
     TOKEN_REDIRECTION_RIGHT_AND,
     TOKEN_REDIRECTION_LEFT_AND,
     TOKEN_REDIRECTION_RIGHT_PIPE,
-    TOKEN_REDIRECTION_LEFT_RIGHT
-
+    TOKEN_REDIRECTION_LEFT_RIGHT,
+    TOKEN_ASSIGNMENT_WORD
 };
 
 struct token
