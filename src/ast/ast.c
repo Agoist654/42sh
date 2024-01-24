@@ -251,23 +251,27 @@ static void ast_rule_until_destroy(struct ast *ast)
     return;
 }
 
-// static void ast_rule_for_destroy(struct ast *ast)
-//{
-//     if (ast != NULL)
-//     {
-//         assert(ast->type == AST_RULE_FOR);
-//         if (ast->ast_union.ast_rule_for.count != NULL)
-//         {
-//             ast->ast_union.ast_rule_for.count->ftable->destroy(ast->ast_union.ast_rule_for.count);
-//         }
-//         if (ast->ast_union.ast_rule_for.then != NULL)
-//         {
-//             ast->ast_union.ast_rule_for.then->ftable->destroy(ast->ast_union.ast_rule_for.then);
-//         }
-//         free(ast);
-//     }
-//     return;
-// }
+static void ast_rule_for_destroy(struct ast *ast)
+{
+    if (ast != NULL)
+    {
+        assert(ast->type == AST_RULE_FOR);
+        if (ast->ast_union.ast_rule_for.var != NULL)
+        {
+            free(ast->ast_union.ast_rule_for.var);
+        }
+        if (ast->ast_union.ast_rule_for.argv != NULL)
+        {
+            for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
+                free(ast->ast_union.ast_rule_for.argv[k]);
+            free(ast->ast_union.ast_rule_for.argv);
+        }
+        if (ast->ast_union.ast_rule_for.compound_list)
+            ast->ast_union.ast_rule_for.compound_list->ftable->destroy(ast->ast_union.ast_rule_for.compound_list);
+        free(ast);
+    }
+    return;
+}
 
 void ast_list_print(struct ast *ast)
 {
@@ -490,24 +494,25 @@ static void ast_rule_until_print(struct ast *ast)
     return;
 }
 
-// static void ast_rule_for_print(struct ast *ast)
-//{
-//     if (ast != NULL)
-//     {
-//         assert(ast->type == AST_RULE_IF);
-//         printf(" FOR ");
-//         if (ast->ast_union.ast_rule_for.count != NULL)
-//        {
-//             ast->ast_union.ast_rule_for.count->ftable->print(ast->ast_union.ast_rule_for.count);
-//         }
-//         printf(" DO ");
-//         if (ast->ast_union.ast_rule_for.then != NULL)
-//         {
-//             ast->ast_union.ast_rule_for.then->ftable->print(ast->ast_union.ast_rule_for.then);
-//         }
-//     }
-//     return;
-// }
+static void ast_rule_for_print(struct ast *ast)
+{
+    (void)ast;
+     //if (ast != NULL)
+     //{
+     //    assert(ast->type == AST_RULE_IF);
+     //    printf(" FOR ");
+     //    if (ast->ast_union.ast_rule_for.count != NULL)
+     //   {
+     //        ast->ast_union.ast_rule_for.count->ftable->print(ast->ast_union.ast_rule_for.count);
+     //    }
+     //    printf(" DO ");
+     //    if (ast->ast_union.ast_rule_for.then != NULL)
+     //    {
+     //        ast->ast_union.ast_rule_for.then->ftable->print(ast->ast_union.ast_rule_for.then);
+     //    }
+     //}
+     //return;
+}
 
 static struct ftable ftable[] = {
     { .destroy = &ast_list_destroy,
@@ -542,10 +547,10 @@ static struct ftable ftable[] = {
       .exec = &ast_rule_while_exec },
     { .destroy = &ast_rule_until_destroy,
       .print = &ast_rule_until_print,
-      .exec = &ast_rule_until_exec }
-    //                                  { .destroy = &ast_rule_until_destroy,
-    //                                    .print = &ast_rule_until_print,
-    //                                    .exec = &ast_rule_until_exec }
+      .exec = &ast_rule_until_exec },
+                                      { .destroy = &ast_rule_for_destroy,
+                                        .print = &ast_rule_for_print,
+                                        .exec = &ast_rule_for_exec }
 };
 
 struct ast *ast_init(enum ast_type type)

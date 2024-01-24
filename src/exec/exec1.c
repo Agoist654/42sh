@@ -98,6 +98,16 @@ int ast_command_exec(struct ast *ast)
     return res;
 }
 
+static size_t get_len(char **argv)
+{
+    if (!argv)
+        return 0;
+    size_t res = 0;
+    while (argv[res] != NULL)
+        res++;
+    return res;
+}
+
 static char *get_value(char *buffer)
 {
     return strchr(buffer, '=') + 1;
@@ -114,33 +124,12 @@ static size_t get_equal_index(char *buffer)
     return index;
 }
 
+
 static char *get_key(char *buffer)
 {
     size_t equal_index = get_equal_index(buffer);
     buffer[equal_index] = '\0';
     return buffer;
-}
-
-static size_t get_len(char **argv)
-{
-    if (!argv)
-        return 0;
-    size_t res = 0;
-    while (argv[res] != NULL)
-        res++;
-    return res;
-}
-
-static int hash_map_add(struct ast *ast)
-{
-    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word);
-         k++)
-    {
-        char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
-        char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
-        hash_map_insert(get_hm(), key, value, NULL);
-    }
-    return 1;
 }
 
 static int sent_env_add(struct ast *ast)
