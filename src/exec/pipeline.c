@@ -1,18 +1,19 @@
 //#define _POSIX_C_SOURCE 200112L
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <err.h>
 #include "pipeline.h"
 
- enum pipe_side
+#include <err.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+enum pipe_side
 {
     LEFT,
     RIGHT
 };
 
- pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side)
+pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side)
 {
     pid_t cpid = fork();
     if (cpid != 0)
@@ -31,7 +32,7 @@
     errx(1, "execvp failed\n");
 }
 
- int exec_pipe(struct ast *ast)
+int exec_pipe(struct ast *ast)
 {
     // create pipe
     int fds[2];
@@ -55,4 +56,3 @@
 
     return WEXITSTATUS(wstatus);
 }
-

@@ -1,7 +1,7 @@
 #define _POSIX_C_SOURCE 200112L
 #include <assert.h>
-#include <errno.h>
 #include <err.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,13 +13,12 @@
 #include "dlist.h"
 #include "exec.h"
 #include "expansion/expansion.h"
-#include "redirection.h"
-#include "pipeline.h"
 #include "hash_map.h"
+#include "pipeline.h"
+#include "redirection.h"
 
 #define NB_BUILTINS 3
-static struct builtin builtins[] =
-{
+static struct builtin builtins[] = {
     { .command_name = "echo", .builtin = echo },
     { .command_name = "true", .builtin = true_f },
     { .command_name = "false", .builtin = false_f }
@@ -67,7 +66,8 @@ int ast_pipeline_exec(struct ast *ast)
     assert(ast->type == AST_PIPELINE);
     int ret_value = 0;
     if (ast->ast_union.ast_pipeline.next == NULL)
-        ret_value = ast->ast_union.ast_pipeline.command->ftable->exec( ast->ast_union.ast_pipeline.command);
+        ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
+            ast->ast_union.ast_pipeline.command);
     if (ast->ast_union.ast_pipeline.next != NULL)
     {
         ret_value = exec_pipe(ast);
@@ -98,14 +98,12 @@ int ast_command_exec(struct ast *ast)
     return res;
 }
 
-static
-char *get_value(char *buffer)
+static char *get_value(char *buffer)
 {
     return strchr(buffer, '=') + 1;
 }
 
-static
-size_t get_equal_index(char *buffer)
+static size_t get_equal_index(char *buffer)
 {
     size_t index = 0;
     for (; index < strlen(buffer); index++)
@@ -123,8 +121,7 @@ static char *get_key(char *buffer)
     return buffer;
 }
 
-static
-size_t get_len(char **argv)
+static size_t get_len(char **argv)
 {
     if (!argv)
         return 0;
@@ -136,7 +133,8 @@ size_t get_len(char **argv)
 
 static int hash_map_add(struct ast *ast)
 {
-    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word); k++)
+    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word);
+         k++)
     {
         char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
         char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
@@ -147,7 +145,8 @@ static int hash_map_add(struct ast *ast)
 
 static int sent_env_add(struct ast *ast)
 {
-    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word); k++)
+    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word);
+         k++)
     {
         char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
         char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
@@ -187,10 +186,14 @@ int ast_simple_command_exec(struct ast *ast)
             expansion(ast->ast_union.ast_simple_command.argv[i]);
     }
 
-    for (int k = 0; /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */k < NB_BUILTINS; k++)
+    for (int k = 0;
+         /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */ k
+         < NB_BUILTINS;
+         k++)
     {
         if (strcmp(ast->ast_union.ast_simple_command.argv[0],
-                    builtins[k].command_name) == 0)
+                   builtins[k].command_name)
+            == 0)
         {
             res = builtins[k].builtin(ast->ast_union.ast_simple_command.argv);
             restore_redirection(dlist);
@@ -203,7 +206,8 @@ int ast_simple_command_exec(struct ast *ast)
     if (pid == 0)
     {
         if (execvp(ast->ast_union.ast_simple_command.argv[0],
-                ast->ast_union.ast_simple_command.argv) == -1)
+                   ast->ast_union.ast_simple_command.argv)
+            == -1)
         {
             if (errno == ENOENT)
                 errx(127, "commandd not found");

@@ -40,7 +40,7 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_WHILE,
                               TOKEN_UNTIL,
                               TOKEN_IF,
-                            TOKEN_ASSIGNMENT_WORD,
+                              TOKEN_ASSIGNMENT_WORD,
                               -1 };
 
 static int first_pipeline[] = { TOKEN_NEGATION,
@@ -56,7 +56,7 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_WHILE,
                                 TOKEN_UNTIL,
                                 TOKEN_IF,
-                            TOKEN_ASSIGNMENT_WORD,
+                                TOKEN_ASSIGNMENT_WORD,
                                 -1 };
 
 static int first_command[] = { TOKEN_WORD,
@@ -71,7 +71,7 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_WHILE,
                                TOKEN_UNTIL,
                                TOKEN_IF,
-                            TOKEN_ASSIGNMENT_WORD,
+                               TOKEN_ASSIGNMENT_WORD,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -83,7 +83,7 @@ static int first_simple_command[] = { TOKEN_WORD,
                                       TOKEN_REDIRECTION_RIGHT_PIPE,
                                       TOKEN_REDIRECTION_LEFT_RIGHT,
                                       TOKEN_IONUMBER,
-                            TOKEN_ASSIGNMENT_WORD,
+                                      TOKEN_ASSIGNMENT_WORD,
                                       -1 };
 
 static int first_shell_command[] = { TOKEN_WHILE, TOKEN_UNTIL, TOKEN_IF, -1 };
@@ -98,34 +98,29 @@ static int first_redirection[] = { TOKEN_REDIRECTION_RIGHT,
                                    TOKEN_IONUMBER,
                                    -1 };
 
-static int first_prefix[] = { TOKEN_REDIRECTION_RIGHT,
-                                   TOKEN_REDIRECTION_LEFT,
-                                   TOKEN_REDIRECTION_RIGHT_RIGHT,
-                                   TOKEN_REDIRECTION_RIGHT_AND,
-                                   TOKEN_REDIRECTION_LEFT_AND,
-                                   TOKEN_REDIRECTION_RIGHT_PIPE,
-                                   TOKEN_REDIRECTION_LEFT_RIGHT,
-                                   TOKEN_IONUMBER,
-                                   TOKEN_ASSIGNMENT_WORD,
-                                   -1 };
-
+static int first_prefix[] = {
+    TOKEN_REDIRECTION_RIGHT,       TOKEN_REDIRECTION_LEFT,
+    TOKEN_REDIRECTION_RIGHT_RIGHT, TOKEN_REDIRECTION_RIGHT_AND,
+    TOKEN_REDIRECTION_LEFT_AND,    TOKEN_REDIRECTION_RIGHT_PIPE,
+    TOKEN_REDIRECTION_LEFT_RIGHT,  TOKEN_IONUMBER,
+    TOKEN_ASSIGNMENT_WORD,         -1
+};
 
 static int first_compound_list[] = { TOKEN_NEGATION,
-                              TOKEN_WORD,
-                              TOKEN_REDIRECTION_RIGHT,
-                              TOKEN_REDIRECTION_LEFT,
-                              TOKEN_REDIRECTION_RIGHT_RIGHT,
-                              TOKEN_REDIRECTION_RIGHT_AND,
-                              TOKEN_REDIRECTION_LEFT_AND,
-                              TOKEN_REDIRECTION_RIGHT_PIPE,
-                              TOKEN_REDIRECTION_LEFT_RIGHT,
-                              TOKEN_IONUMBER,
-                              TOKEN_WHILE,
-                              TOKEN_UNTIL,
-                              TOKEN_IF,
-                              TOKEN_NEWLINE,
-                              -1 };
-
+                                     TOKEN_WORD,
+                                     TOKEN_REDIRECTION_RIGHT,
+                                     TOKEN_REDIRECTION_LEFT,
+                                     TOKEN_REDIRECTION_RIGHT_RIGHT,
+                                     TOKEN_REDIRECTION_RIGHT_AND,
+                                     TOKEN_REDIRECTION_LEFT_AND,
+                                     TOKEN_REDIRECTION_RIGHT_PIPE,
+                                     TOKEN_REDIRECTION_LEFT_RIGHT,
+                                     TOKEN_IONUMBER,
+                                     TOKEN_WHILE,
+                                     TOKEN_UNTIL,
+                                     TOKEN_IF,
+                                     TOKEN_NEWLINE,
+                                     -1 };
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
 
@@ -151,7 +146,8 @@ static int is_in(int token_type, const int *first)
 static int isseparator(struct token token)
 {
     return (token.type == TOKEN_EOF || token.type == TOKEN_NEWLINE
-            || token.type == TOKEN_SEMICOLON || token.type == TOKEN_PIPE || token.type == TOKEN_AND || token.type == TOKEN_OR);
+            || token.type == TOKEN_SEMICOLON || token.type == TOKEN_PIPE
+            || token.type == TOKEN_AND || token.type == TOKEN_OR);
 }
 
 static struct redirection *redirection_init(void)
@@ -242,9 +238,9 @@ static void realloc_argv(struct ast *res, size_t nb_arg)
 {
     if (nb_arg == res->ast_union.ast_simple_command.len_argv - 1)
     {
-        res->ast_union.ast_simple_command.argv =
-            realloc(res->ast_union.ast_simple_command.argv,
-                    res->ast_union.ast_simple_command.len_argv * 2 * sizeof(char *));
+        res->ast_union.ast_simple_command.argv = realloc(
+            res->ast_union.ast_simple_command.argv,
+            res->ast_union.ast_simple_command.len_argv * 2 * sizeof(char *));
         res->ast_union.ast_simple_command.len_argv *= 2;
     }
     return;
@@ -256,7 +252,8 @@ static void realloc_redir(struct ast *res, size_t nb_redir)
     {
         res->ast_union.ast_simple_command.redirection =
             realloc(res->ast_union.ast_simple_command.redirection,
-                    res->ast_union.ast_simple_command.len_redir * 2 * sizeof(struct redirection *));
+                    res->ast_union.ast_simple_command.len_redir * 2
+                        * sizeof(struct redirection *));
         res->ast_union.ast_simple_command.len_redir *= 2;
     }
     return;
@@ -266,9 +263,9 @@ static void realloc_ass_word(struct ast *res, size_t nb_ass)
 {
     if (nb_ass == res->ast_union.ast_simple_command.len_ass - 1)
     {
-        res->ast_union.ast_simple_command.ass_word =
-            realloc(res->ast_union.ast_simple_command.ass_word,
-                    res->ast_union.ast_simple_command.len_ass * 2 * sizeof(char *));
+        res->ast_union.ast_simple_command.ass_word = realloc(
+            res->ast_union.ast_simple_command.ass_word,
+            res->ast_union.ast_simple_command.len_ass * 2 * sizeof(char *));
         res->ast_union.ast_simple_command.len_ass *= 2;
     }
     return;
@@ -301,9 +298,11 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         realloc_redir(res, nb_redir);
         struct prefix *prefix = parse_prefix(lexer);
         if (prefix->type == REDIRECTION)
-            res->ast_union.ast_simple_command.redirection[nb_redir++] = prefix->prefix_union.redir;
+            res->ast_union.ast_simple_command.redirection[nb_redir++] =
+                prefix->prefix_union.redir;
         if (prefix->type == ASSIGNMENT_WORD)
-            res->ast_union.ast_simple_command.ass_word[nb_ass++] = prefix->prefix_union.assignment_word;
+            res->ast_union.ast_simple_command.ass_word[nb_ass++] =
+                prefix->prefix_union.assignment_word;
         free(prefix);
     }
     while (!isseparator(lexer_peek(lexer)))

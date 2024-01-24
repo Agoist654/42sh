@@ -1,7 +1,6 @@
 #define STR_SIZE 512
 
 #include "expansion.h"
-#include "exec/hash_map.h"
 
 #include <ctype.h>
 #include <stddef.h>
@@ -9,23 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char special[] = {
-    '@',
-    '*',
-    '?',
-    '$',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '#',
-    -1
-};
+#include "exec/hash_map.h"
+
+static char special[] = { '@', '*', '?', '$', '1', '2', '3', '4',
+                          '5', '6', '7', '8', '9', '#', -1 };
 
 static void realloc_str(struct str *str)
 {
@@ -37,9 +23,10 @@ static void realloc_str(struct str *str)
     return;
 }
 
-static void backslash(struct str *str,  struct str *new_str)
+static void backslash(struct str *str, struct str *new_str)
 {
-    if (str->str[str->current_pos] == '\\' || str->str[str->current_pos] == '$' || str->str[str->current_pos] == '`'
+    if (str->str[str->current_pos] == '\\' || str->str[str->current_pos] == '$'
+        || str->str[str->current_pos] == '`'
         || str->str[str->current_pos] == '"')
         new_str->str[new_str->current_pos++] = str->str[str->current_pos];
     else if (str->str[str->current_pos] != '\n')
@@ -67,7 +54,8 @@ static struct str get_var_name(struct str *str)
     struct str key = { .str = name, .current_pos = 0, .size = STR_SIZE };
     if (key.str == NULL)
         return key;
-    if (is_special(str->str[str->current_pos]) && str->str[str->current_pos] != '{')
+    if (is_special(str->str[str->current_pos])
+        && str->str[str->current_pos] != '{')
     {
         key.str[key.current_pos++] = str->str[str->current_pos++];
         return key;
@@ -85,10 +73,12 @@ static struct str get_var_name(struct str *str)
         key.str[key.current_pos] = '\0';
         return key;
     }
-    if (str->str[str->current_pos] == '_' || isalpha(str->str[str->current_pos]))
+    if (str->str[str->current_pos] == '_'
+        || isalpha(str->str[str->current_pos]))
     {
         key.str[key.current_pos++] = str->str[str->current_pos++];
-        while (isalnum(str->str[str->current_pos]) || str->str[str->current_pos] == '_')
+        while (isalnum(str->str[str->current_pos])
+               || str->str[str->current_pos] == '_')
         {
             realloc_str(&key);
             key.str[key.current_pos++] = str->str[str->current_pos++];
@@ -143,7 +133,9 @@ char *expansion(char *str_init)
     if (new_str_init == NULL)
         return str_init;
     struct str str = { .str = str_init, .current_pos = 0, .size = STR_SIZE };
-    struct str new_str = { .str = new_str_init, .current_pos = 0, .size = STR_SIZE };
+    struct str new_str = { .str = new_str_init,
+                           .current_pos = 0,
+                           .size = STR_SIZE };
     while (str.str[str.current_pos] != '\0')
     {
         realloc_str(&new_str);
