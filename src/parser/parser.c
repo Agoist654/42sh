@@ -93,6 +93,18 @@ static int first_redirection[] = { TOKEN_REDIRECTION_RIGHT,
                                    TOKEN_IONUMBER,
                                    -1 };
 
+static int first_prefix[] = { TOKEN_REDIRECTION_RIGHT,
+                                   TOKEN_REDIRECTION_LEFT,
+                                   TOKEN_REDIRECTION_RIGHT_RIGHT,
+                                   TOKEN_REDIRECTION_RIGHT_AND,
+                                   TOKEN_REDIRECTION_LEFT_AND,
+                                   TOKEN_REDIRECTION_RIGHT_PIPE,
+                                   TOKEN_REDIRECTION_LEFT_RIGHT,
+                                   TOKEN_IONUMBER,
+                                   TOKEN_ASSIGNMENT_WORD,
+                                   -1 };
+
+
 static int first_compound_list[] = { TOKEN_NEGATION,
                               TOKEN_WORD,
                               TOKEN_REDIRECTION_RIGHT,
@@ -197,6 +209,66 @@ static struct element *parse_element(struct lexer *lexer)
     return elt;
 }
 
+static struct prefix *parse_prefix(struct lexer *lexer)
+{
+    struct prefix *prefix = malloc(sizeof(struct prefix));
+    if (prefix == NULL)
+        return NULL;
+    if (is_in(lexer_peek(lexer).type, first_redirection))
+    {
+        prefix->type = REDIRECTION;
+        prefix->prefix_union.redir = parse_redirection(lexer);
+        if (error.res)
+        {
+            redirection_destroy(prefix->prefix_union.redir);
+            free(prefix);
+            return NULL;
+        }
+    }
+    else
+    {
+        prefix->type = ASSIGNMENT_WORD;
+        prefix->prefix_union.assignment_word = lexer_pop(lexer).buffer;
+    }
+    return prefix;
+}
+
+static void realloc_argv(struct ast *res, size_t nb_arg)
+{
+    if (nb_arg == res->ast_union.ast_simple_command.len_argv - 1)
+    {
+        res->ast_union.ast_simple_command.argv =
+            realloc(res->ast_union.ast_simple_command.argv,
+                    res->ast_union.ast_simple_command.len_argv * 2 * sizeof(char *));
+        res->ast_union.ast_simple_command.len_argv *= 2;
+    }
+    return;
+}
+
+static void realloc_redir(struct ast *res, size_t nb_redir)
+{
+    if (nb_redir == res->ast_union.ast_simple_command.len_redir - 1)
+    {
+        res->ast_union.ast_simple_command.redirection =
+            realloc(res->ast_union.ast_simple_command.redirection,
+                    res->ast_union.ast_simple_command.len_redir * 2 * sizeof(struct redirection *));
+        res->ast_union.ast_simple_command.len_redir *= 2;
+    }
+    return;
+}
+
+static void realloc_ass_word(struct ast *res, size_t nb_ass)
+{
+    if (nb_ass == res->ast_union.ast_simple_command.len_ass - 1)
+    {
+        res->ast_union.ast_simple_command.ass_word =
+            realloc(res->ast_union.ast_simple_command.ass_word,
+                    res->ast_union.ast_simple_command.len_ass * 2 * sizeof(char *));
+        res->ast_union.ast_simple_command.len_ass *= 2;
+    }
+    return;
+}
+
 static struct ast *parse_simple_command(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_SIMPLE_COMMAND);
@@ -209,29 +281,31 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         calloc(LEN, sizeof(struct redirection *));
     if (!res->ast_union.ast_simple_command.redirection)
         goto error;
+    res->ast_union.ast_simple_command.ass_word = calloc(LEN, sizeof(char *));
+    if (!res->ast_union.ast_simple_command.ass_word)
+        goto error;
     res->ast_union.ast_simple_command.len_argv = LEN;
     res->ast_union.ast_simple_command.len_redir = LEN;
+    res->ast_union.ast_simple_command.len_ass = LEN;
     size_t nb_arg = 0;
     size_t nb_redir = 0;
+    size_t nb_ass = 0;
+    while (is_in(lexer_peek(lexer).type, first_prefix))
+    {
+        realloc_ass_word(res, nb_ass);
+        realloc_redir(res, nb_redir);
+        struct prefix *prefix = parse_prefix(lexer);
+        if (prefix->type == REDIRECTION)
+            res->ast_union.ast_simple_command.redirection[nb_redir++] = prefix->prefix_union.redir;
+        if (prefix->type == ASSIGNMENT_WORD)
+            res->ast_union.ast_simple_command.ass_word[nb_ass++] = prefix->prefix_union.assignment_word;
+        free(prefix);
+    }
     while (!isseparator(lexer_peek(lexer)))
     {
-        if (nb_arg == res->ast_union.ast_simple_command.len_argv - 1)
-        {
-            res->ast_union.ast_simple_command.argv =
-                realloc(res->ast_union.ast_simple_command.argv,
-                        res->ast_union.ast_simple_command.len_argv * 2 * sizeof(char *));
-            res->ast_union.ast_simple_command.len_argv *= 2;
-        }
-        if (nb_arg == res->ast_union.ast_simple_command.len_redir - 1)
-        {
-            res->ast_union.ast_simple_command.redirection =
-                realloc(res->ast_union.ast_simple_command.redirection,
-                        res->ast_union.ast_simple_command.len_redir * 2 * sizeof(struct redirection *));
-            res->ast_union.ast_simple_command.len_redir *= 2;
-        }
+        realloc_argv(res, nb_arg);
+        realloc_redir(res, nb_redir);
         struct element *elt = parse_element(lexer);
-        if (elt == NULL)
-            continue;
         if (elt->type == WORD)
             res->ast_union.ast_simple_command.argv[nb_arg++] =
                 elt->element_union.word;
@@ -242,6 +316,7 @@ static struct ast *parse_simple_command(struct lexer *lexer)
     }
     res->ast_union.ast_simple_command.argv[nb_arg] = NULL;
     res->ast_union.ast_simple_command.redirection[nb_redir] = NULL;
+    res->ast_union.ast_simple_command.ass_word[nb_ass] = NULL;
     return res;
 error:
     error.msg = "ast_pipeline init\n";

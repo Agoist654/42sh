@@ -32,6 +32,12 @@ enum element_type
     REDIR
 };
 
+enum prefix_type
+{
+    ASSIGNMENT_WORD,
+    REDIRECTION
+};
+
 struct ast_list
 {
     struct ast *current;
@@ -90,6 +96,8 @@ struct ast_simple_command
     size_t len_argv;
     struct redirection **redirection;
     size_t len_redir;
+    char **ass_word;
+    size_t len_ass;
 };
 
 struct ast_rule_while
@@ -132,6 +140,12 @@ union element_union
     struct redirection *redir;
 };
 
+union prefix_union
+{
+    char *assignment_word;
+    struct redirection *redir;
+};
+
 struct ast;
 typedef void (*destroy_f)(struct ast *ast);
 typedef void (*print_f)(struct ast *ast);
@@ -155,6 +169,12 @@ struct element
 {
     enum element_type type;
     union element_union element_union;
+};
+
+struct prefix
+{
+    enum prefix_type type;
+    union prefix_union prefix_union;
 };
 
 struct redirection
