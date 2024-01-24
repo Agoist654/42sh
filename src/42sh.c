@@ -4,9 +4,12 @@
 #include "ast/ast.h"
 #include "builtin/builtin.h"
 #include "exec/exec.h"
+#include "exec/hash_map.h"
 #include "io_backend/io_backend.h"
 #include "lexer/lexer.h"
 #include "parser/parser.h"
+
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
@@ -22,5 +25,6 @@ int main(int argc, char *argv[])
     free(lexer_peek(lexer).buffer);
     free(lexer);
     io_close();
+    hash_map_free(get_hm());
     return res;
 }

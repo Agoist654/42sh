@@ -140,8 +140,7 @@ static int hash_map_add(struct ast *ast)
     {
         char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
         char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
-        if (hash_map_insert(get_hm(), key, value, NULL))
-            printf("hm insert: key:>%s<, value>%s<", key, value);
+        hash_map_insert(get_hm(), key, value, NULL);
     }
     return 1;
 }
@@ -153,7 +152,6 @@ static int sent_env_add(struct ast *ast)
         char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
         char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
         setenv(key, value, 1);
-        printf("setenv insert: initial:>%s<, setenv>%s<", ast->ast_union.ast_simple_command.ass_word[k], value);
     }
     return 1;
 }
@@ -163,7 +161,6 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_SIMPLE_COMMAND);
-    // int to_close = 0;
     int res = 0;
     if (get_len(ast->ast_union.ast_simple_command.argv) == 0)
     {
@@ -177,7 +174,6 @@ int ast_simple_command_exec(struct ast *ast)
     if (ast->ast_union.ast_simple_command.redirection != NULL
         && ast->ast_union.ast_simple_command.redirection[0] != NULL)
     {
-        // to_close = 1;
         for (int i = 0;
              ast->ast_union.ast_simple_command.redirection[i] != NULL; i++)
         {
