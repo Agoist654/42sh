@@ -58,7 +58,6 @@ static int redirection_right(struct dlist *dlist, int io_number, char *word)
     return save_fd;
 }
 
-
 static int redirection_right_right(struct dlist *dlist, int io_number,
                                    char *word)
 {

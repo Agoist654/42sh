@@ -69,13 +69,12 @@ static struct token token_null = { .type = TOKEN_NULL,
                                    .buffer = NULL,
                                    .len = BUFFER_SIZE };
 
-static
-int isassignment_word(char *buffer)
+static int isassignment_word(char *buffer)
 {
     if (buffer && isdigit(buffer[0]))
         return 0;
     size_t index = 0;
-    while(index < strlen(buffer))
+    while (index < strlen(buffer))
     {
         if (buffer[index] == '=')
             break;

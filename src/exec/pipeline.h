@@ -4,4 +4,3 @@
 #include "ast/ast.h"
 int exec_pipe(struct ast *ast);
 #endif // PIPELINE_H
-

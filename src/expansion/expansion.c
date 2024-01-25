@@ -9,23 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char special[] = {
-    '@',
-    '*',
-    '?',
-    '$',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '#',
-    -1
-};
+#include "exec/hash_map.h"
+
+static char special[] = { '@', '*', '?', '$', '1', '2', '3', '4',
+                          '5', '6', '7', '8', '9', '#', -1 };
 
 static void realloc_str(struct str *str)
 {
@@ -37,9 +24,10 @@ static void realloc_str(struct str *str)
     return;
 }
 
-static void backslash(struct str *str,  struct str *new_str)
+static void backslash(struct str *str, struct str *new_str)
 {
-    if (str->str[str->current_pos] == '\\' || str->str[str->current_pos] == '$' || str->str[str->current_pos] == '`'
+    if (str->str[str->current_pos] == '\\' || str->str[str->current_pos] == '$'
+        || str->str[str->current_pos] == '`'
         || str->str[str->current_pos] == '"')
         new_str->str[new_str->current_pos++] = str->str[str->current_pos];
     else if (str->str[str->current_pos] != '\n')
@@ -67,7 +55,8 @@ static struct str get_var_name(struct str *str)
     struct str key = { .str = name, .current_pos = 0, .size = STR_SIZE };
     if (key.str == NULL)
         return key;
-    if (is_special(str->str[str->current_pos]) && str->str[str->current_pos] != '{')
+    if (is_special(str->str[str->current_pos])
+        && str->str[str->current_pos] != '{')
     {
         key.str[key.current_pos++] = str->str[str->current_pos++];
         return key;
@@ -85,10 +74,12 @@ static struct str get_var_name(struct str *str)
         key.str[key.current_pos] = '\0';
         return key;
     }
-    if (str->str[str->current_pos] == '_' || isalpha(str->str[str->current_pos]))
+    if (str->str[str->current_pos] == '_'
+        || isalpha(str->str[str->current_pos]))
     {
         key.str[key.current_pos++] = str->str[str->current_pos++];
-        while (isalnum(str->str[str->current_pos]) || str->str[str->current_pos] == '_')
+        while (isalnum(str->str[str->current_pos])
+               || str->str[str->current_pos] == '_')
         {
             realloc_str(&key);
             key.str[key.current_pos++] = str->str[str->current_pos++];
@@ -98,6 +89,25 @@ static struct str get_var_name(struct str *str)
     }
     key.str[key.current_pos] = '\0';
     return key;
+}
+
+static int handle_special_var(struct str *new_str, struct str *key)
+{
+    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD" == 0 || strcmp(key->str, "IFS") == 0))
+    {
+        char *value = getenv(key->str);
+        if (value == NULL)
+        {
+            return 0;
+        }
+        for (int i = 0; value[i] != '\0'; i++)
+        {
+            new_str->str[new_str->current_pos++] = value[i];
+        }
+        return 1;
+    }
+    //handle others special variable
+    return 0;
 }
 
 static void handle_var(struct str *str, struct str *new_str)
@@ -112,7 +122,8 @@ static void handle_var(struct str *str, struct str *new_str)
     }
     else
     {
-        // handle_special_var
+        if (handle_special_var(new_str, key))
+            return;
         char *value = hash_map_get(get_hm(), key.str);
         if (value == NULL)
         {
@@ -143,7 +154,9 @@ char *expansion(char *str_init)
     if (new_str_init == NULL)
         return str_init;
     struct str str = { .str = str_init, .current_pos = 0, .size = STR_SIZE };
-    struct str new_str = { .str = new_str_init, .current_pos = 0, .size = STR_SIZE };
+    struct str new_str = { .str = new_str_init,
+                           .current_pos = 0,
+                           .size = STR_SIZE };
     while (str.str[str.current_pos] != '\0')
     {
         realloc_str(&new_str);

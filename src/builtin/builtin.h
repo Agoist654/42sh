@@ -3,7 +3,6 @@
 
 typedef int (*builtin_f)(char **argv);
 
-
 struct builtin
 {
     char *command_name;
