@@ -90,6 +90,25 @@ static struct str get_var_name(struct str *str)
     return key;
 }
 
+static int handle_special_var(struct str *new_str, struct str *key)
+{
+    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD" == 0 || strcmp(key->str, "IFS") == 0))
+    {
+        char *value = getenv(key->str);
+        if (value == NULL)
+        {
+            return 0;
+        }
+        for (int i = 0; value[i] != '\0'; i++)
+        {
+            new_str->str[new_str->current_pos++] = value[i];
+        }
+        return 1;
+    }
+    //handle others special variable
+    return 0;
+}
+
 static void handle_var(struct str *str, struct str *new_str)
 {
     str->current_pos++;
@@ -102,7 +121,8 @@ static void handle_var(struct str *str, struct str *new_str)
     }
     else
     {
-        // handle_special_var
+        if (handle_special_var(new_str, key))
+            return;
         char *value = hash_map_get(get_hm(), key.str);
         if (value == NULL)
         {
