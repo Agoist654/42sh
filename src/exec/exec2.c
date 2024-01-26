@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE 500
 #include <assert.h>
 #include <err.h>
 #include <stddef.h>
@@ -81,10 +82,15 @@ int ast_rule_for_exec(struct ast *ast)
         return 0;
 
     int res = 0;
+
+    char *key = strdup(ast->ast_union.ast_rule_for.var);
     for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
     {
-        hash_map_insert(get_hm(),ast->ast_union.ast_rule_for.var, ast->ast_union.ast_rule_for.argv[k], NULL);
+        char *value = strdup(ast->ast_union.ast_rule_for.argv[k]);
+        hash_map_insert(get_hm(), key, value, NULL);
         res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list);
+        free(value);
     }
+
     return res;
 }
