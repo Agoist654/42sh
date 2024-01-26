@@ -24,6 +24,7 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_WHILE,
                             TOKEN_UNTIL,
                             TOKEN_IF,
+                            TOKEN_FOR,
                             TOKEN_ASSIGNMENT_WORD,
                             -1 };
 
@@ -40,6 +41,7 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_WHILE,
                               TOKEN_UNTIL,
                               TOKEN_IF,
+                              TOKEN_FOR,
                               TOKEN_ASSIGNMENT_WORD,
                               -1 };
 
@@ -56,6 +58,7 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_WHILE,
                                 TOKEN_UNTIL,
                                 TOKEN_IF,
+                                TOKEN_FOR,
                                 TOKEN_ASSIGNMENT_WORD,
                                 -1 };
 
@@ -72,6 +75,7 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_UNTIL,
                                TOKEN_IF,
                                TOKEN_ASSIGNMENT_WORD,
+                               TOKEN_FOR,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -86,7 +90,7 @@ static int first_simple_command[] = { TOKEN_WORD,
                                       TOKEN_ASSIGNMENT_WORD,
                                       -1 };
 
-static int first_shell_command[] = { TOKEN_WHILE, TOKEN_UNTIL, TOKEN_IF, -1 };
+static int first_shell_command[] = { TOKEN_WHILE, TOKEN_UNTIL, TOKEN_IF, TOKEN_FOR, -1 };
 
 static int first_redirection[] = { TOKEN_REDIRECTION_RIGHT,
                                    TOKEN_REDIRECTION_LEFT,
@@ -310,6 +314,8 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         realloc_argv(res, nb_arg);
         realloc_redir(res, nb_redir);
         struct element *elt = parse_element(lexer);
+        if (!elt)
+            goto error;
         if (elt->type == WORD)
             res->ast_union.ast_simple_command.argv[nb_arg++] =
                 elt->element_union.word;
@@ -325,6 +331,8 @@ static struct ast *parse_simple_command(struct lexer *lexer)
 error:
     error.msg = "ast_pipeline init\n";
     error.res = -42;
+    if (res)
+        return res;
     return NULL;
 }
 
@@ -675,6 +683,103 @@ static struct ast *parse_rule_until(struct lexer *lexer)
     return res;
 }
 
+static void realloc_for_argv(struct ast *res, size_t nb_arg)
+{
+    if (nb_arg == res->ast_union.ast_rule_for.len_argv - 1)
+    {
+        res->ast_union.ast_rule_for.argv =
+            realloc(res->ast_union.ast_rule_for.argv,
+                    res->ast_union.ast_rule_for.len_argv * 2 * sizeof(char *));
+        res->ast_union.ast_rule_for.len_argv *= 2;
+    }
+    return;
+}
+
+static void parse_rule_for_aux(struct ast **res,struct lexer *lexer)
+{
+    while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    if (lexer_peek(lexer).type == TOKEN_DO)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    if (is_in(lexer_peek(lexer).type, first_compound_list))
+        *res = parse_compound_list(lexer);
+    else
+        goto error;
+    if (lexer_peek(lexer).type == TOKEN_DONE)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    return;
+
+error:
+    error.res = 2;
+    error.msg = "parse_rule_for: syntax error near unexpected token do or done";
+    return;
+}
+
+
+static struct ast *parse_rule_for(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_RULE_FOR);
+    if (!res)
+    {
+        error.msg = "ast_for init\n";
+        error.res = -42;
+        return NULL;
+    }
+
+    res->ast_union.ast_rule_for.argv = calloc(LEN, sizeof(char *));
+    res->ast_union.ast_rule_for.compound_list = NULL;
+    res->ast_union.ast_rule_for.len_argv = LEN;
+    if (!res->ast_union.ast_rule_for.argv)
+        goto error;
+    free(lexer_pop(lexer).buffer);
+    if (lexer_peek(lexer).type != TOKEN_WORD)
+        goto error;
+    res->ast_union.ast_rule_for.var = lexer_pop(lexer).buffer;
+    if (lexer_peek(lexer).type == TOKEN_SEMICOLON)
+    {
+        free(lexer_pop(lexer).buffer);
+        //res->ast_union.ast_rule_for.compound_list = parse_rule_for_aux(lexer);
+        parse_rule_for_aux(&res->ast_union.ast_rule_for.compound_list, lexer);
+        if (!res->ast_union.ast_rule_for.compound_list)
+            goto error;
+        // even if error return res
+        return res;
+    }
+    // not finished basrad
+    while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    if (lexer_peek(lexer).type == TOKEN_IN)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    int nb_arg = 0;
+    while (lexer_peek(lexer).type == TOKEN_WORD)
+    {
+        realloc_for_argv(res, nb_arg);
+        res->ast_union.ast_rule_for.argv[nb_arg++] = lexer_pop(lexer).buffer;
+    }
+    if (lexer_peek(lexer).type == TOKEN_SEMICOLON || lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    //res->ast_union.ast_rule_for.compound_list = parse_rule_for_aux(lexer);
+    parse_rule_for_aux(&res->ast_union.ast_rule_for.compound_list, lexer);
+    if (!res->ast_union.ast_rule_for.compound_list)
+        goto error;
+
+    return res;
+
+error:
+    error.res = 2;
+    error.msg = "parse_rule_for: syntax error near unexpected token for or in";
+    return res;
+}
+
+
 static struct ast *parse_shell_command(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_SHELL_COMMAND);
@@ -686,6 +791,8 @@ static struct ast *parse_shell_command(struct lexer *lexer)
         res->ast_union.ast_shell_command.rule_if = parse_rule_while(lexer);
     else if (lexer->current_token.type == TOKEN_UNTIL)
         res->ast_union.ast_shell_command.rule_if = parse_rule_until(lexer);
+    else if (lexer->current_token.type == TOKEN_FOR)
+        res->ast_union.ast_shell_command.rule_if = parse_rule_for(lexer);
     else
         error.res = 2;
     return res;

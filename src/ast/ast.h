@@ -114,8 +114,10 @@ struct ast_rule_until
 
 struct ast_rule_for
 {
-    struct ast *count;
-    struct ast *then;
+    char *var;
+    char **argv;
+    size_t len_argv;
+    struct ast *compound_list;
 };
 
 union ast_union

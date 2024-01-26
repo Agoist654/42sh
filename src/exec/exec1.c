@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE  500
 #define _POSIX_C_SOURCE 200112L
 #include <assert.h>
 #include <err.h>
@@ -98,6 +99,16 @@ int ast_command_exec(struct ast *ast)
     return res;
 }
 
+static size_t get_len(char **argv)
+{
+    if (!argv)
+        return 0;
+    size_t res = 0;
+    while (argv[res] != NULL)
+        res++;
+    return res;
+}
+
 static char *get_value(char *buffer)
 {
     return strchr(buffer, '=') + 1;
@@ -114,33 +125,12 @@ static size_t get_equal_index(char *buffer)
     return index;
 }
 
+
 static char *get_key(char *buffer)
 {
     size_t equal_index = get_equal_index(buffer);
     buffer[equal_index] = '\0';
     return buffer;
-}
-
-static size_t get_len(char **argv)
-{
-    if (!argv)
-        return 0;
-    size_t res = 0;
-    while (argv[res] != NULL)
-        res++;
-    return res;
-}
-
-static int hash_map_add(struct ast *ast)
-{
-    for (size_t k = 0; k < get_len(ast->ast_union.ast_simple_command.ass_word);
-         k++)
-    {
-        char *value = get_value(ast->ast_union.ast_simple_command.ass_word[k]);
-        char *key = get_key(ast->ast_union.ast_simple_command.ass_word[k]);
-        hash_map_insert(get_hm(), key, value, NULL);
-    }
-    return 1;
 }
 
 static int sent_env_add(struct ast *ast)
@@ -153,6 +143,30 @@ static int sent_env_add(struct ast *ast)
         setenv(key, value, 1);
     }
     return 1;
+}
+
+static char **pre_expand(char **argv)
+{
+    size_t size = get_len(argv);
+    char **res = calloc(size + 1, sizeof(char *));
+    for (size_t k = 0; argv[k] != NULL; k++)
+    {
+        res[k] = strdup(argv[k]);
+        res[k] = expansion(res[k]);
+    }
+    res[size] = NULL;
+    return res;
+}
+
+static 
+void post_expand(char **argv)
+{
+    for (size_t k = 0; argv[k] != NULL; k++)
+    {
+        //printf("POSR%s\n", argv[k]);
+        free(argv[k]);
+    }
+    free(argv);
 }
 
 int ast_simple_command_exec(struct ast *ast)
@@ -180,11 +194,15 @@ int ast_simple_command_exec(struct ast *ast)
                              ast->ast_union.ast_simple_command.redirection[i]);
         }
     }
-    for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
-    {
-        ast->ast_union.ast_simple_command.argv[i] =
-            expansion(ast->ast_union.ast_simple_command.argv[i]);
-    }
+//    for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
+//    {
+//        //ast->ast_union.ast_simple_command.argv[i] =
+//            //expansion(ast->ast_union.ast_simple_command.argv[i]);
+//         expandedpre_expand(ast->ast_union.ast_simple_command.argv[i]);
+//        expansion(needfree);
+//    }
+
+    char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
 
     for (int k = 0;
          /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */ k
@@ -195,8 +213,9 @@ int ast_simple_command_exec(struct ast *ast)
                    builtins[k].command_name)
             == 0)
         {
-            res = builtins[k].builtin(ast->ast_union.ast_simple_command.argv);
+            res = builtins[k].builtin(expanded_argv);//ast->ast_union.ast_simple_command.argv);
             restore_redirection(dlist);
+            post_expand(expanded_argv);
             return res;
         }
     }
@@ -205,8 +224,8 @@ int ast_simple_command_exec(struct ast *ast)
     int pid = fork();
     if (pid == 0)
     {
-        if (execvp(ast->ast_union.ast_simple_command.argv[0],
-                   ast->ast_union.ast_simple_command.argv)
+        if (execvp(expanded_argv[0],
+                   expanded_argv)
             == -1)
         {
             if (errno == ENOENT)
@@ -215,6 +234,8 @@ int ast_simple_command_exec(struct ast *ast)
         errx(1, "failedd");
     }
     waitpid(pid, &res, 0);
+    post_expand(expanded_argv);
+
     restore_redirection(dlist);
     return WEXITSTATUS(res);
 }

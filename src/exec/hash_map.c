@@ -1,4 +1,6 @@
+#define _XOPEN_SOURCE  500
 #include "hash_map.h"
+#include <string.h>
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -37,6 +39,42 @@ struct hash_map *hash_map_init(size_t size)
     return map;
 }
 
+static char *get_value(char *buffer)
+{
+    return strchr(buffer, '=') + 1;
+}
+
+static size_t get_equal_index(char *buffer)
+{
+    size_t index = 0;
+    for (; index < strlen(buffer); index++)
+    {
+        if (buffer[index] == '=')
+            break;
+    }
+    return index;
+}
+
+static char *get_key(char *buffer)
+{
+    size_t equal_index = get_equal_index(buffer);
+    buffer[equal_index] = '\0';
+    return buffer;
+}
+
+int hash_map_add(struct ast *ast)
+{
+    for (size_t k = 0; ast->ast_union.ast_simple_command.ass_word[k] != NULL;
+            k++)
+    {
+        char *ass_word = strdup(ast->ast_union.ast_simple_command.ass_word[k]);
+        char *value = get_value(ass_word);
+        char *key = get_key(ass_word);
+        hash_map_insert(get_hm(), key, value, NULL);
+    }
+    return 1;
+}
+
 static bool str_equal(const char *str1, const char *str2)
 {
     int ind = 0;
@@ -60,7 +98,7 @@ static bool str_equal(const char *str1, const char *str2)
 }
 
 static struct pair_list *list_prepend(struct pair_list *list, char *value,
-                                      const char *key)
+                                      char *key)
 {
     struct pair_list *new = malloc(sizeof(struct pair_list));
     if (new == NULL)
@@ -124,6 +162,8 @@ static void list_destroy(struct pair_list *list)
     {
         return;
     }
+    free(list->key);
+    //free(list->value);
     list_destroy(list->next);
     free(list);
     return;
