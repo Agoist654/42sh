@@ -92,7 +92,7 @@ static struct str get_var_name(struct str *str)
 
 static int handle_special_var(struct str *new_str, struct str *key)
 {
-    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD" == 0 || strcmp(key->str, "IFS") == 0))
+    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD") == 0 || strcmp(key->str, "IFS") == 0)
     {
         char *value = getenv(key->str);
         if (value == NULL)
@@ -121,7 +121,7 @@ static void handle_var(struct str *str, struct str *new_str)
     }
     else
     {
-        if (handle_special_var(new_str, key))
+        if (handle_special_var(new_str, &key))
             return;
         char *value = hash_map_get(get_hm(), key.str);
         if (value == NULL)
