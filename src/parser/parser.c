@@ -276,24 +276,44 @@ static void realloc_ass_word(struct ast *res, size_t nb_ass)
     return;
 }
 
-static struct ast *parse_simple_command(struct lexer *lexer)
+static struct ast *ast_simple_command_init(void)
 {
     struct ast *res = ast_init(AST_SIMPLE_COMMAND);
     if (!res)
-        goto error;
+        return NULL;
     res->ast_union.ast_simple_command.argv = calloc(LEN, sizeof(char *));
     if (!res->ast_union.ast_simple_command.argv)
-        goto error;
+    {
+        free(res);
+        return NULL;
+    }
     res->ast_union.ast_simple_command.redirection =
         calloc(LEN, sizeof(struct redirection *));
     if (!res->ast_union.ast_simple_command.redirection)
-        goto error;
+    {
+        free(res->ast_union.ast_simple_command.argv);
+        free(res);
+        return NULL;
+    }
     res->ast_union.ast_simple_command.ass_word = calloc(LEN, sizeof(char *));
     if (!res->ast_union.ast_simple_command.ass_word)
-        goto error;
+    {
+        free(res->ast_union.ast_simple_command.argv);
+        free(res->ast_union.ast_simple_command.redirection);
+        free(res);
+        return NULL;
+    }
     res->ast_union.ast_simple_command.len_argv = LEN;
     res->ast_union.ast_simple_command.len_redir = LEN;
     res->ast_union.ast_simple_command.len_ass = LEN;
+    return res;
+}
+
+static struct ast *parse_simple_command(struct lexer *lexer)
+{
+    struct ast *res = ast_simple_command_init();
+    if (!res)
+        goto error;
     size_t nb_arg = 0;
     size_t nb_redir = 0;
     size_t nb_ass = 0;

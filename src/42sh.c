@@ -9,6 +9,8 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 
+#include <stdlib.h>
+
 int main(int argc, char *argv[])
 {
     io_backend(argc, argv);
