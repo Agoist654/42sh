@@ -135,7 +135,7 @@ bool hash_map_insert(struct hash_map *hash_map, char *key, char *value,
     struct pair_list *list = is_in(hash_map->data[ind], key);
     if (list == NULL)
     {
-        hash_map->data[ind] = list_prepend(hash_map->data[ind], value, key);
+        hash_map->data[ind] = list_prepend(hash_map->data[ind], value, (key));
         if (updated != NULL)
         {
             *updated = false;

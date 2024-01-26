@@ -124,6 +124,7 @@ static int first_compound_list[] = { TOKEN_NEGATION,
                                      TOKEN_UNTIL,
                                      TOKEN_IF,
                                      TOKEN_NEWLINE,
+                                     TOKEN_FOR,
                                      -1 };
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
