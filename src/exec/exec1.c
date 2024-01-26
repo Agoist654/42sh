@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE  500
+#define _XOPEN_SOURCE 500
 #define _POSIX_C_SOURCE 200112L
 #include <assert.h>
 #include <err.h>
@@ -125,7 +125,6 @@ static size_t get_equal_index(char *buffer)
     return index;
 }
 
-
 static char *get_key(char *buffer)
 {
     size_t equal_index = get_equal_index(buffer);
@@ -158,12 +157,11 @@ static char **pre_expand(char **argv)
     return res;
 }
 
-static 
-void post_expand(char **argv)
+static void post_expand(char **argv)
 {
     for (size_t k = 0; argv[k] != NULL; k++)
     {
-        //printf("POSR%s\n", argv[k]);
+        // printf("POSR%s\n", argv[k]);
         free(argv[k]);
     }
     free(argv);
@@ -194,13 +192,14 @@ int ast_simple_command_exec(struct ast *ast)
                              ast->ast_union.ast_simple_command.redirection[i]);
         }
     }
-//    for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL; i++)
-//    {
-//        //ast->ast_union.ast_simple_command.argv[i] =
-//            //expansion(ast->ast_union.ast_simple_command.argv[i]);
-//         expandedpre_expand(ast->ast_union.ast_simple_command.argv[i]);
-//        expansion(needfree);
-//    }
+    //    for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL;
+    //    i++)
+    //    {
+    //        //ast->ast_union.ast_simple_command.argv[i] =
+    //            //expansion(ast->ast_union.ast_simple_command.argv[i]);
+    //         expandedpre_expand(ast->ast_union.ast_simple_command.argv[i]);
+    //        expansion(needfree);
+    //    }
 
     char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
 
@@ -213,7 +212,8 @@ int ast_simple_command_exec(struct ast *ast)
                    builtins[k].command_name)
             == 0)
         {
-            res = builtins[k].builtin(expanded_argv);//ast->ast_union.ast_simple_command.argv);
+            res = builtins[k].builtin(
+                expanded_argv); // ast->ast_union.ast_simple_command.argv);
             restore_redirection(dlist);
             post_expand(expanded_argv);
             return res;
@@ -224,9 +224,7 @@ int ast_simple_command_exec(struct ast *ast)
     int pid = fork();
     if (pid == 0)
     {
-        if (execvp(expanded_argv[0],
-                   expanded_argv)
-            == -1)
+        if (execvp(expanded_argv[0], expanded_argv) == -1)
         {
             if (errno == ENOENT)
                 errx(127, "commandd not found");

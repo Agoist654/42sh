@@ -92,7 +92,8 @@ static struct str get_var_name(struct str *str)
 
 static int handle_special_var(struct str *new_str, struct str *key)
 {
-    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD") == 0 || strcmp(key->str, "IFS") == 0)
+    if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD") == 0
+        || strcmp(key->str, "IFS") == 0)
     {
         char *value = getenv(key->str);
         if (value == NULL)
@@ -105,7 +106,7 @@ static int handle_special_var(struct str *new_str, struct str *key)
         }
         return 1;
     }
-    //handle others special variable
+    // handle others special variable
     return 0;
 }
 

@@ -1,11 +1,11 @@
-#define _XOPEN_SOURCE  500
+#define _XOPEN_SOURCE 500
 #include "hash_map.h"
-#include <string.h>
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define HASHMAP_SIZE 8
 
@@ -65,7 +65,7 @@ static char *get_key(char *buffer)
 int hash_map_add(struct ast *ast)
 {
     for (size_t k = 0; ast->ast_union.ast_simple_command.ass_word[k] != NULL;
-            k++)
+         k++)
     {
         char *ass_word = strdup(ast->ast_union.ast_simple_command.ass_word[k]);
         char *value = get_value(ass_word);
@@ -163,7 +163,7 @@ static void list_destroy(struct pair_list *list)
         return;
     }
     free(list->key);
-    //free(list->value);
+    // free(list->value);
     list_destroy(list->next);
     free(list);
     return;

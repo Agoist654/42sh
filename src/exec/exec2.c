@@ -1,5 +1,6 @@
 #define _XOPEN_SOURCE 500
 #include <assert.h>
+#include <ctype.h>
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -7,7 +8,6 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <ctype.h>
 
 #include "builtin/builtin.h"
 #include "exec.h"
@@ -58,8 +58,7 @@ static int isassignment_word(char *buffer)
     return 1;
 }
 
-static 
-size_t get_len(char **argv)
+static size_t get_len(char **argv)
 {
     if (!argv)
         return 0;
@@ -84,7 +83,7 @@ int ast_rule_for_exec(struct ast *ast)
     int res = 0;
 
     char *key = (ast->ast_union.ast_rule_for.var);
-    //char **expanded_argv = pre_expand(ast->ast_union.ast_rule_for.argv);
+    // char **expanded_argv = pre_expand(ast->ast_union.ast_rule_for.argv);
     for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
     {
         char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]));
@@ -93,6 +92,6 @@ int ast_rule_for_exec(struct ast *ast)
         free(value);
     }
 
-    //free(key);
+    // free(key);
     return res;
 }

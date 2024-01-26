@@ -1,9 +1,10 @@
 #ifndef HASH_MAP_H
 #define HASH_MAP_H
 
-#include "ast/ast.h"
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "ast/ast.h"
 
 struct pair_list
 {
