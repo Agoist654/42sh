@@ -335,8 +335,6 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         realloc_argv(res, nb_arg);
         realloc_redir(res, nb_redir);
         struct element *elt = parse_element(lexer);
-        if (!elt)
-            goto error;
         if (elt->type == WORD)
             res->ast_union.ast_simple_command.argv[nb_arg++] =
                 elt->element_union.word;
@@ -352,10 +350,9 @@ static struct ast *parse_simple_command(struct lexer *lexer)
 error:
     error.msg = "ast_pipeline init\n";
     error.res = -42;
-    if (res)
-        return res;
     return NULL;
 }
+
 
 static struct ast *parse_command(struct lexer *lexer)
 {
