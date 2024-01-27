@@ -18,6 +18,8 @@
 #include "pipeline.h"
 #include "redirection.h"
 
+FILE *stream;
+
 #define NB_BUILTINS 3
 static struct builtin builtins[] = {
     { .command_name = "echo", .builtin = echo },
@@ -224,6 +226,8 @@ int ast_simple_command_exec(struct ast *ast)
     int pid = fork();
     if (pid == 0)
     {
+        if (ftell(stream) >= 0)
+            fclose(stream);
         if (execvp(expanded_argv[0], expanded_argv) == -1)
         {
             if (errno == ENOENT)

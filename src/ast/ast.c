@@ -305,6 +305,18 @@ static void ast_and_or_print(struct ast *ast)
             ast->ast_union.ast_and_or.pipeline->ftable->print(
                 ast->ast_union.ast_and_or.pipeline);
         }
+
+        if (ast->ast_union.ast_and_or.next != NULL)
+        {
+            if (ast->ast_union.ast_and_or.and_or == AND)
+            {
+                printf("AND\n");
+            }
+            else
+                printf("OR\n");
+            ast->ast_union.ast_and_or.pipeline->ftable->print(
+                ast->ast_union.ast_and_or.next);
+        }
     }
     return;
 }
@@ -319,8 +331,43 @@ static void ast_pipeline_print(struct ast *ast)
             ast->ast_union.ast_pipeline.command->ftable->print(
                 ast->ast_union.ast_pipeline.command);
         }
+
+        if (ast->ast_union.ast_pipeline.next != NULL)
+        {
+            printf("PIPE\n");
+            ast->ast_union.ast_pipeline.next->ftable->print(
+                ast->ast_union.ast_pipeline.next);
+        }
     }
     return;
+}
+
+static char *redir[] = { [TOKEN_REDIRECTION_RIGHT] = ">",
+                         [TOKEN_REDIRECTION_LEFT] = "<",
+                         [TOKEN_REDIRECTION_RIGHT_RIGHT] = ">>",
+                         [TOKEN_REDIRECTION_RIGHT_AND] = ">&",
+                         [TOKEN_REDIRECTION_LEFT_AND] = "<&",
+                         [TOKEN_REDIRECTION_RIGHT_PIPE] = ">|",
+                         [TOKEN_REDIRECTION_LEFT_RIGHT] = "<>" };
+
+static void print_redir(struct redirection **redirection)
+{
+    for (size_t k = 0; redirection[k] != NULL; k++)
+    {
+        if (redirection[k]->io_number)
+            printf("\"%s\"", redirection[k]->io_number);
+        for (enum token_type type = TOKEN_REDIRECTION_RIGHT;
+             type <= TOKEN_REDIRECTION_LEFT_RIGHT; type++)
+        {
+            if (redirection[k]->op == type)
+            {
+                printf("REDIRECTION");
+                printf("\"%s\"", redir[type]);
+            }
+        }
+        if (redirection[k]->word)
+            printf("\"%s\"", redirection[k]->word);
+    }
 }
 
 static void ast_command_print(struct ast *ast)
@@ -333,6 +380,10 @@ static void ast_command_print(struct ast *ast)
             ast->ast_union.ast_command.first->ftable->print(
                 ast->ast_union.ast_command.first);
         }
+        if (ast->ast_union.ast_command.redirection != NULL)
+        {
+            print_redir(ast->ast_union.ast_command.redirection);
+        }
     }
     return;
 }
@@ -342,13 +393,18 @@ static void ast_simple_command_print(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SIMPLE_COMMAND);
+        printf("SIMPLE_COMMAND\n");
         if (ast->ast_union.ast_simple_command.argv != NULL)
         {
             for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL;
                  i++)
             {
-                printf(" %s ", ast->ast_union.ast_simple_command.argv[i]);
+                printf(" \"%s\" ", ast->ast_union.ast_simple_command.argv[i]);
             }
+        }
+        if (ast->ast_union.ast_simple_command.redirection != NULL)
+        {
+            print_redir(ast->ast_union.ast_simple_command.redirection);
         }
     }
     return;
@@ -359,6 +415,7 @@ static void ast_shell_command_print(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_SHELL_COMMAND);
+        printf("SIMPLE_COMMAND\n");
         if (ast->ast_union.ast_shell_command.rule_if != NULL)
         {
             ast->ast_union.ast_shell_command.rule_if->ftable->print(
