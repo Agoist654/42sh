@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static FILE *stream = NULL;
+extern FILE *stream;
 static char next = -4;
 
 void io_backend(int argc, char *argv[])

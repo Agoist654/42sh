@@ -2,10 +2,13 @@
 #include "pipeline.h"
 
 #include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+extern FILE *stream;
 
 enum pipe_side
 {
@@ -17,7 +20,11 @@ pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side)
 {
     pid_t cpid = fork();
     if (cpid != 0)
+    {
         return cpid;
+    }
+    if (ftell(stream) >= 0)
+        fclose(stream);
 
     int fd_to_replace = side == LEFT ? STDOUT_FILENO : STDIN_FILENO;
     int fd_pipe_end = side == LEFT ? fds[1] : fds[0];

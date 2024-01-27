@@ -19,6 +19,8 @@
 #include "redirection.h"
 
 #define NB_BUILTINS 5
+FILE *stream;
+
 static struct builtin builtins[] = {
     { .command_name = "export", .builtin = export_f },
     { .command_name = "unset", .builtin = unset_f },
@@ -226,6 +228,8 @@ int ast_simple_command_exec(struct ast *ast)
     int pid = fork();
     if (pid == 0)
     {
+        if (ftell(stream) >= 0)
+            fclose(stream);
         if (execvp(expanded_argv[0], expanded_argv) == -1)
         {
             if (errno == ENOENT)
