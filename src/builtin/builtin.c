@@ -40,7 +40,6 @@ static size_t get_equal_index(char *buffer)
     return index;
 }
 
-
 static char *get_key(char *buffer)
 {
     size_t equal_index = get_equal_index(buffer);
@@ -66,6 +65,7 @@ static int unset_ret(char **argv, size_t name)
         return 1;
     return ret;
 }
+
 int unset_f(char **argv)
 {
     int option_v = 0;
