@@ -746,8 +746,8 @@ static struct ast *parse_rule_for(struct lexer *lexer)
     struct ast *res = ast_init(AST_RULE_FOR);
     if (!res)
     {
-        error.msg = "ast_for init\n";
-        error.res = -42;
+        // error.msg = "ast_for init\n";
+        // error.res = -42;
         return NULL;
     }
 
@@ -798,7 +798,8 @@ static struct ast *parse_rule_for(struct lexer *lexer)
 
 error:
     error.res = 2;
-    error.msg = "parse_rule_for: syntax error near unexpected token for or in";
+    // error.msg = "parse_rule_for: syntax error near unexpected token for or
+    // in";
     return res;
 }
 
