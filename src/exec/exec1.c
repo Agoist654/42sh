@@ -18,8 +18,10 @@
 #include "pipeline.h"
 #include "redirection.h"
 
-#define NB_BUILTINS 3
+#define NB_BUILTINS 5
 static struct builtin builtins[] = {
+    { .command_name = "export", .builtin = export_f },
+    { .command_name = "unset", .builtin = unset_f },
     { .command_name = "echo", .builtin = echo },
     { .command_name = "true", .builtin = true_f },
     { .command_name = "false", .builtin = false_f }

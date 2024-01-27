@@ -12,5 +12,7 @@ struct builtin
 int true_f(char **argv);
 int false_f(char **argv);
 int echo(char **argv);
+int export_f(char **argv);
+int unset_f(char **argv);
 
 #endif /* !BUILTIN_H */
