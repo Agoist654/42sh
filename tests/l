@@ -1,0 +1,4 @@
+echo toto | cat -e > toto.txt
+cat toto.txt
+rm toto.txt
+

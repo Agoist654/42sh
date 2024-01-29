@@ -1,0 +1,4 @@
+echo toto | cat -e >tat 
+cat tat 
+rm tat
+

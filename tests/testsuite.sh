@@ -50,6 +50,27 @@ rm "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
 }
 
 
+printnoerr(){
+
+    echo "as stdin================================================\n"
+
+rm "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
+    touch "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
+
+    bash --posix tests/$@ 2> "$REF_ERR" >"$REF_OUT"
+    echo $? > "$REF_RES"
+
+    ./src/42sh tests/$@ 2> "$TES_ERR" > "$TES_OUT"
+    echo $? > "$TES_RES"
+
+    echo "$TEST_NAME": \>"$@"\<
+    diff -u  "$TES_OUT" "$REF_OUT"
+    #diff -u  "$TES_ERR" "$REF_ERR"
+    diff -u  "$TES_RES" "$REF_RES"
+}
+
+
+
 printc(){
 
     echo "as string================================================\n"
@@ -214,6 +235,59 @@ print simple_var.sh
 TEST_NAME="get_pwd"
 printc -c 'echo $PWD'
 
+TEST_NAME="a"
+printin a
+
+TEST_NAME="badexec1"
+printnoerr badexec1
+
+TEST_NAME="badexec2"
+printnoerr badexec2
+
+TEST_NAME="badexec3"
+printnoerr badexec3
+
+TEST_NAME="badexec4"
+printnoerr badexec4
+
+TEST_NAME="badexec5"
+printnoerr badexec5
+
+TEST_NAME="badexec6"
+printnoerr badexec6
+
 TEST_NAME="4"
 print 4
-rm greps
+
+TEST_NAME="badl"
+print badl
+
+TEST_NAME="complexe_for"
+print complexe_for.sh
+
+TEST_NAME="complexe_for2"
+print complexe_for2.sh
+
+TEST_NAME="complexe_for3"
+printnoerr complexe_for3.sh
+
+TEST_NAME="simple_for"
+printin for.sh
+
+TEST_NAME="l"
+print l
+
+TEST_NAME="p"
+print p
+
+TEST_NAME="quote"
+print quote
+
+TEST_NAME="quote2"
+print quote2
+
+TEST_NAME="quote3"
+print quote3
+
+TEST_NAME="quote4"
+print quote4

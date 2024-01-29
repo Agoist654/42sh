@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     while (lexer_peek(lexer).type != TOKEN_EOF)
     {
         struct ast *ast = parse_input(lexer);
+        if (ast == NULL)
+            continue;
         res = ast_list_exec(ast);
         ast_list_destroy(ast);
     }

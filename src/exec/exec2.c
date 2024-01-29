@@ -75,7 +75,10 @@ int ast_rule_for_exec(struct ast *ast)
     assert(ast->type == AST_RULE_FOR);
 
     if (isassignment_word(ast->ast_union.ast_rule_for.var) == 0)
-        return 1;
+    {
+        fprintf(stderr, "Bad for loop variable");
+        return 2;
+    }
 
     if (get_len(ast->ast_union.ast_rule_for.argv) == 0)
         return 0;

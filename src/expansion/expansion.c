@@ -38,6 +38,7 @@ static void backslash(struct str *str, struct str *new_str, int double_quote)
     }
     else if (str->str[str->current_pos] == '\n' && !double_quote)
     {
+        str->current_pos++;
         return;
     }
     else

@@ -1,0 +1,6 @@
+key=value
+for id in 1 2 3;  do
+
+    true $key $var;
+
+done
