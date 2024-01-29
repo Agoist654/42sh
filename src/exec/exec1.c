@@ -175,7 +175,7 @@ int ast_simple_command_exec(struct ast *ast)
 {
     if (ast == NULL)
         return -1;
-    assert(ast->type == AST_SIMPLE_COMMAND);
+    // assert(ast->type == AST_SIMPLE_COMMAND);
     int res = 0;
     if (get_len(ast->ast_union.ast_simple_command.argv) == 0)
     {
@@ -207,17 +207,15 @@ int ast_simple_command_exec(struct ast *ast)
 
     char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
 
-    for (int k = 0;
-         /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */ k
-         < NB_BUILTINS;
-         k++)
+    /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */
+    for (int k = 0; k < NB_BUILTINS; k++)
     {
         if (strcmp(ast->ast_union.ast_simple_command.argv[0],
                    builtins[k].command_name)
             == 0)
         {
-            res = builtins[k].builtin(
-                expanded_argv); // ast->ast_union.ast_simple_command.argv);
+            res = builtins[k].builtin(expanded_argv);
+            // ast->ast_union.ast_simple_command.argv);
             restore_redirection(dlist);
             post_expand(expanded_argv);
             return res;
