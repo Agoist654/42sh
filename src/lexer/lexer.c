@@ -143,13 +143,15 @@ static int handle_single_quote(struct token token)
     token.type = TOKEN_SINGLE_QUOTE;
     while (io_peek() != EOF)
     {
-        token = io_eat(token);
         if (io_peek() == '\'')
         {
             token = io_eat(token);
             return TOKEN_SINGLE_QUOTE;
         }
+        token = io_eat(token);
     }
+    if (token.type == TOKEN_SINGLE_QUOTE)
+        return TOKEN_SINGLE_QUOTE;
     return TOKEN_ERROR;
 }
 
@@ -160,13 +162,15 @@ static int handle_double_quote(struct token token)
     token.type = TOKEN_DOUBLE_QUOTE;
     while (io_peek() != EOF)
     {
-        token = io_eat(token);
         if (io_peek() == '\"')
         {
             token = io_eat(token);
             return TOKEN_DOUBLE_QUOTE;
         }
+        token = io_eat(token);
     }
+    if (token.type == TOKEN_DOUBLE_QUOTE)
+        return TOKEN_DOUBLE_QUOTE;
     return TOKEN_ERROR;
 }
 
@@ -208,9 +212,22 @@ static int isredir(char io_peek)
     return 0;
 }
 
-static struct token token_reg(void)
+static int isdelimiter(char io_peek)
 {
-    struct token res = token_init();
+    if (io_peek == ' ' || io_peek == EOF || io_peek == '\n' || io_peek == ';')
+        return 1;
+    return 0;
+}
+
+static int isnotquoted(struct token token)
+{
+    if (token.type != TOKEN_SINGLE_QUOTE && token.type != TOKEN_DOUBLE_QUOTE)
+        return 1;
+    return 0;
+}
+
+static struct token token_reg(struct token res)
+{
     // rule 1
     while (io_peek() != EOF)
     {
@@ -229,11 +246,21 @@ static struct token token_reg(void)
             return res;
 
         // step1  // rule 4: backslash/quote/double-quote and not quoted
-        if (res.type != TOKEN_SINGLE_QUOTE && isquote(io_peek()))
+        if (isnotquoted(res) && (isquote(io_peek()) || io_peek() == '\\'))
         {
-            res.type = handle_quote(res);
-            if (io_peek() == EOF)
-                return res;
+            if (isquote(io_peek()))
+            {
+                res.type = handle_quote(res);
+                if (isdelimiter(io_peek()))
+                    return res;
+            }
+
+            else
+            {
+                while (io_peek() == '\\')
+                    io_eat(res);
+                io_eat(res);
+            }
             continue;
         }
 
@@ -275,7 +302,7 @@ static struct token token_reg(void)
         // step1   //rule 10: start of a TOKEN_WORD
         res.type = TOKEN_WORD;
     }
-    if (res.type != TOKEN_WORD && res.type != TOKEN_EOF)
+    if (res.type != TOKEN_WORD && res.type != TOKEN_OPERATOR)
         res.type = TOKEN_EOF;
     return res;
 }
@@ -283,7 +310,8 @@ static struct token token_reg(void)
 // static
 struct token lex(void)
 {
-    struct token res = token_reg();
+    struct token res = token_init();
+    res = token_reg(res);
     if (res.type == TOKEN_WORD && isassignment_word(res.buffer))
         res.type = TOKEN_ASSIGNMENT_WORD;
     if (res.type != TOKEN_WORD && res.type != TOKEN_OPERATOR)
