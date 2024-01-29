@@ -23,19 +23,32 @@ static void realloc_str(struct str *str)
     return;
 }
 
-static void backslash(struct str *str, struct str *new_str)
+static void backslash(struct str *str, struct str *new_str, int double_quote)
 {
     if (str->str[str->current_pos] == '\\' || str->str[str->current_pos] == '$'
         || str->str[str->current_pos] == '`'
-        || str->str[str->current_pos] == '"')
+        || str->str[str->current_pos] == '"'
+        || (str->str[str->current_pos] == '\'' && !double_quote))
         new_str->str[new_str->current_pos++] = str->str[str->current_pos];
-    else if (str->str[str->current_pos] != '\n')
+    else if (str->str[str->current_pos] == '\n' && double_quote)
     {
         new_str->str[new_str->current_pos++] = '\\';
         realloc_str(new_str);
+        new_str->str[new_str->current_pos++] = 'n';
+    }
+    else if (str->str[str->current_pos] == '\n' && !double_quote)
+    {
+        return;
+    }
+    else
+    {
+        if (double_quote)
+        {
+            new_str->str[new_str->current_pos++] = '\\';
+            realloc_str(new_str);
+        }
         new_str->str[new_str->current_pos++] = str->str[str->current_pos];
     }
-    str->current_pos++;
 }
 
 static int is_special(char c)
@@ -167,15 +180,10 @@ char *expansion(char *str_init)
         }
         else if (str.str[str.current_pos] == '$')
             handle_var(&str, &new_str);
-        else if (double_quote && str.str[str.current_pos] != '"')
+        else if (str.str[str.current_pos] == '\\' && !simple_quote)
         {
-            if (str.str[str.current_pos] == '\\')
-            {
-                str.current_pos++;
-                backslash(&str, &new_str);
-            }
             str.current_pos++;
-            continue;
+            backslash(&str, &new_str, double_quote);
         }
         else if (str.str[str.current_pos] == '\'')
         {
