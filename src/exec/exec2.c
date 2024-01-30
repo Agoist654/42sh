@@ -85,16 +85,18 @@ int ast_rule_for_exec(struct ast *ast)
 
     int res = 0;
 
-    char *key = (ast->ast_union.ast_rule_for.var);
     // char **expanded_argv = pre_expand(ast->ast_union.ast_rule_for.argv);
     for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
     {
+        char *key = strdup(ast->ast_union.ast_rule_for.var);
+        char *hash_key = strdup(key);
         char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]));
-        hash_map_insert(get_hm(), key, value, NULL);
+        char *hash_value = strdup(value);
+        hash_map_insert(get_hm(), hash_key, hash_value, NULL);
         res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list);
         free(value);
+        free(key);
     }
 
-    // free(key);
     return res;
 }

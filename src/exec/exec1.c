@@ -196,18 +196,9 @@ int ast_simple_command_exec(struct ast *ast)
                              ast->ast_union.ast_simple_command.redirection[i]);
         }
     }
-    //    for (int i = 0; ast->ast_union.ast_simple_command.argv[i] != NULL;
-    //    i++)
-    //    {
-    //        //ast->ast_union.ast_simple_command.argv[i] =
-    //            //expansion(ast->ast_union.ast_simple_command.argv[i]);
-    //         expandedpre_expand(ast->ast_union.ast_simple_command.argv[i]);
-    //        expansion(needfree);
-    //    }
 
     char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
 
-    /*get_len(ast->ast_union.ast_simple_command.argv) != 0 && */
     for (int k = 0; k < NB_BUILTINS; k++)
     {
         if (strcmp(ast->ast_union.ast_simple_command.argv[0],

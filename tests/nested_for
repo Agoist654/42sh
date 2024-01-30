@@ -1,0 +1,8 @@
+for k in k1 k2 k3; do
+
+for i in i4 i5 i6; do
+echo $k;
+done
+
+echo $i;
+done

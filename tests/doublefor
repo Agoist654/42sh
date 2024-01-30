@@ -1,0 +1,7 @@
+for k in 1 2 3; do
+    echo $k;
+done
+
+for i in 4 5 6; do
+    echo $i;
+done

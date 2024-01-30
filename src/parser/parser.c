@@ -741,6 +741,15 @@ error:
     return;
 }
 
+static
+void ast_for_init(struct ast *res)
+{
+    res->ast_union.ast_rule_for.argv = calloc(LEN, sizeof(char *));
+    res->ast_union.ast_rule_for.compound_list = NULL;
+    res->ast_union.ast_rule_for.len_argv = LEN;
+    return;
+}
+
 static struct ast *parse_rule_for(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_RULE_FOR);
@@ -751,9 +760,7 @@ static struct ast *parse_rule_for(struct lexer *lexer)
         return NULL;
     }
 
-    res->ast_union.ast_rule_for.argv = calloc(LEN, sizeof(char *));
-    res->ast_union.ast_rule_for.compound_list = NULL;
-    res->ast_union.ast_rule_for.len_argv = LEN;
+    ast_for_init(res);
     if (!res->ast_union.ast_rule_for.argv)
         goto error;
     free(lexer_pop(lexer).buffer);
@@ -779,7 +786,7 @@ static struct ast *parse_rule_for(struct lexer *lexer)
     else
         goto error;
     int nb_arg = 0;
-    while (lexer_peek(lexer).type == TOKEN_WORD)
+    while (!isseparator(lexer_peek(lexer)))
     {
         realloc_for_argv(res, nb_arg);
         res->ast_union.ast_rule_for.argv[nb_arg++] = lexer_pop(lexer).buffer;

@@ -69,8 +69,9 @@ int hash_map_add(struct ast *ast)
     {
         char *ass_word = strdup(ast->ast_union.ast_simple_command.ass_word[k]);
         char *value = get_value(ass_word);
-        char *key = get_key(ass_word);
-        hash_map_insert(get_hm(), key, value, NULL);
+        char *hash_value = strdup(value);
+        char *hash_key = get_key(ass_word);
+        hash_map_insert(get_hm(), hash_key, hash_value, NULL);
     }
     return 1;
 }
@@ -147,6 +148,9 @@ bool hash_map_insert(struct hash_map *hash_map, char *key, char *value,
     }
     else
     {
+        free(list->key);
+        free(list->value);
+        list->key = key;
         list->value = value;
         if (updated != NULL)
         {
@@ -163,7 +167,7 @@ static void list_destroy(struct pair_list *list)
         return;
     }
     free(list->key);
-    // free(list->value);
+    free(list->value);
     list_destroy(list->next);
     free(list);
     return;
