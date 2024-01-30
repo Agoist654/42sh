@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 36
+#define NB_TOKENS 38
 
 #include <stddef.h>
 enum token_type
@@ -26,6 +26,8 @@ enum token_type
     // step3 2
     TOKEN_BRACKET_LEFT,
     TOKEN_BRACKET_RIGHT,
+    TOKEN_PARENTHESIS_LEFT,
+    TOKEN_PARENTHESIS_RIGHT,
 
     // step2 19
     TOKEN_WHILE,

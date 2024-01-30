@@ -55,8 +55,11 @@ static char *tokens[NB_TOKENS] = {
     [TOKEN_SEMICOLON] = ";",
     [TOKEN_NEWLINE] = "\n",
 
+    //step 3
     [TOKEN_BRACKET_LEFT] = "{",
     [TOKEN_BRACKET_RIGHT] = "}",
+    [TOKEN_PARENTHESIS_LEFT] = "(",
+    [TOKEN_PARENTHESIS_RIGHT] = ")",
 
     // step2
     [TOKEN_WHILE] = "while",
@@ -218,7 +221,7 @@ static int ispart_prev_op(char io_peek, char *buffer)
 static int isoperator(char io_peek)
 {
     if (io_peek == ';' || io_peek == '\n' || io_peek == '<' || io_peek == '>'
-        || io_peek == '&' || io_peek == '|')
+        || io_peek == '&' || io_peek == '|' || io_peek == '(' || io_peek == ')')
         return 1;
     return 0;
 }
