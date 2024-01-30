@@ -23,6 +23,10 @@ enum token_type
     TOKEN_ERROR,
     TOKEN_NULL,
 
+    //step3
+    TOKEN_BRACKET_LEFT,
+    TOKEN_BRACKET_RIGHT,
+
     // step2
     TOKEN_WHILE,
     TOKEN_FOR,
