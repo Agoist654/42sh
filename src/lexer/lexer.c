@@ -16,6 +16,21 @@
 //     .len = BUFFER_SIZE
 // };
 
+static 
+struct token realloc_buffer(struct token token)
+{
+    if (strlen(token.buffer) == token.len - 1)
+    {
+        token.buffer = realloc(token.buffer, 2 * token.len * sizeof(char));
+        for (size_t k = token.len; k < token.len * 2; k++)
+        {
+            token.buffer[k] = '\0';
+        }
+        token.len = token.len * 2;
+    }
+    return token;
+}
+
 static struct token io_eat(struct token token)
 {
     if (strlen(token.buffer) == token.len - 1)
@@ -230,6 +245,22 @@ static int isnotquoted(struct token token)
     return 0;
 }
 
+static
+struct token handle_backslash(struct token token)
+{
+    io_pop();
+    if (io_peek() != '\n')
+    {
+        token = realloc_buffer(token);
+        token.buffer[strlen(token.buffer)] = '\\';
+        token = realloc_buffer(token);
+        io_eat(token);
+    }
+    else
+        io_pop();
+    return token;
+}
+
 static struct token token_reg(struct token res)
 {
     // rule 1
@@ -237,7 +268,7 @@ static struct token token_reg(struct token res)
     {
         // rule 2: if peek is part of the current operator and not quoted
         if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR
-            && ispart_prev_op(io_peek(), res.buffer))
+                && ispart_prev_op(io_peek(), res.buffer))
         {
             res = io_eat(res);
             continue;
@@ -258,13 +289,8 @@ static struct token token_reg(struct token res)
                 if (isdelimiter(io_peek()))
                     return res;
             }
-
             else
-            {
-                io_eat(res);
-                io_eat(res);
-            }
-            res.type = TOKEN_WORD;
+                res = handle_backslash(res);
             continue;
         }
 
