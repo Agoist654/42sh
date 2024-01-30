@@ -111,6 +111,8 @@ static void prt(char **argv, int pl, int eE)
     pl++;
     while (pl < len(argv))
     {
+        if (argv[pl][0] == '\0')
+            continue;
         printf(" ");
         if (eE)
             printf("%s", argv[pl]);
