@@ -55,7 +55,7 @@ static char *tokens[NB_TOKENS] = {
     [TOKEN_SEMICOLON] = ";",
     [TOKEN_NEWLINE] = "\n",
 
-    //step 3
+    // step 3
     [TOKEN_BRACKET_LEFT] = "{",
     [TOKEN_BRACKET_RIGHT] = "}",
     [TOKEN_PARENTHESIS_LEFT] = "(",
