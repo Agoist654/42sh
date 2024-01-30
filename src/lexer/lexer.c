@@ -16,8 +16,7 @@
 //     .len = BUFFER_SIZE
 // };
 
-static 
-struct token realloc_buffer(struct token token)
+static struct token realloc_buffer(struct token token)
 {
     if (strlen(token.buffer) == token.len - 1)
     {
@@ -245,8 +244,7 @@ static int isnotquoted(struct token token)
     return 0;
 }
 
-static
-struct token handle_backslash(struct token token)
+static struct token handle_backslash(struct token token)
 {
     io_pop();
     if (io_peek() != '\n')
@@ -268,7 +266,7 @@ static struct token token_reg(struct token res)
     {
         // rule 2: if peek is part of the current operator and not quoted
         if (res.type != TOKEN_SINGLE_QUOTE && res.type == TOKEN_OPERATOR
-                && ispart_prev_op(io_peek(), res.buffer))
+            && ispart_prev_op(io_peek(), res.buffer))
         {
             res = io_eat(res);
             continue;

@@ -23,7 +23,7 @@ enum token_type
     TOKEN_ERROR,
     TOKEN_NULL,
 
-    //step3 2
+    // step3 2
     TOKEN_BRACKET_LEFT,
     TOKEN_BRACKET_RIGHT,
 
