@@ -29,7 +29,7 @@ static void backslash(struct str *str, struct str *new_str, int double_quote)
         || str->str[str->current_pos] == '`'
         || str->str[str->current_pos] == '"'
         || (str->str[str->current_pos] == '\'' && !double_quote))
-        new_str->str[new_str->current_pos++] = str->str[str->current_pos];
+        new_str->str[new_str->current_pos++] = str->str[str->current_pos++];
     else if (str->str[str->current_pos] == '\n' && double_quote)
     {
         new_str->str[new_str->current_pos++] = '\\';
