@@ -153,7 +153,8 @@ static int isseparator(struct token token)
 {
     return (token.type == TOKEN_EOF || token.type == TOKEN_NEWLINE
             || token.type == TOKEN_SEMICOLON || token.type == TOKEN_PIPE
-            || token.type == TOKEN_AND || token.type == TOKEN_OR);
+            || token.type == TOKEN_AND || token.type == TOKEN_OR
+            || token.type == TOKEN_ERROR);
 }
 
 static struct redirection *redirection_init(void)

@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
         ast_list_destroy(ast);
     }
     free(lexer_peek(lexer).buffer);
+    free(lexer_look_ahead(lexer).buffer);
     free(lexer);
     io_close();
     // hash_map_dump(get_hm());

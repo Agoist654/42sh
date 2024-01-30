@@ -293,7 +293,7 @@ TEST_NAME="quote4"
 print quote4
 
 TEST_NAME="badtriplepipe"
-print badtriplepipe
+printnoerr badtriplepipe
 
 TEST_NAME="var_for_var"
 print var_for_var

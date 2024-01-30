@@ -55,10 +55,12 @@ struct token
 struct lexer
 {
     struct token current_token;
+    struct token look_ahead;
 };
 
 struct lexer *lexer_init(void);
 struct token lexer_peek(struct lexer *lexer);
 struct token lexer_pop(struct lexer *lexer);
+struct token lexer_look_ahead(struct lexer *lexer);
 
 #endif // LEXER_H

@@ -119,6 +119,7 @@ struct lexer *lexer_init(void)
     if (!res)
         return NULL;
     res->current_token = token_null;
+    res->look_ahead = token_null;
     return res;
 }
 
@@ -257,10 +258,10 @@ static struct token token_reg(struct token res)
 
             else
             {
-                while (io_peek() == '\\')
-                    io_eat(res);
+                io_eat(res);
                 io_eat(res);
             }
+            res.type = TOKEN_WORD;
             continue;
         }
 
@@ -334,6 +335,8 @@ struct token lexer_peek(struct lexer *lexer)
 {
     if (lexer->current_token.type == TOKEN_NULL)
         lexer->current_token = lex();
+    if (lexer->look_ahead.type == TOKEN_NULL)
+        lexer->look_ahead = lex();
     return lexer->current_token;
 }
 
@@ -344,6 +347,16 @@ struct token lexer_peek(struct lexer *lexer)
 struct token lexer_pop(struct lexer *lexer)
 {
     struct token save_token = lexer->current_token;
-    lexer->current_token = lex();
+    lexer->current_token = lexer->look_ahead;
+    lexer->look_ahead = lex();
     return save_token;
+}
+
+struct token lexer_look_ahead(struct lexer *lexer)
+{
+    if (lexer->look_ahead.type == TOKEN_NULL)
+    {
+        lexer->look_ahead = lex();
+    }
+    return lexer->look_ahead;
 }
