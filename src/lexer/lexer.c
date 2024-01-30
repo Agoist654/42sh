@@ -31,7 +31,7 @@ static struct token io_eat(struct token token)
     return token;
 }
 
-static char *tokens[] = {
+static char *tokens[NB_TOKENS] = {
     // step 1
     [TOKEN_IF] = "if",
     [TOKEN_THEN] = "then",

@@ -1,12 +1,12 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#define NB_TOKENS 34
+#define NB_TOKENS 36
 
 #include <stddef.h>
 enum token_type
 {
-    // step1
+    // step1 15
     TOKEN_IF,
     TOKEN_THEN,
     TOKEN_ELIF,
@@ -23,11 +23,11 @@ enum token_type
     TOKEN_ERROR,
     TOKEN_NULL,
 
-    //step3
+    //step3 2
     TOKEN_BRACKET_LEFT,
     TOKEN_BRACKET_RIGHT,
 
-    // step2
+    // step2 19
     TOKEN_WHILE,
     TOKEN_FOR,
     TOKEN_UNTIL,
