@@ -5,6 +5,7 @@
 #include "builtin/builtin.h"
 #include "exec/exec.h"
 #include "exec/hash_map.h"
+#include "exec/hash_map_fun.h"
 #include "io_backend/io_backend.h"
 #include "lexer/lexer.h"
 #include "parser/parser.h"
@@ -26,7 +27,7 @@ int main(int argc, char *argv[])
     free(lexer_look_ahead(lexer).buffer);
     free(lexer);
     io_close();
-    // hash_map_dump(get_hm());
     hash_map_free(get_hm());
+    hash_map_fun_free(get_fun_hm());
     return res;
 }

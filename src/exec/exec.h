@@ -15,5 +15,6 @@ int ast_rule_until_exec(struct ast *ast);
 int ast_rule_for_exec(struct ast *ast);
 int ast_else_clause_exec(struct ast *ast);
 int ast_compound_list_exec(struct ast *ast);
+int ast_fundec_exec(struct ast *ast);
 
 #endif /* !EXEC_H */

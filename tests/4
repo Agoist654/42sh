@@ -1,2 +1,2 @@
 if ! true; then echo a b c d e f g; else if cat 1 || ls; then echo toto > tata.txt; else echo tata; fi; fi; ls | grep s > greps
-rm -f greps
+rm -f greps tata.txt
