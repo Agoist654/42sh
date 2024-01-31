@@ -90,44 +90,65 @@ int unset_f(char **argv)
     return unset_ret(argv, 1);
 }
 
+void print(char *argv, size_t len)
+{
+    for (size_t dep = 0; dep < len; dep++)
+    {
+        if ((dep + 1) < len && argv[dep] == '\\' && argv[dep + 1] == 'n')
+        {
+            dep++;
+            printf("\\n");
+        }
+        else if ((dep + 1) < len && argv[dep] == '\\' && argv[dep + 1] == 't')
+        {
+            dep++;
+            printf("\\t");
+        }
+        else if (argv[dep] == '\\')
+            printf("\\");
+        else
+            printf("%c", argv[dep]);
+    }
+}
+
+void e_print(char *argv, size_t len)
+{
+    for (size_t dep = 0; dep < len; dep++)
+    {
+        if ((dep + 1) < len && argv[dep] == '\\' && argv[dep + 1] == 'n')
+        {
+            dep++;
+            printf("\n");
+        }
+        else if ((dep + 1) < len && argv[dep] == '\\' && argv[dep + 1] == 't')
+        {
+            dep++;
+            printf("\t");
+        }
+        else if (argv[dep] == '\\')
+        {
+            dep++;
+            printf("%c", argv[dep]);
+        }
+        else
+            printf("%c", argv[dep]);
+    }
+}
+
 static void prt(char **argv, int pl, int eE)
 {
     if (eE)
-        printf("%s", argv[pl]);
+        e_print(argv[pl], strlen(argv[pl]));
     else
-    {
-        for (size_t dep = 0; dep < strlen(argv[pl]); dep++)
-        {
-            if (argv[pl][dep] == '\n')
-                printf("\\n");
-            else if (argv[pl][dep] == '\t')
-                printf("\\t");
-            else if (argv[pl][dep] == '\\')
-                printf("\\");
-            else
-                printf("%c", argv[pl][dep]);
-        }
-    }
+        print(argv[pl], strlen(argv[pl]));
     pl++;
     while (pl < len(argv))
     {
         printf(" ");
         if (eE)
-            printf("%s", argv[pl]);
+            e_print(argv[pl], strlen(argv[pl]));
         else
-        {
-            for (size_t dep = 0; dep < strlen(argv[pl]); dep++)
-            {
-                if (argv[pl][dep] == '\n')
-                    printf("\\n");
-                else if (argv[pl][dep] == '\t')
-                    printf("\\t");
-                else if (argv[pl][dep] == '\\')
-                    printf("\\");
-                else
-                    printf("%c", argv[pl][dep]);
-            }
-        }
+            print(argv[pl], strlen(argv[pl]));
         pl++;
     }
 }
@@ -138,7 +159,7 @@ int echo(char **argv)
     size_t pos = 0;
     int n = 1;
     int tmpn = 1;
-    int eE = 1;
+    int eE = 0;
     int valid = 0;
     int same_n = 0;
 
