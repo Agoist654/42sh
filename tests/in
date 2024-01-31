@@ -1,0 +1,5 @@
+
+for k in in world; do
+    echo $k;
+done
+
