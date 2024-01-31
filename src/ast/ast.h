@@ -17,7 +17,8 @@ enum ast_type
     AST_COMPOUND_LIST,
     AST_RULE_WHILE,
     AST_RULE_UNTIL,
-    AST_RULE_FOR
+    AST_RULE_FOR,
+    AST_FUNDEC
 };
 
 enum and_or
@@ -120,6 +121,12 @@ struct ast_rule_for
     struct ast *compound_list;
 };
 
+struct ast_fundec
+{
+    char *name;
+    struct ast *body;
+};
+
 union ast_union
 {
     struct ast_list ast_list;
@@ -134,6 +141,7 @@ union ast_union
     struct ast_rule_while ast_rule_while;
     struct ast_rule_until ast_rule_until;
     struct ast_rule_for ast_rule_for;
+    struct ast_fundec ast_fundec;
 };
 
 union element_union
