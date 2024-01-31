@@ -164,7 +164,7 @@ static int handle_single_quote(struct token token)
     token.type = TOKEN_SINGLE_QUOTE;
     while (io_peek() != EOF)
     {
-        if (io_peek() == '\'')
+        if (io_peek() == '\'' && token.buffer[strlen(token.buffer) - 1] != '\\')
         {
             token = io_eat(token);
             return TOKEN_SINGLE_QUOTE;
@@ -183,7 +183,7 @@ static int handle_double_quote(struct token token)
     token.type = TOKEN_DOUBLE_QUOTE;
     while (io_peek() != EOF)
     {
-        if (io_peek() == '\"')
+        if (io_peek() == '\"' && token.buffer[strlen(token.buffer) - 1] != '\\')
         {
             token = io_eat(token);
             return TOKEN_DOUBLE_QUOTE;
