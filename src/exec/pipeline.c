@@ -16,7 +16,7 @@ enum pipe_side
     RIGHT
 };
 
-pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side)
+pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side, char **farg)
 {
     pid_t cpid = fork();
     if (cpid != 0)
@@ -35,11 +35,11 @@ pid_t exec_fork(struct ast *ast, int fds[2], enum pipe_side side)
     close(fds[0]);
     close(fds[1]);
 
-    exit(ast->ftable->exec(ast));
+    exit(ast->ftable->exec(ast, farg));
     errx(1, "execvp failed\n");
 }
 
-int exec_pipe(struct ast *ast)
+int exec_pipe(struct ast *ast, char **farg)
 {
     // create pipe
     int fds[2];
@@ -47,8 +47,8 @@ int exec_pipe(struct ast *ast)
         errx(1, "pipe failed");
 
     // exec each part with fork
-    int pid_left = exec_fork(ast->ast_union.ast_pipeline.command, fds, LEFT);
-    int pid_right = exec_fork(ast->ast_union.ast_pipeline.next, fds, RIGHT);
+    int pid_left = exec_fork(ast->ast_union.ast_pipeline.command, fds, LEFT, farg);
+    int pid_right = exec_fork(ast->ast_union.ast_pipeline.next, fds, RIGHT, farg);
 
     // handle fork errors
 

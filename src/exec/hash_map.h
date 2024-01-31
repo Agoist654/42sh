@@ -28,6 +28,6 @@ void hash_map_dump(struct hash_map *hash_map);
 char *hash_map_get(const struct hash_map *hash_map, const char *key);
 bool hash_map_remove(struct hash_map *hash_map, const char *key);
 struct hash_map *get_hm(void);
-int hash_map_add(struct ast *ast);
+int hash_map_add(struct ast *ast, char **farg);
 
 #endif /* ! HASH_MAP_H */

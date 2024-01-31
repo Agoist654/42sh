@@ -15,34 +15,34 @@
 #include "exec/hash_map_fun.h"
 #include "expansion/expansion.h"
 
-int ast_rule_while_exec(struct ast *ast)
+int ast_rule_while_exec(struct ast *ast, char **farg)
 {
     int ret_val = 0;
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_WHILE);
     while (ast->ast_union.ast_rule_while.cond->ftable->exec(
-               ast->ast_union.ast_rule_while.cond)
+               ast->ast_union.ast_rule_while.cond, farg)
            == 0)
     {
         ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
-            ast->ast_union.ast_rule_while.then);
+            ast->ast_union.ast_rule_while.then, farg);
     }
     return ret_val;
 }
 
-int ast_rule_until_exec(struct ast *ast)
+int ast_rule_until_exec(struct ast *ast, char **farg)
 {
     int ret_val = 0;
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_UNTIL);
     while (ast->ast_union.ast_rule_until.cond->ftable->exec(
-               ast->ast_union.ast_rule_until.cond)
+               ast->ast_union.ast_rule_until.cond, farg)
            == 0)
     {
         ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
-            ast->ast_union.ast_rule_until.then);
+            ast->ast_union.ast_rule_until.then, farg);
     }
     return ret_val;
 }
@@ -69,7 +69,7 @@ static size_t get_len(char **argv)
     return res;
 }
 
-int ast_rule_for_exec(struct ast *ast)
+int ast_rule_for_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
@@ -91,10 +91,10 @@ int ast_rule_for_exec(struct ast *ast)
     {
         char *key = strdup(ast->ast_union.ast_rule_for.var);
         char *hash_key = strdup(key);
-        char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]));
+        char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
         char *hash_value = strdup(value);
         hash_map_insert(get_hm(), hash_key, hash_value, NULL);
-        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list);
+        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list, farg);
         free(value);
         free(key);
     }
@@ -102,8 +102,9 @@ int ast_rule_for_exec(struct ast *ast)
     return res;
 }
 
-int ast_fundec_exec(struct ast *ast)
+int ast_fundec_exec(struct ast *ast, char **farg)
 {
+    (void)farg;
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_FUNDEC);

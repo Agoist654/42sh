@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         struct ast *ast = parse_input(lexer);
         if (ast == NULL)
             continue;
-        res = ast_list_exec(ast);
+        res = ast_list_exec(ast, argv);
         ast_list_destroy(ast);
     }
     free(lexer_peek(lexer).buffer);

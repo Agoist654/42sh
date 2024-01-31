@@ -161,7 +161,7 @@ union prefix_union
 struct ast;
 typedef void (*destroy_f)(struct ast *ast);
 typedef void (*print_f)(struct ast *ast);
-typedef int (*exec_f)(struct ast *ast);
+typedef int (*exec_f)(struct ast *ast, char **);
 
 struct ftable
 {

@@ -8,6 +8,6 @@ struct str
     int size;
 };
 
-char *expansion(char *str);
+char *expansion(char *str, char **argv);
 
 #endif /* !EXPANSION_H */
