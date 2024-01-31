@@ -104,7 +104,34 @@ static struct str get_var_name(struct str *str)
     return key;
 }
 
-static int handle_special_var(struct str *new_str, struct str *key)
+int get_len(char **argv)
+{
+    int res = 0;
+    while (argv[res] != NULL)
+    {
+        res++;
+    }
+    return res;
+}
+
+static void handle_super_special_var(struct str *new_str, struct str *key, char **argv)
+{
+    if (isdigit(key->str[0]))
+    {
+        int nb = atoi(key->str);
+        if (nb > get_len(argv))
+            return;
+        for (int i = 0; argv[nb][i] != '\0'; i++)
+        {
+            new_str->str[new_str->current_pos++] = argv[nb][i];
+        }
+        return;
+    }
+    //handle other var
+    return;
+}
+
+static int handle_special_var(struct str *new_str, struct str *key, char **argv)
 {
     if (strcmp(key->str, "PWD") == 0 || strcmp(key->str, "OLDPWD") == 0
         || strcmp(key->str, "IFS") == 0)
@@ -120,11 +147,15 @@ static int handle_special_var(struct str *new_str, struct str *key)
         }
         return 1;
     }
-    // handle others special variable
+    if (is_special(key->str[0]))
+    {
+        handle_super_special_var(new_str, key, argv);
+        return 1;
+    }
     return 0;
 }
 
-static void handle_var(struct str *str, struct str *new_str)
+static void handle_var(struct str *str, struct str *new_str, char **argv)
 {
     str->current_pos++;
     struct str key = get_var_name(str);
@@ -136,8 +167,11 @@ static void handle_var(struct str *str, struct str *new_str)
     }
     else
     {
-        if (handle_special_var(new_str, &key))
+        if (handle_special_var(new_str, &key, argv))
+        {
+            free(key.str);
             return;
+        }
         char *value = hash_map_get(get_hm(), key.str);
         if (value == NULL)
         {
@@ -158,7 +192,7 @@ static void handle_var(struct str *str, struct str *new_str)
     return;
 }
 
-char *expansion(char *str_init)
+char *expansion(char *str_init, char **argv)
 {
     if (str_init == NULL)
         return str_init;
@@ -180,7 +214,7 @@ char *expansion(char *str_init)
             continue;
         }
         else if (str.str[str.current_pos] == '$')
-            handle_var(&str, &new_str);
+            handle_var(&str, &new_str, argv);
         else if (str.str[str.current_pos] == '\\' && !simple_quote)
         {
             str.current_pos++;

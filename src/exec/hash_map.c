@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "expansion/expansion.h"
+
 #define HASHMAP_SIZE 8
 
 static struct hash_map *hm = NULL;
@@ -62,14 +64,14 @@ static char *get_key(char *buffer)
     return buffer;
 }
 
-int hash_map_add(struct ast *ast)
+int hash_map_add(struct ast *ast, char **farg)
 {
     for (size_t k = 0; ast->ast_union.ast_simple_command.ass_word[k] != NULL;
          k++)
     {
         char *ass_word = strdup(ast->ast_union.ast_simple_command.ass_word[k]);
         char *value = get_value(ass_word);
-        char *hash_value = strdup(value);
+        char *hash_value = expansion(strdup(value), farg);
         char *hash_key = get_key(ass_word);
         hash_map_insert(get_hm(), hash_key, hash_value, NULL);
     }

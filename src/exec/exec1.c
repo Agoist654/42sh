@@ -30,42 +30,42 @@ static struct builtin builtins[] = {
     { .command_name = "false", .builtin = false_f }
 };
 
-int ast_list_exec(struct ast *ast)
+int ast_list_exec(struct ast *ast, char **argv)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_LIST);
     int ret = ast->ast_union.ast_list.current->ftable->exec(
-        ast->ast_union.ast_list.current);
+        ast->ast_union.ast_list.current, argv);
     if (ast->ast_union.ast_list.next != NULL)
     {
-        ret = ast_list_exec(ast->ast_union.ast_list.next);
+        ret = ast_list_exec(ast->ast_union.ast_list.next, argv);
     }
     return ret;
 }
 
-int ast_and_or_exec(struct ast *ast)
+int ast_and_or_exec(struct ast *ast, char **argv)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_AND_OR);
     int res = ast->ast_union.ast_and_or.pipeline->ftable->exec(
-        ast->ast_union.ast_and_or.pipeline);
+        ast->ast_union.ast_and_or.pipeline, argv);
     if (ast->ast_union.ast_and_or.next != NULL)
     {
         if (ast->ast_union.ast_and_or.and_or == AND && res == 0)
         {
-            res = ast_and_or_exec(ast->ast_union.ast_and_or.next);
+            res = ast_and_or_exec(ast->ast_union.ast_and_or.next, argv);
         }
         if (ast->ast_union.ast_and_or.and_or == OR && res != 0)
         {
-            res = ast_and_or_exec(ast->ast_union.ast_and_or.next);
+            res = ast_and_or_exec(ast->ast_union.ast_and_or.next, argv);
         }
     }
     return res;
 }
 
-int ast_pipeline_exec(struct ast *ast)
+int ast_pipeline_exec(struct ast *ast, char **argv)
 {
     if (ast == NULL)
         return -1;
@@ -73,17 +73,17 @@ int ast_pipeline_exec(struct ast *ast)
     int ret_value = 0;
     if (ast->ast_union.ast_pipeline.next == NULL)
         ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
-            ast->ast_union.ast_pipeline.command);
+            ast->ast_union.ast_pipeline.command, argv);
     if (ast->ast_union.ast_pipeline.next != NULL)
     {
-        ret_value = exec_pipe(ast);
+        ret_value = exec_pipe(ast, argv);
     }
     if (ast->ast_union.ast_pipeline.neg)
         return !ret_value;
     return ret_value;
 }
 
-int ast_command_exec(struct ast *ast)
+int ast_command_exec(struct ast *ast, char **argv)
 {
     if (ast == NULL)
         return -1;
@@ -99,7 +99,7 @@ int ast_command_exec(struct ast *ast)
         }
     }
     int res = ast->ast_union.ast_command.first->ftable->exec(
-        ast->ast_union.ast_command.first);
+        ast->ast_union.ast_command.first, argv);
     restore_redirection(dlist);
     return res;
 }
@@ -149,14 +149,14 @@ static int sent_env_add(struct ast *ast)
     return 1;
 }
 
-static char **pre_expand(char **argv)
+static char **pre_expand(char **argv, char **farg)
 {
     size_t size = get_len(argv);
     char **res = calloc(size + 1, sizeof(char *));
     for (size_t k = 0; argv[k] != NULL; k++)
     {
         res[k] = strdup(argv[k]);
-        res[k] = expansion(res[k]);
+        res[k] = expansion(res[k], farg);
     }
     res[size] = NULL;
     return res;
@@ -191,7 +191,7 @@ pid_t myexecvp(char **expanded_argv)
     return pid;
 }
 
-int ast_simple_command_exec(struct ast *ast)
+int ast_simple_command_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
@@ -199,7 +199,7 @@ int ast_simple_command_exec(struct ast *ast)
     int res = 0;
     if (get_len(ast->ast_union.ast_simple_command.argv) == 0)
     {
-        hash_map_add(ast);
+        hash_map_add(ast, farg);
         return 1;
     }
     else
@@ -217,11 +217,11 @@ int ast_simple_command_exec(struct ast *ast)
         }
     }
 
-    char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
+    char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv, farg);
     struct ast *fun = hash_map_fun_get(get_fun_hm(), expanded_argv[0]);
     if (fun != NULL)
     {
-        res = fun->ftable->exec(fun);
+        res = fun->ftable->exec(fun, expanded_argv);
         restore_redirection(dlist);
         post_expand(expanded_argv);
         return res;
@@ -248,36 +248,36 @@ int ast_simple_command_exec(struct ast *ast)
     return WEXITSTATUS(res);
 }
 
-int ast_shell_command_exec(struct ast *ast)
+int ast_shell_command_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_SHELL_COMMAND);
     return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
-        ast->ast_union.ast_shell_command.rule_if);
+        ast->ast_union.ast_shell_command.rule_if, farg);
 }
 
-int ast_rule_if_exec(struct ast *ast)
+int ast_rule_if_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_IF);
     if (ast->ast_union.ast_rule_if.cond->ftable->exec(
-            ast->ast_union.ast_rule_if.cond)
+            ast->ast_union.ast_rule_if.cond, farg)
         == 0)
     {
         return ast->ast_union.ast_rule_if.then->ftable->exec(
-            ast->ast_union.ast_rule_if.then);
+            ast->ast_union.ast_rule_if.then, farg);
     }
     else if (ast->ast_union.ast_rule_if.else_clause != NULL)
     {
         return ast->ast_union.ast_rule_if.else_clause->ftable->exec(
-            ast->ast_union.ast_rule_if.else_clause);
+            ast->ast_union.ast_rule_if.else_clause, farg);
     }
     return 0; //?
 }
 
-int ast_else_clause_exec(struct ast *ast)
+int ast_else_clause_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
@@ -285,36 +285,36 @@ int ast_else_clause_exec(struct ast *ast)
     if (ast->ast_union.ast_else_clause.then == NULL)
     {
         return ast->ast_union.ast_else_clause.cond->ftable->exec(
-            ast->ast_union.ast_else_clause.cond);
+            ast->ast_union.ast_else_clause.cond, farg);
     }
     else
     {
         if (ast->ast_union.ast_else_clause.cond->ftable->exec(
-                ast->ast_union.ast_else_clause.cond)
+                ast->ast_union.ast_else_clause.cond, farg)
             == 0)
         {
             return ast->ast_union.ast_else_clause.then->ftable->exec(
-                ast->ast_union.ast_else_clause.then);
+                ast->ast_union.ast_else_clause.then, farg);
         }
         else if (ast->ast_union.ast_else_clause.else_clause != NULL)
         {
             return ast->ast_union.ast_else_clause.else_clause->ftable->exec(
-                ast->ast_union.ast_else_clause.else_clause);
+                ast->ast_union.ast_else_clause.else_clause, farg);
         }
         return 0; //?
     }
 }
 
-int ast_compound_list_exec(struct ast *ast)
+int ast_compound_list_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_COMPOUND_LIST);
     int ret = ast->ast_union.ast_compound_list.and_or->ftable->exec(
-        ast->ast_union.ast_compound_list.and_or);
+        ast->ast_union.ast_compound_list.and_or, farg);
     if (ast->ast_union.ast_compound_list.next != NULL)
     {
-        ret = ast_compound_list_exec(ast->ast_union.ast_compound_list.next);
+        ret = ast_compound_list_exec(ast->ast_union.ast_compound_list.next, farg);
     }
     return ret;
 }
