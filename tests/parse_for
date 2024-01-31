@@ -1,0 +1,90 @@
+
+
+static void realloc_for_argv(struct ast *res, size_t nb_arg)
+{
+    if (nb_arg == res->ast_union.ast_rule_for.len_argv - 1)
+    {
+        res->ast_union.ast_rule_for.argv =
+            realloc(res->ast_union.ast_rule_for.argv,
+                    res->ast_union.ast_rule_for.len_argv * 2 * sizeof(char *));
+        res->ast_union.ast_rule_for.len_argv *= 2;
+    }
+    return;
+}
+
+static struct ast *parse_rule_for_aux(struct lexer *lexer)
+{
+    while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    if (lexer->peek(lexer).type == TOKEN_DO)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    if (is_in(lexer_peek(lexer).type, first_coumpound_list))
+        res->ast_union.ast_rule_for.compound_list = parse_coumpound_list(lexer);
+    else
+        goto error;
+    if (lexer->peek(lexer).type == TOKEN_DONE)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    return res;
+
+error:
+    error.res = 2;
+    error.msg = "parse_rule_for: syntax error near unexpected token do or done";
+    return res;
+}
+
+
+static struct ast *parse_rule_for(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_RULE_FOR);
+    if (!res)
+    {
+        error.msg = "ast_shell_command init\n";
+        error.res = -42;
+        return NULL;
+    }
+
+    res->ast_union.ast_rule_for.argv = calloc(LEN, sizeof(char *));
+    if (!res->ast_union.ast_rule_for.argv)
+        goto error;
+    free(lexer_pop(lexer).buffer);
+    if (lexer_peek(lexer).type != TOKEN_WORD)
+        goto error;
+    res->ast_union.ast_rule_for.var = lexer_pop(lexer).buffer;
+    if (lexer->peek(lexer).type == TOKEN_SEMICOLON)
+    {
+        free(lexer_pop(lexer).buffer);
+        res->ast_union.ast_rule_for.compound_list = parse_rule_for_aux(lexer);
+        // even if error return res
+        return res;
+    }
+    // not finished basrad
+    while (lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    if (lexer_peek(lexer).type == TOKEN_IN)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    int nb_arg = 0;
+    while (lexer_peek(lexer).type == TOKEN_WORD)
+    {
+        realloc_for_argv(res, nb_arg);
+        res->ast_union.ast_rule_for.argv[nb_arg++] = lexer_pop(lexer).buffer;
+    }
+    if (lexer_peek(lexer).type == TOKEN_SEMICOLON || lexer_peek(lexer).type == TOKEN_NEWLINE)
+        free(lexer_pop(lexer).buffer);
+    else
+        goto error;
+    res->ast_union.ast_rule_for.compound_list = parse_rule_for_aux(lexer);
+
+    return res;
+
+error:
+    error.res = 2;
+    error.msg = "parse_rule_for: syntax error near unexpected token for or in";
+    return res;
+}
+
