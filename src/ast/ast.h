@@ -125,6 +125,7 @@ struct ast_fundec
 {
     char *name;
     struct ast *body;
+    int has_been_init;
 };
 
 union ast_union

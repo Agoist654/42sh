@@ -108,5 +108,6 @@ int ast_fundec_exec(struct ast *ast)
         return -1;
     assert(ast->type == AST_FUNDEC);
     hash_map_fun_insert(get_fun_hm(), ast->ast_union.ast_fundec.name, ast->ast_union.ast_fundec.body, NULL);
+    ast->ast_union.ast_fundec.has_been_init = 1;
     return 0;
 }
