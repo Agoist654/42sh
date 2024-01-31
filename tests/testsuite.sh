@@ -325,5 +325,38 @@ print doublequote2.sh
 TEST_NAME="var_for_var"
 print var_for_var
 
+TEST_NAME="echo_e_backslash1"
+print echo_e_backslash1
 
+TEST_NAME="echo_e_backslash2"
+print echo_e_backslash2
 
+TEST_NAME="function_echo.sh"
+print function_echo.sh
+
+TEST_NAME="in"
+print in
+
+TEST_NAME="tst"
+print tst
+
+TEST_NAME="var_simple_bracket"
+print var_simple_bracket
+
+TEST_NAME="var_simple_command"
+print var_simple_command
+
+TEST_NAME="sq_echo_mix1"
+print sq_echo_mix1
+
+TEST_NAME="sq_echo_mix2"
+print sq_echo_mix2
+
+TEST_NAME="quote_command"
+print quote_command
+
+#TEST_NAME="bad_unterminated_quote"
+#print bad_unterminated_quote
+
+#TEST_NAME="bad_weak2"
+#print bad_weak2
