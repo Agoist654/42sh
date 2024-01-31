@@ -27,8 +27,8 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_FOR,
                             TOKEN_ASSIGNMENT_WORD,
                             TOKEN_BRACKET_LEFT,
-                            TOKEN_BRACKET_RIGHT,
                             TOKEN_PARENTHESIS_LEFT,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                             -1 };
 
 static int first_and_or[] = { TOKEN_NEGATION,
@@ -47,8 +47,8 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_FOR,
                               TOKEN_ASSIGNMENT_WORD,
                               TOKEN_BRACKET_LEFT,
-                              TOKEN_BRACKET_RIGHT,
                             TOKEN_PARENTHESIS_LEFT,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                               -1 };
 
 static int first_pipeline[] = { TOKEN_NEGATION,
@@ -67,8 +67,8 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_FOR,
                                 TOKEN_ASSIGNMENT_WORD,
                                 TOKEN_BRACKET_LEFT,
-                                TOKEN_BRACKET_RIGHT,
                             TOKEN_PARENTHESIS_LEFT,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                 -1 };
 
 static int first_command[] = { TOKEN_WORD,
@@ -86,8 +86,8 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_ASSIGNMENT_WORD,
                                TOKEN_FOR,
                                TOKEN_BRACKET_LEFT,
-                               TOKEN_BRACKET_RIGHT,
                             TOKEN_PARENTHESIS_LEFT,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -100,6 +100,7 @@ static int first_simple_command[] = { TOKEN_WORD,
                                       TOKEN_REDIRECTION_LEFT_RIGHT,
                                       TOKEN_IONUMBER,
                                       TOKEN_ASSIGNMENT_WORD,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                       -1 };
 
 static int first_shell_command[] = {
@@ -143,9 +144,9 @@ static int first_compound_list[] = { TOKEN_NEGATION,
                                      TOKEN_NEWLINE,
                                      TOKEN_FOR,
                                      TOKEN_BRACKET_LEFT,
-                                     TOKEN_BRACKET_RIGHT,
                                      TOKEN_PARENTHESIS_LEFT,
                                      TOKEN_ASSIGNMENT_WORD,
+                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                      -1 };
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
@@ -381,47 +382,90 @@ error:
     return NULL;
 }
 
+static struct ast *parse_fundec(struct lexer *lexer)
+{
+    struct ast *res = ast_init(AST_FUNDEC);
+    if (!res)
+        goto error;
+    res->ast_union.ast_fundec.name = lexer_pop(lexer).buffer;
+    free(lexer_pop(lexer).buffer);
+    res->ast_union.ast_fundec.body = NULL;
+    if (lexer_peek(lexer).type == TOKEN_PARENTHESIS_RIGHT)
+        free(lexer_pop(lexer).buffer);
+    else
+    {
+        error.res = 2;
+        return res;
+    }
+    while(lexer_peek(lexer).type == TOKEN_NEWLINE)
+    {
+        free(lexer_pop(lexer).buffer);
+    }
+    if (is_in(lexer_peek(lexer).type, first_shell_command))
+        res->ast_union.ast_fundec.body = parse_shell_command(lexer);
+    else
+        error.res = 2;
+    return res;
+error:
+    error.res = -42;
+    return NULL;
+}
+
+static void add_redir_command(struct ast *res, struct lexer *lexer)
+{
+    int nb_redir = 0;
+    while (is_in(lexer_peek(lexer).type, first_redirection))
+    {
+        if (res->ast_union.ast_command.redirection == NULL)
+        {
+            res->ast_union.ast_command.redirection =
+                malloc(LEN * sizeof(struct redirection));
+            if (res->ast_union.ast_command.redirection == NULL)
+            {
+                error.res = -42;
+                return;
+            }
+        }
+        if (res->ast_union.ast_command.len_redir - 1 == nb_redir)
+        {
+            res->ast_union.ast_command.redirection =
+                realloc(res->ast_union.ast_command.redirection,
+                        res->ast_union.ast_command.len_redir * 2);
+            res->ast_union.ast_command.len_redir *= 2;
+        }
+        res->ast_union.ast_command.redirection[nb_redir++] =
+            parse_redirection(lexer);
+        if (error.res)
+        {
+            res->ast_union.ast_command.redirection[nb_redir] = NULL;
+            return;
+        }
+    }
+}
+
 static struct ast *parse_command(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_COMMAND);
     if (!res)
         goto error;
     res->ast_union.ast_command.redirection = NULL;
-    if (is_in(lexer_peek(lexer).type, first_shell_command))
-        res->ast_union.ast_command.first = parse_shell_command(lexer);
-    else if (is_in(lexer_peek(lexer).type, first_simple_command))
+    if (is_in(lexer_peek(lexer).type, first_simple_command))
     {
-        res->ast_union.ast_command.first = parse_simple_command(lexer);
+        if (lexer_look_ahead(lexer).type == TOKEN_PARENTHESIS_LEFT)
+        {
+            res->ast_union.ast_command.first = parse_fundec(lexer);
+            add_redir_command(res, lexer);
+        }
+        else
+            res->ast_union.ast_command.first = parse_simple_command(lexer);
+        return res;
+    }
+    else if (is_in(lexer_peek(lexer).type, first_shell_command))
+    {
+        res->ast_union.ast_command.first = parse_shell_command(lexer);
         if (error.res)
             return res;
-        int nb_redir = 0;
-        while (is_in(lexer_peek(lexer).type, first_redirection))
-        {
-            if (res->ast_union.ast_command.redirection == NULL)
-            {
-                res->ast_union.ast_command.redirection =
-                    malloc(LEN * sizeof(struct redirection));
-                if (res->ast_union.ast_command.redirection == NULL)
-                {
-                    error.res = -42;
-                    return res;
-                }
-            }
-            if (res->ast_union.ast_command.len_redir - 1 == nb_redir)
-            {
-                res->ast_union.ast_command.redirection =
-                    realloc(res->ast_union.ast_command.redirection,
-                            res->ast_union.ast_command.len_redir * 2);
-                res->ast_union.ast_command.len_redir *= 2;
-            }
-            res->ast_union.ast_command.redirection[nb_redir++] =
-                parse_redirection(lexer);
-            if (error.res)
-            {
-                res->ast_union.ast_command.redirection[nb_redir] = NULL;
-                return res;
-            }
-        }
+        add_redir_command(res, lexer);
         return res;
     }
     else

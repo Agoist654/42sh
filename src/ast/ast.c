@@ -274,6 +274,16 @@ static void ast_rule_for_destroy(struct ast *ast)
     return;
 }
 
+static void ast_fundec_destroy(struct ast *ast)
+{
+    if (ast != NULL)
+    {
+        assert(ast->type == AST_FUNDEC);
+    free(ast);
+    }
+    return;
+}
+
 void ast_list_print(struct ast *ast)
 {
     if (ast != NULL)
@@ -572,6 +582,23 @@ static void ast_rule_for_print(struct ast *ast)
     // return;
 }
 
+static void ast_fundec_print(struct ast *ast)
+{
+    if (ast != NULL)
+    {
+        assert(ast->type == AST_FUNDEC);
+        if (ast->ast_union.ast_fundec.name != NULL)
+            printf("%s()", ast->ast_union.ast_fundec.name);
+        if (ast->ast_union.ast_fundec.body != NULL)
+        {
+            printf("{");
+            ast->ast_union.ast_fundec.body->ftable->print(ast->ast_union.ast_fundec.body);
+            printf("{");
+        }
+    }
+    return;
+}
+
 static struct ftable ftable[] = { { .destroy = &ast_list_destroy,
                                     .print = &ast_list_print,
                                     .exec = &ast_list_exec },
@@ -607,7 +634,10 @@ static struct ftable ftable[] = { { .destroy = &ast_list_destroy,
                                     .exec = &ast_rule_until_exec },
                                   { .destroy = &ast_rule_for_destroy,
                                     .print = &ast_rule_for_print,
-                                    .exec = &ast_rule_for_exec } };
+                                    .exec = &ast_rule_for_exec },
+                                  { .destroy = &ast_fundec_destroy,
+                                    .print = &ast_fundec_print,
+                                    .exec = &ast_fundec_exec } };
 
 struct ast *ast_init(enum ast_type type)
 {

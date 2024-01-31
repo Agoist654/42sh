@@ -12,7 +12,9 @@ libexec_a_SOURCES =  \
 	pipeline.h \
 	hash.c \
 	hash_map.c \
-	hash_map.h
+	hash_map.h \
+	hash_map_fun.c \
+	hash_map_fun.h
 
 libexec_a_CPPFLAGS = -I$(top_srcdir)/src
 

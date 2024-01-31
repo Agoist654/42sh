@@ -12,6 +12,7 @@
 #include "builtin/builtin.h"
 #include "exec.h"
 #include "exec/hash_map.h"
+#include "exec/hash_map_fun.h"
 #include "expansion/expansion.h"
 
 int ast_rule_while_exec(struct ast *ast)
@@ -99,4 +100,13 @@ int ast_rule_for_exec(struct ast *ast)
     }
 
     return res;
+}
+
+int ast_fundec_exec(struct ast *ast)
+{
+    if (ast == NULL)
+        return -1;
+    assert(ast->type == AST_FUNDEC);
+    hash_map_fun_insert(get_fun_hm(), ast->ast_union.ast_fundec.name, ast->ast_union.ast_fundec.body, NULL);
+    return 0;
 }

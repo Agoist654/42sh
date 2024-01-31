@@ -15,6 +15,7 @@
 #include "exec.h"
 #include "expansion/expansion.h"
 #include "hash_map.h"
+#include "hash_map_fun.h"
 #include "pipeline.h"
 #include "redirection.h"
 
@@ -171,6 +172,25 @@ static void post_expand(char **argv)
     free(argv);
 }
 
+static
+pid_t myexecvp(char **expanded_argv)
+{
+    /* if it is not a builtin */
+    int pid = fork();
+    if (pid == 0)
+    {
+        if (ftell(stream) >= 0)
+            fclose(stream);
+        if (execvp(expanded_argv[0], expanded_argv) == -1)
+        {
+            if (errno == ENOENT)
+                errx(127, "commandd not found");
+        }
+        errx(1, "failedd");
+    }
+    return pid;
+}
+
 int ast_simple_command_exec(struct ast *ast)
 {
     if (ast == NULL)
@@ -198,7 +218,14 @@ int ast_simple_command_exec(struct ast *ast)
     }
 
     char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv);
-
+    struct ast *fun = hash_map_fun_get(get_fun_hm(), expanded_argv[0]);
+    if (fun != NULL)
+    {
+        res = fun->ftable->exec(fun);
+        restore_redirection(dlist);
+        post_expand(expanded_argv);
+        return res;
+    }
     for (int k = 0; k < NB_BUILTINS; k++)
     {
         if (strcmp(ast->ast_union.ast_simple_command.argv[0],
@@ -213,19 +240,7 @@ int ast_simple_command_exec(struct ast *ast)
         }
     }
 
-    /* if it is not a builtin */
-    int pid = fork();
-    if (pid == 0)
-    {
-        if (ftell(stream) >= 0)
-            fclose(stream);
-        if (execvp(expanded_argv[0], expanded_argv) == -1)
-        {
-            if (errno == ENOENT)
-                errx(127, "commandd not found");
-        }
-        errx(1, "failedd");
-    }
+    pid_t pid = myexecvp(expanded_argv);
     waitpid(pid, &res, 0);
     post_expand(expanded_argv);
 
