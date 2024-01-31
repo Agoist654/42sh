@@ -303,3 +303,27 @@ print nested_for
 
 TEST_NAME="doublefor"
 print doublefor
+
+TEST_NAME="big_arg"
+print big_arg
+
+#TEST_NAME="if_redir"
+#print if_redir
+
+TEST_NAME="bizare_for.sh"
+printnoerr bizare_for.sh
+
+TEST_NAME="a_n"
+print a_n
+
+TEST_NAME="doublequote.sh"
+print doublequote.sh
+
+TEST_NAME="doublequote2.sh"
+print doublequote2.sh
+
+TEST_NAME="var_for_var"
+print var_for_var
+
+
+

@@ -1,0 +1,5 @@
+if true; then
+    echo treu;
+else
+    echo fasle;
+fi > p
