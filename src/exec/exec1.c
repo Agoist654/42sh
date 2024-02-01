@@ -281,11 +281,7 @@ int ast_shell_command_exec(struct ast *ast, char **farg)
         return WEXITSTATUS(res);
     }
     return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
-<<<<<<< HEAD
-        ast->ast_union.ast_shell_command.rule_if, farg);
-=======
             ast->ast_union.ast_shell_command.rule_if, farg);
->>>>>>> subshell
 }
 
 int ast_rule_if_exec(struct ast *ast, char **farg)
