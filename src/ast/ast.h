@@ -125,6 +125,7 @@ struct ast_fundec
 {
     char *name;
     struct ast *body;
+    int has_been_init;
 };
 
 union ast_union
@@ -159,7 +160,7 @@ union prefix_union
 struct ast;
 typedef void (*destroy_f)(struct ast *ast);
 typedef void (*print_f)(struct ast *ast);
-typedef int (*exec_f)(struct ast *ast);
+typedef int (*exec_f)(struct ast *ast, char **);
 
 struct ftable
 {

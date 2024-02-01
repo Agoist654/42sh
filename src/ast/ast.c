@@ -279,6 +279,13 @@ static void ast_fundec_destroy(struct ast *ast)
     if (ast != NULL)
     {
         assert(ast->type == AST_FUNDEC);
+        if (!ast->ast_union.ast_fundec.has_been_init)
+        {
+            if (ast->ast_union.ast_fundec.name != NULL)
+                free(ast->ast_union.ast_fundec.name);
+            if (ast->ast_union.ast_fundec.body != NULL)
+                ast->ast_union.ast_fundec.body->ftable->destroy(ast->ast_union.ast_fundec.body);
+        }
     free(ast);
     }
     return;
