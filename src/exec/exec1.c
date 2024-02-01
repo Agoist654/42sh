@@ -200,7 +200,7 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
     if (get_len(ast->ast_union.ast_simple_command.argv) == 0)
     {
         hash_map_add(ast, farg);
-        return 1;
+        return 0;
     }
     else
         sent_env_add(ast);
