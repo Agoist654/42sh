@@ -408,6 +408,21 @@ print subshell2.sh
 TEST_NAME="quote_var1"
 print quote_var1
 
+TEST_NAME="simple_continue.sh"
+print simple_continue.sh
+
+TEST_NAME="if_continue.sh"
+print if_continue.sh
+
+TEST_NAME="pipe.sh"
+print pipe.sh
+
+#TEST_NAME="complexe_subshell.sh"
+#print complexe_subshell.sh
+
+TEST_NAME="simple_continue1.sh"
+print simple_continue1.sh
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 
