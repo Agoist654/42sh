@@ -1,1 +1,1 @@
-echo -eEe '42\\tsh'
+echo -e '42\\tsh'

@@ -331,6 +331,21 @@ print echo_e_backslash1
 TEST_NAME="echo_e_backslash2"
 print echo_e_backslash2
 
+TEST_NAME="echo_e_backslash3"
+print echo_e_backslash3
+
+TEST_NAME="echo_many_e_E2"
+print echo_many_e_E2
+
+TEST_NAME="echo_mix_options1"
+print echo_mix_options1
+
+TEST_NAME="echo_mix_options2"
+print echo_mix_options2
+
+TEST_NAME="echo_eEe"
+print echo_eEe
+
 TEST_NAME="function_echo.sh"
 print function_echo.sh
 
@@ -360,3 +375,6 @@ print quote_command
 
 #TEST_NAME="bad_weak2"
 #print bad_weak2
+
+#TEST_NAME="bad_weak3"
+#print bad_weak3
