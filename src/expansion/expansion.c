@@ -48,7 +48,7 @@ static void backslash(struct str *str, struct str *new_str, int double_quote)
             new_str->str[new_str->current_pos++] = '\\';
             realloc_str(new_str);
         }
-        new_str->str[new_str->current_pos++] = str->str[str->current_pos];
+        new_str->str[new_str->current_pos++] = str->str[str->current_pos++];
     }
 }
 
