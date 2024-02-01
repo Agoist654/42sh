@@ -13,10 +13,14 @@
 int main(int argc, char *argv[])
 {
     io_backend(argc, argv);
+    init_error();
+    struct error *error = get_err();
     struct lexer *lexer = lexer_init();
     int res = 0;
     while (lexer_peek(lexer).type != TOKEN_EOF)
     {
+        if (error->e)
+            break;
         struct ast *ast = parse_input(lexer);
         if (ast == NULL)
             continue;
@@ -27,6 +31,7 @@ int main(int argc, char *argv[])
     free(lexer_look_ahead(lexer).buffer);
     free(lexer);
     io_close();
+    close_error();
     hash_map_free(get_hm());
     hash_map_fun_free(get_fun_hm());
     return res;

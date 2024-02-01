@@ -21,13 +21,26 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_WHILE);
+    struct error *error = get_err();
+    error->depth += 1;
     while (ast->ast_union.ast_rule_while.cond->ftable->exec(
                ast->ast_union.ast_rule_while.cond, farg)
-           == 0)
+           == 0 && !error->e)
     {
+        if (error->c)
+        {
+            error->c--;
+            continue;
+        }
+        if (error->b)
+        {
+            error->b--;
+            break;
+        }
         ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
             ast->ast_union.ast_rule_while.then, farg);
     }
+    error->depth -= 1;
     return ret_val;
 }
 
@@ -37,13 +50,26 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_UNTIL);
+    struct error *error = get_err();
+    error->depth++;
     while (ast->ast_union.ast_rule_until.cond->ftable->exec(
                ast->ast_union.ast_rule_until.cond, farg)
-           != 0)
+           != 0 && !error->e)
     {
+        if (error->c)
+        {
+            error->c--;
+            continue;
+        }
+        if (error->b)
+        {
+            error->b--;
+            break;
+        }
         ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
             ast->ast_union.ast_rule_until.then, farg);
     }
+    error->depth--;
     return ret_val;
 }
 
@@ -85,10 +111,22 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
         return 0;
 
     int res = 0;
+    struct error *error = get_err();
+    error->depth++;
 
     // char **expanded_argv = pre_expand(ast->ast_union.ast_rule_for.argv);
     for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
     {
+        if (error->c)
+        {
+            error->c--;
+            continue;
+        }
+        if (error->b)
+        {
+            error->b--;
+            break;
+        }
         char *key = strdup(ast->ast_union.ast_rule_for.var);
         char *hash_key = strdup(key);
         char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
@@ -98,6 +136,7 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
         free(value);
         free(key);
     }
+    error->depth--;
 
     return res;
 }

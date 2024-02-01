@@ -2,7 +2,8 @@ lib_LIBRARIES = libbuilt.a
 
 libbuilt_a_SOURCES = \
 	builtin.c \
-	builtin.h
+	builtin.h \
+	tf.c
 
 libbuilt_a_CPPFLAGS = -I$(top_srcdir)/src
 

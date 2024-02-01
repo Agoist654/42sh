@@ -156,7 +156,7 @@ static int op[] = { TOKEN_REDIRECTION_RIGHT,       TOKEN_REDIRECTION_LEFT,
                     TOKEN_REDIRECTION_LEFT_AND,    TOKEN_REDIRECTION_RIGHT_PIPE,
                     TOKEN_REDIRECTION_LEFT_RIGHT,  -1 };
 
-static struct error error = { .res = 0, .msg = NULL };
+static struct err error = { .res = 0, .msg = NULL };
 
 static struct ast *parse_shell_command(struct lexer *lexer);
 

@@ -19,7 +19,7 @@
 #include "pipeline.h"
 #include "redirection.h"
 
-#define NB_BUILTINS 5
+#define NB_BUILTINS 8
 FILE *stream;
 
 static struct builtin builtins[] = {
@@ -27,7 +27,10 @@ static struct builtin builtins[] = {
     { .command_name = "unset", .builtin = unset_f },
     { .command_name = "echo", .builtin = echo },
     { .command_name = "true", .builtin = true_f },
-    { .command_name = "false", .builtin = false_f }
+    { .command_name = "false", .builtin = false_f },
+    { .command_name = "exit", .builtin = exit_f },
+    { .command_name = "continue", .builtin = continue_f },
+    { .command_name = "break", .builtin = break_f }
 };
 
 int ast_list_exec(struct ast *ast, char **argv)
@@ -51,15 +54,22 @@ int ast_and_or_exec(struct ast *ast, char **argv)
     assert(ast->type == AST_AND_OR);
     int res = ast->ast_union.ast_and_or.pipeline->ftable->exec(
         ast->ast_union.ast_and_or.pipeline, argv);
+    struct error *error = get_err();
+    if (error->e || (error->depth && (error->c || error->b)))
+        return res;
     if (ast->ast_union.ast_and_or.next != NULL)
     {
         if (ast->ast_union.ast_and_or.and_or == AND && res == 0)
         {
             res = ast_and_or_exec(ast->ast_union.ast_and_or.next, argv);
+            if (error->e || (error->depth && (error->c || error->b)))
+                return res;
         }
         if (ast->ast_union.ast_and_or.and_or == OR && res != 0)
         {
             res = ast_and_or_exec(ast->ast_union.ast_and_or.next, argv);
+            if (error->e || (error->depth && (error->c || error->b)))
+                return res;
         }
     }
     return res;
@@ -70,6 +80,7 @@ int ast_pipeline_exec(struct ast *ast, char **argv)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_PIPELINE);
+    struct error *error = get_err();
     int ret_value = 0;
     if (ast->ast_union.ast_pipeline.next == NULL)
         ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
@@ -78,7 +89,7 @@ int ast_pipeline_exec(struct ast *ast, char **argv)
     {
         ret_value = exec_pipe(ast, argv);
     }
-    if (ast->ast_union.ast_pipeline.neg)
+    if (ast->ast_union.ast_pipeline.neg && !error->e)
         return !ret_value;
     return ret_value;
 }
@@ -88,11 +99,9 @@ int ast_command_exec(struct ast *ast, char **argv)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_COMMAND);
-    //    int to_close = 0;
     struct dlist *dlist = dlist_init();
     if (ast->ast_union.ast_command.redirection != NULL)
     {
-        //      to_close = 1;
         for (int i = 0; ast->ast_union.ast_command.redirection[i] != NULL; i++)
         {
             exec_redirection(dlist, ast->ast_union.ast_command.redirection[i]);
@@ -221,7 +230,9 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
     struct ast *fun = hash_map_fun_get(get_fun_hm(), expanded_argv[0]);
     if (fun != NULL)
     {
-        res = fun->ftable->exec(fun, expanded_argv);
+        int res_tmp = fun->ftable->exec(fun, expanded_argv);
+        if (res_tmp >= 0)
+            res = res_tmp;
         restore_redirection(dlist);
         post_expand(expanded_argv);
         return res;
@@ -289,19 +300,20 @@ int ast_rule_if_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_RULE_IF);
+    struct error *error = get_err();
     if (ast->ast_union.ast_rule_if.cond->ftable->exec(
             ast->ast_union.ast_rule_if.cond, farg)
-        == 0)
+        == 0 && !(error->e || (error->depth && (error->c || error->b))))
     {
         return ast->ast_union.ast_rule_if.then->ftable->exec(
             ast->ast_union.ast_rule_if.then, farg);
     }
-    else if (ast->ast_union.ast_rule_if.else_clause != NULL)
+    else if (ast->ast_union.ast_rule_if.else_clause != NULL && !(error->e || (error->depth && (error->c || error->b))))
     {
         return ast->ast_union.ast_rule_if.else_clause->ftable->exec(
             ast->ast_union.ast_rule_if.else_clause, farg);
     }
-    return 0; //?
+    return 0;
 }
 
 int ast_else_clause_exec(struct ast *ast, char **farg)
@@ -309,6 +321,7 @@ int ast_else_clause_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_ELSE_CLAUSE);
+    struct error *error = get_err();
     if (ast->ast_union.ast_else_clause.then == NULL)
     {
         return ast->ast_union.ast_else_clause.cond->ftable->exec(
@@ -318,17 +331,17 @@ int ast_else_clause_exec(struct ast *ast, char **farg)
     {
         if (ast->ast_union.ast_else_clause.cond->ftable->exec(
                 ast->ast_union.ast_else_clause.cond, farg)
-            == 0)
+            == 0 && !(error->e || (error->depth && (error->c || error->b))))
         {
             return ast->ast_union.ast_else_clause.then->ftable->exec(
                 ast->ast_union.ast_else_clause.then, farg);
         }
-        else if (ast->ast_union.ast_else_clause.else_clause != NULL)
+        else if (ast->ast_union.ast_else_clause.else_clause != NULL && !(error->e || (error->depth && (error->c || error->b))))
         {
             return ast->ast_union.ast_else_clause.else_clause->ftable->exec(
                 ast->ast_union.ast_else_clause.else_clause, farg);
         }
-        return 0; //?
+        return 0;
     }
 }
 
@@ -337,9 +350,10 @@ int ast_compound_list_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_COMPOUND_LIST);
+    struct error *error = get_err();
     int ret = ast->ast_union.ast_compound_list.and_or->ftable->exec(
         ast->ast_union.ast_compound_list.and_or, farg);
-    if (ast->ast_union.ast_compound_list.next != NULL)
+    if (ast->ast_union.ast_compound_list.next != NULL && !(error->e || (error->depth && (error->c || error->b))))
     {
         ret = ast_compound_list_exec(ast->ast_union.ast_compound_list.next, farg);
     }

@@ -3,7 +3,7 @@
 
 #include "../lexer/lexer.h"
 
-struct error
+struct err
 {
     int res;
     char *msg;
