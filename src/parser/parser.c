@@ -27,6 +27,7 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_FOR,
                             TOKEN_ASSIGNMENT_WORD,
                             TOKEN_BRACKET_LEFT,
+                            TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                             -1 };
 
@@ -46,6 +47,7 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_FOR,
                               TOKEN_ASSIGNMENT_WORD,
                               TOKEN_BRACKET_LEFT,
+                            TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                               -1 };
 
@@ -65,6 +67,7 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_FOR,
                                 TOKEN_ASSIGNMENT_WORD,
                                 TOKEN_BRACKET_LEFT,
+                            TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                 -1 };
 
@@ -83,6 +86,7 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_ASSIGNMENT_WORD,
                                TOKEN_FOR,
                                TOKEN_BRACKET_LEFT,
+                            TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                -1 };
 
@@ -101,6 +105,8 @@ static int first_simple_command[] = { TOKEN_WORD,
 
 static int first_shell_command[] = {
     TOKEN_WHILE,        TOKEN_UNTIL,         TOKEN_IF, TOKEN_FOR,
+
+    TOKEN_PARENTHESIS_LEFT,
     TOKEN_BRACKET_LEFT, TOKEN_BRACKET_RIGHT, -1
 };
 
@@ -138,6 +144,8 @@ static int first_compound_list[] = { TOKEN_NEGATION,
                                      TOKEN_NEWLINE,
                                      TOKEN_FOR,
                                      TOKEN_BRACKET_LEFT,
+                                     TOKEN_PARENTHESIS_LEFT,
+                                     TOKEN_ASSIGNMENT_WORD,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
                                      -1 };
 
@@ -167,6 +175,8 @@ static int isseparator(struct token token)
     return (token.type == TOKEN_EOF || token.type == TOKEN_NEWLINE
             || token.type == TOKEN_SEMICOLON || token.type == TOKEN_PIPE
             || token.type == TOKEN_AND || token.type == TOKEN_OR
+            || token.type == TOKEN_PARENTHESIS_RIGHT
+            || token.type == TOKEN_PARENTHESIS_LEFT
             || token.type == TOKEN_ERROR);
 }
 
@@ -866,9 +876,24 @@ error:
     return res;
 }
 
+static struct ast *parse_subshell(struct lexer *lexer)
+{
+    free(lexer_pop(lexer).buffer);
+    struct ast *res = NULL;
+    if (is_in(lexer_peek(lexer).type, first_compound_list))
+        res = parse_compound_list(lexer);
+    else
+        error.res = 2;
+    if (lexer_peek(lexer).type != TOKEN_PARENTHESIS_RIGHT)
+        error.res = 2;
+    free(lexer_pop(lexer).buffer);
+    return res;
+}
+
 static struct ast *parse_shell_command(struct lexer *lexer)
 {
     struct ast *res = ast_init(AST_SHELL_COMMAND);
+    res->ast_union.ast_shell_command.issubshell = 0;
     if (!res)
         goto error;
     if (lexer_peek(lexer).type == TOKEN_IF)
@@ -879,6 +904,11 @@ static struct ast *parse_shell_command(struct lexer *lexer)
         res->ast_union.ast_shell_command.rule_if = parse_rule_until(lexer);
     else if (lexer_peek(lexer).type == TOKEN_FOR)
         res->ast_union.ast_shell_command.rule_if = parse_rule_for(lexer);
+    else if (lexer_peek(lexer).type == TOKEN_PARENTHESIS_LEFT)
+    {
+        res->ast_union.ast_shell_command.issubshell = 1;
+        res->ast_union.ast_shell_command.rule_if = parse_subshell(lexer);
+    }
     else if (lexer_peek(lexer).type == TOKEN_BRACKET_LEFT)
     {
         free(lexer_pop(lexer).buffer);

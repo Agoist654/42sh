@@ -62,6 +62,7 @@ struct ast_else_clause
 struct ast_shell_command
 {
     struct ast *rule_if;
+    int issubshell;
 };
 
 struct ast_and_or
