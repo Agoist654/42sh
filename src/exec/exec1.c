@@ -278,8 +278,6 @@ int ast_shell_command_exec(struct ast *ast, char **farg)
         waitpid(pid, &res, 0);
         //printf("AFTER FORK\n");
         //hash_map_dump(get_hm());
-       // hash_map_free(get_hm());
-       // set_hm(save_hm);
         return WEXITSTATUS(res);
     }
     return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
