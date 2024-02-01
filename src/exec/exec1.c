@@ -233,13 +233,44 @@ int ast_simple_command_exec(struct ast *ast)
     return WEXITSTATUS(res);
 }
 
+static
+pid_t subshell_exec(struct ast *ast)
+{
+    int pid = fork();
+    if (pid == 0)
+    {
+        //if (ftell(stream) >= 0)
+        //    fclose(stream);
+        int res = ast_compound_list_exec(ast);
+//        ast->ast_union.ast_compound_list.and_or->ftable->exec(ast->ast_union.ast_compound_list.and_or);
+        exit(res);
+    }
+    return pid;
+}
+
 int ast_shell_command_exec(struct ast *ast)
 {
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_SHELL_COMMAND);
-    return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
-        ast->ast_union.ast_shell_command.rule_if);
+    int res = 0;
+    if (ast->ast_union.ast_shell_command.issubshell == 1)
+    {
+        //struct hash_map *save_hm = hash_map_copy(get_hm());
+        pid_t pid = subshell_exec(ast->ast_union.ast_shell_command.rule_if);
+        //printf("BEFOR FORK\n");
+        //hash_map_dump(get_hm());
+        waitpid(pid, &res, 0);
+        //printf("AFTER FORK\n");
+        //hash_map_dump(get_hm());
+       // hash_map_free(get_hm());
+       // set_hm(save_hm);
+        return WEXITSTATUS(res);
+    }
+
+    else
+        return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
+                ast->ast_union.ast_shell_command.rule_if);
 }
 
 int ast_rule_if_exec(struct ast *ast)

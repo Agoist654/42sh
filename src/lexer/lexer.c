@@ -157,6 +157,19 @@ static int isquote(char io_peek)
     return 0;
 }
 
+static int quote_is_escaped(char *buffer)
+{
+    size_t size = strlen(buffer);
+    int res = 0;
+    for (size_t k = size - 1; size - k != size + 1; k--)
+    {
+        if (buffer[k] != '\\')
+            return res;
+        res = !res;
+    }
+    return res;
+}
+
 static int handle_single_quote(struct token token)
 {
     // append the quote in the buffer
@@ -164,7 +177,8 @@ static int handle_single_quote(struct token token)
     token.type = TOKEN_SINGLE_QUOTE;
     while (io_peek() != EOF)
     {
-        if (io_peek() == '\'' && token.buffer[strlen(token.buffer) - 1] != '\\')
+        //token.buffer[strlen(token.buffer) - 1] != '\\')
+        if (io_peek() == '\'' && !quote_is_escaped(token.buffer))
         {
             token = io_eat(token);
             return TOKEN_SINGLE_QUOTE;
@@ -183,7 +197,8 @@ static int handle_double_quote(struct token token)
     token.type = TOKEN_DOUBLE_QUOTE;
     while (io_peek() != EOF)
     {
-        if (io_peek() == '\"' && token.buffer[strlen(token.buffer) - 1] != '\\')
+        //token.buffer[strlen(token.buffer) - 1] != '\\')
+        if (io_peek() == '\"' && !quote_is_escaped(token.buffer))
         {
             token = io_eat(token);
             return TOKEN_DOUBLE_QUOTE;
