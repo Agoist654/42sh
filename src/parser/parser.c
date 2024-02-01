@@ -29,6 +29,7 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_BRACKET_LEFT,
                             TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                            TOKEN_PARENTHESIS_LEFT,
                             -1 };
 
 static int first_and_or[] = { TOKEN_NEGATION,
@@ -49,6 +50,7 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_BRACKET_LEFT,
                             TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                            TOKEN_PARENTHESIS_LEFT,
                               -1 };
 
 static int first_pipeline[] = { TOKEN_NEGATION,
@@ -69,6 +71,8 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_BRACKET_LEFT,
                             TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                                TOKEN_BRACKET_RIGHT,
+                            TOKEN_PARENTHESIS_LEFT,
                                 -1 };
 
 static int first_command[] = { TOKEN_WORD,
@@ -88,6 +92,7 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_BRACKET_LEFT,
                             TOKEN_PARENTHESIS_LEFT,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                            TOKEN_PARENTHESIS_LEFT,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -147,6 +152,8 @@ static int first_compound_list[] = { TOKEN_NEGATION,
                                      TOKEN_PARENTHESIS_LEFT,
                                      TOKEN_ASSIGNMENT_WORD,
                             TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                                     TOKEN_PARENTHESIS_LEFT,
+                                     TOKEN_ASSIGNMENT_WORD,
                                      -1 };
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
