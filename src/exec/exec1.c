@@ -181,8 +181,7 @@ static void post_expand(char **argv)
     free(argv);
 }
 
-static
-pid_t myexecvp(char **expanded_argv)
+static pid_t myexecvp(char **expanded_argv)
 {
     /* if it is not a builtin */
     int pid = fork();
@@ -226,7 +225,8 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
         }
     }
 
-    char **expanded_argv = pre_expand(ast->ast_union.ast_simple_command.argv, farg);
+    char **expanded_argv =
+        pre_expand(ast->ast_union.ast_simple_command.argv, farg);
     struct ast *fun = hash_map_fun_get(get_fun_hm(), expanded_argv[0]);
     if (fun != NULL)
     {
@@ -259,16 +259,15 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
     return WEXITSTATUS(res);
 }
 
-static
-pid_t subshell_exec(struct ast *ast, char **farg)
+static pid_t subshell_exec(struct ast *ast, char **farg)
 {
     int pid = fork();
     if (pid == 0)
     {
-        //if (ftell(stream) >= 0)
-        //    fclose(stream);
+        // if (ftell(stream) >= 0)
+        //     fclose(stream);
         int res = ast_compound_list_exec(ast, farg);
-//        ast->ast_union.ast_compound_list.and_or->ftable->exec(ast->ast_union.ast_compound_list.and_or);
+        //        ast->ast_union.ast_compound_list.and_or->ftable->exec(ast->ast_union.ast_compound_list.and_or);
         exit(res);
     }
     return pid;
@@ -282,17 +281,18 @@ int ast_shell_command_exec(struct ast *ast, char **farg)
     int res = 0;
     if (ast->ast_union.ast_shell_command.issubshell == 1)
     {
-        //struct hash_map *save_hm = hash_map_copy(get_hm());
-        pid_t pid = subshell_exec(ast->ast_union.ast_shell_command.rule_if, farg);
-        //printf("BEFOR FORK\n");
-        //hash_map_dump(get_hm());
+        // struct hash_map *save_hm = hash_map_copy(get_hm());
+        pid_t pid =
+            subshell_exec(ast->ast_union.ast_shell_command.rule_if, farg);
+        // printf("BEFOR FORK\n");
+        // hash_map_dump(get_hm());
         waitpid(pid, &res, 0);
-        //printf("AFTER FORK\n");
-        //hash_map_dump(get_hm());
+        // printf("AFTER FORK\n");
+        // hash_map_dump(get_hm());
         return WEXITSTATUS(res);
     }
     return ast->ast_union.ast_shell_command.rule_if->ftable->exec(
-            ast->ast_union.ast_shell_command.rule_if, farg);
+        ast->ast_union.ast_shell_command.rule_if, farg);
 }
 
 int ast_rule_if_exec(struct ast *ast, char **farg)
@@ -303,12 +303,14 @@ int ast_rule_if_exec(struct ast *ast, char **farg)
     struct error *error = get_err();
     if (ast->ast_union.ast_rule_if.cond->ftable->exec(
             ast->ast_union.ast_rule_if.cond, farg)
-        == 0 && !(error->e || (error->depth && (error->c || error->b))))
+            == 0
+        && !(error->e || (error->depth && (error->c || error->b))))
     {
         return ast->ast_union.ast_rule_if.then->ftable->exec(
             ast->ast_union.ast_rule_if.then, farg);
     }
-    else if (ast->ast_union.ast_rule_if.else_clause != NULL && !(error->e || (error->depth && (error->c || error->b))))
+    else if (ast->ast_union.ast_rule_if.else_clause != NULL
+             && !(error->e || (error->depth && (error->c || error->b))))
     {
         return ast->ast_union.ast_rule_if.else_clause->ftable->exec(
             ast->ast_union.ast_rule_if.else_clause, farg);
@@ -331,12 +333,14 @@ int ast_else_clause_exec(struct ast *ast, char **farg)
     {
         if (ast->ast_union.ast_else_clause.cond->ftable->exec(
                 ast->ast_union.ast_else_clause.cond, farg)
-            == 0 && !(error->e || (error->depth && (error->c || error->b))))
+                == 0
+            && !(error->e || (error->depth && (error->c || error->b))))
         {
             return ast->ast_union.ast_else_clause.then->ftable->exec(
                 ast->ast_union.ast_else_clause.then, farg);
         }
-        else if (ast->ast_union.ast_else_clause.else_clause != NULL && !(error->e || (error->depth && (error->c || error->b))))
+        else if (ast->ast_union.ast_else_clause.else_clause != NULL
+                 && !(error->e || (error->depth && (error->c || error->b))))
         {
             return ast->ast_union.ast_else_clause.else_clause->ftable->exec(
                 ast->ast_union.ast_else_clause.else_clause, farg);
@@ -353,9 +357,11 @@ int ast_compound_list_exec(struct ast *ast, char **farg)
     struct error *error = get_err();
     int ret = ast->ast_union.ast_compound_list.and_or->ftable->exec(
         ast->ast_union.ast_compound_list.and_or, farg);
-    if (ast->ast_union.ast_compound_list.next != NULL && !(error->e || (error->depth && (error->c || error->b))))
+    if (ast->ast_union.ast_compound_list.next != NULL
+        && !(error->e || (error->depth && (error->c || error->b))))
     {
-        ret = ast_compound_list_exec(ast->ast_union.ast_compound_list.next, farg);
+        ret =
+            ast_compound_list_exec(ast->ast_union.ast_compound_list.next, farg);
     }
     return ret;
 }

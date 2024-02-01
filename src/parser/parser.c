@@ -28,7 +28,8 @@ static int first_list[] = { TOKEN_NEGATION,
                             TOKEN_ASSIGNMENT_WORD,
                             TOKEN_BRACKET_LEFT,
                             TOKEN_PARENTHESIS_LEFT,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                            TOKEN_SINGLE_QUOTE,
+                            TOKEN_DOUBLE_QUOTE,
                             -1 };
 
 static int first_and_or[] = { TOKEN_NEGATION,
@@ -47,8 +48,9 @@ static int first_and_or[] = { TOKEN_NEGATION,
                               TOKEN_FOR,
                               TOKEN_ASSIGNMENT_WORD,
                               TOKEN_BRACKET_LEFT,
-                            TOKEN_PARENTHESIS_LEFT,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                              TOKEN_PARENTHESIS_LEFT,
+                              TOKEN_SINGLE_QUOTE,
+                              TOKEN_DOUBLE_QUOTE,
                               -1 };
 
 static int first_pipeline[] = { TOKEN_NEGATION,
@@ -67,8 +69,9 @@ static int first_pipeline[] = { TOKEN_NEGATION,
                                 TOKEN_FOR,
                                 TOKEN_ASSIGNMENT_WORD,
                                 TOKEN_BRACKET_LEFT,
-                            TOKEN_PARENTHESIS_LEFT,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                                TOKEN_PARENTHESIS_LEFT,
+                                TOKEN_SINGLE_QUOTE,
+                                TOKEN_DOUBLE_QUOTE,
                                 -1 };
 
 static int first_command[] = { TOKEN_WORD,
@@ -86,8 +89,9 @@ static int first_command[] = { TOKEN_WORD,
                                TOKEN_ASSIGNMENT_WORD,
                                TOKEN_FOR,
                                TOKEN_BRACKET_LEFT,
-                            TOKEN_PARENTHESIS_LEFT,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                               TOKEN_PARENTHESIS_LEFT,
+                               TOKEN_SINGLE_QUOTE,
+                               TOKEN_DOUBLE_QUOTE,
                                -1 };
 
 static int first_simple_command[] = { TOKEN_WORD,
@@ -100,15 +104,19 @@ static int first_simple_command[] = { TOKEN_WORD,
                                       TOKEN_REDIRECTION_LEFT_RIGHT,
                                       TOKEN_IONUMBER,
                                       TOKEN_ASSIGNMENT_WORD,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                                      TOKEN_SINGLE_QUOTE,
+                                      TOKEN_DOUBLE_QUOTE,
                                       -1 };
 
-static int first_shell_command[] = {
-    TOKEN_WHILE,        TOKEN_UNTIL,         TOKEN_IF, TOKEN_FOR,
+static int first_shell_command[] = { TOKEN_WHILE,
+                                     TOKEN_UNTIL,
+                                     TOKEN_IF,
+                                     TOKEN_FOR,
 
-    TOKEN_PARENTHESIS_LEFT,
-    TOKEN_BRACKET_LEFT, TOKEN_BRACKET_RIGHT, -1
-};
+                                     TOKEN_PARENTHESIS_LEFT,
+                                     TOKEN_BRACKET_LEFT,
+                                     TOKEN_BRACKET_RIGHT,
+                                     -1 };
 
 static int first_redirection[] = { TOKEN_REDIRECTION_RIGHT,
                                    TOKEN_REDIRECTION_LEFT,
@@ -146,7 +154,8 @@ static int first_compound_list[] = { TOKEN_NEGATION,
                                      TOKEN_BRACKET_LEFT,
                                      TOKEN_PARENTHESIS_LEFT,
                                      TOKEN_ASSIGNMENT_WORD,
-                            TOKEN_SINGLE_QUOTE, TOKEN_DOUBLE_QUOTE,
+                                     TOKEN_SINGLE_QUOTE,
+                                     TOKEN_DOUBLE_QUOTE,
                                      -1 };
 
 static int first_else_clause[] = { TOKEN_ELSE, TOKEN_ELIF, -1 };
@@ -397,7 +406,7 @@ static struct ast *parse_fundec(struct lexer *lexer)
         error.res = 2;
         return res;
     }
-    while(lexer_peek(lexer).type == TOKEN_NEWLINE)
+    while (lexer_peek(lexer).type == TOKEN_NEWLINE)
     {
         free(lexer_pop(lexer).buffer);
     }

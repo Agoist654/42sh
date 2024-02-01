@@ -423,6 +423,10 @@ print pipe.sh
 TEST_NAME="simple_continue1.sh"
 print simple_continue1.sh
 
+
+TEST_NAME="simple_redir.sh"
+print simple_redir.sh
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 

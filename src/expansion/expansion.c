@@ -114,7 +114,8 @@ int get_len(char **argv)
     return res;
 }
 
-static void handle_super_special_var(struct str *new_str, struct str *key, char **argv)
+static void handle_super_special_var(struct str *new_str, struct str *key,
+                                     char **argv)
 {
     if (isdigit(key->str[0]))
     {
@@ -127,7 +128,7 @@ static void handle_super_special_var(struct str *new_str, struct str *key, char 
         }
         return;
     }
-    //handle other var
+    // handle other var
     return;
 }
 

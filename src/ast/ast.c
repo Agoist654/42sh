@@ -284,9 +284,10 @@ static void ast_fundec_destroy(struct ast *ast)
             if (ast->ast_union.ast_fundec.name != NULL)
                 free(ast->ast_union.ast_fundec.name);
             if (ast->ast_union.ast_fundec.body != NULL)
-                ast->ast_union.ast_fundec.body->ftable->destroy(ast->ast_union.ast_fundec.body);
+                ast->ast_union.ast_fundec.body->ftable->destroy(
+                    ast->ast_union.ast_fundec.body);
         }
-    free(ast);
+        free(ast);
     }
     return;
 }
@@ -599,7 +600,8 @@ static void ast_fundec_print(struct ast *ast)
         if (ast->ast_union.ast_fundec.body != NULL)
         {
             printf("{");
-            ast->ast_union.ast_fundec.body->ftable->print(ast->ast_union.ast_fundec.body);
+            ast->ast_union.ast_fundec.body->ftable->print(
+                ast->ast_union.ast_fundec.body);
             printf("{");
         }
     }

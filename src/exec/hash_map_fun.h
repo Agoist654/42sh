@@ -20,10 +20,11 @@ struct hash_map_fun
 };
 
 size_t hash(const char *str);
-bool hash_map_fun_insert(struct hash_map_fun *hash_map, char *key, struct ast *value,
-                     bool *updated);
+bool hash_map_fun_insert(struct hash_map_fun *hash_map, char *key,
+                         struct ast *value, bool *updated);
 void hash_map_fun_free(struct hash_map_fun *hash_map);
-struct ast *hash_map_fun_get(const struct hash_map_fun *hash_map, const char *key);
+struct ast *hash_map_fun_get(const struct hash_map_fun *hash_map,
+                             const char *key);
 bool hash_map_fun_remove(struct hash_map_fun *hash_map, const char *key);
 struct hash_map_fun *get_fun_hm(void);
 

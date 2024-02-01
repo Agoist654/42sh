@@ -61,8 +61,8 @@ static bool str_equal(const char *str1, const char *str2)
     return false;
 }
 
-static struct pair_list_fun *list_prepend(struct pair_list_fun *list, struct ast *value,
-                                      char *key)
+static struct pair_list_fun *list_prepend(struct pair_list_fun *list,
+                                          struct ast *value, char *key)
 {
     struct pair_list_fun *new = malloc(sizeof(struct pair_list_fun));
     if (new == NULL)
@@ -88,8 +88,8 @@ static struct pair_list_fun *is_in(struct pair_list_fun *list, const char *key)
     return NULL;
 }
 
-bool hash_map_fun_insert(struct hash_map_fun *hash_map, char *key, struct ast *value,
-                     bool *updated)
+bool hash_map_fun_insert(struct hash_map_fun *hash_map, char *key,
+                         struct ast *value, bool *updated)
 {
     if (hash_map == NULL || hash_map->size == 0)
     {
@@ -153,7 +153,8 @@ void hash_map_fun_free(struct hash_map_fun *hash_map)
     return;
 }
 
-struct ast *hash_map_fun_get(const struct hash_map_fun *hash_map, const char *key)
+struct ast *hash_map_fun_get(const struct hash_map_fun *hash_map,
+                             const char *key)
 {
     if (hash_map == NULL || hash_map->size == 0)
     {

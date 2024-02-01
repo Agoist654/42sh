@@ -47,8 +47,10 @@ int exec_pipe(struct ast *ast, char **farg)
         errx(1, "pipe failed");
 
     // exec each part with fork
-    int pid_left = exec_fork(ast->ast_union.ast_pipeline.command, fds, LEFT, farg);
-    int pid_right = exec_fork(ast->ast_union.ast_pipeline.next, fds, RIGHT, farg);
+    int pid_left =
+        exec_fork(ast->ast_union.ast_pipeline.command, fds, LEFT, farg);
+    int pid_right =
+        exec_fork(ast->ast_union.ast_pipeline.next, fds, RIGHT, farg);
 
     // handle fork errors
 

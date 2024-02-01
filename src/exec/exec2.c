@@ -25,7 +25,8 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
     error->depth += 1;
     while (ast->ast_union.ast_rule_while.cond->ftable->exec(
                ast->ast_union.ast_rule_while.cond, farg)
-           == 0 && !error->e)
+               == 0
+           && !error->e)
     {
         ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
             ast->ast_union.ast_rule_while.then, farg);
@@ -55,7 +56,8 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
     error->depth++;
     while (ast->ast_union.ast_rule_until.cond->ftable->exec(
                ast->ast_union.ast_rule_until.cond, farg)
-           != 0 && !error->e)
+               != 0
+           && !error->e)
     {
         ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
             ast->ast_union.ast_rule_until.then, farg);
@@ -120,10 +122,12 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
     {
         char *key = strdup(ast->ast_union.ast_rule_for.var);
         char *hash_key = strdup(key);
-        char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
+        char *value =
+            expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
         char *hash_value = strdup(value);
         hash_map_insert(get_hm(), hash_key, hash_value, NULL);
-        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list, farg);
+        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list,
+                                     farg);
         free(value);
         free(key);
         if (error->c)
@@ -148,7 +152,8 @@ int ast_fundec_exec(struct ast *ast, char **farg)
     if (ast == NULL)
         return -1;
     assert(ast->type == AST_FUNDEC);
-    hash_map_fun_insert(get_fun_hm(), ast->ast_union.ast_fundec.name, ast->ast_union.ast_fundec.body, NULL);
+    hash_map_fun_insert(get_fun_hm(), ast->ast_union.ast_fundec.name,
+                        ast->ast_union.ast_fundec.body, NULL);
     ast->ast_union.ast_fundec.has_been_init = 1;
     return 0;
 }
