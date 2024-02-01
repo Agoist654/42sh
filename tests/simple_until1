@@ -1,0 +1,7 @@
+until for k in true true true true false;
+do
+    echo '42 42 42';
+done
+do
+    echo -n
+    done

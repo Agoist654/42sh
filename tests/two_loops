@@ -1,0 +1,20 @@
+until for k in false;
+do
+    until for k in true true false;
+    do
+        echo '21 21 21';
+    done
+    do
+        echo -n;
+    done
+    until for k in true true true true false;
+    do
+        echo '42 42 42';
+    done
+    do
+        echo -n;
+    done
+done
+do
+    echo -n;
+done

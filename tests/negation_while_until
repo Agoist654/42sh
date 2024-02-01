@@ -1,0 +1,13 @@
+a=false;
+until for k in true true true true false;
+do
+    echo 'until';
+done
+do
+    echo -n
+    done
+while ! $a;
+do
+    echo -e 'while\nwhile\nwhile';
+    a=true;
+done

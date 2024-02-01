@@ -1,0 +1,6 @@
+a=true;
+while $a;
+do
+    echo '42 42 42';
+    a=false;
+done

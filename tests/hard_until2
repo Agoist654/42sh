@@ -1,0 +1,10 @@
+until for k in true true true true false;
+do
+    echo '42 42 done 42';
+    echo '21 until done21 21';
+    echo '42sh';
+    echo 'done 37 done';
+done
+do
+    echo -n
+    done

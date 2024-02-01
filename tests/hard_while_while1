@@ -1,0 +1,11 @@
+a=true;
+while $a;
+do
+    while $a;
+    do
+        echo '42 42 42';
+        echo '21 21 21';
+        echo '37';
+        a=false;
+    done
+done

@@ -151,8 +151,17 @@ printin if_another_if.sh
 TEST_NAME="if execute file"
 print ./simple_echo.sh
 
-#TEST_NAME="simple while"
-#print simple_while.sh
+TEST_NAME="simple_while1"
+print simple_while1
+
+TEST_NAME="simple_while3"
+print simple_while3
+
+TEST_NAME="hard_while_2"
+print hard_while_2
+
+TEST_NAME="hard_while_while1"
+print hard_while_while1
 
 #TEST_NAME="double while"
 #print double_while.sh
@@ -163,9 +172,20 @@ print ./simple_echo.sh
 #TEST_NAME="if with while"
 #print if_to_while.sh
 
-#TEST_NAME="simple until"
-#print simple_until.sh
+TEST_NAME="simple_until1"
+print simple_until1
 
+TEST_NAME="simple_until3"
+print simple_until3
+
+TEST_NAME="hard_until1"
+print hard_until1
+
+TEST_NAME="hard_until2"
+print hard_until2
+
+TEST_NAME="two_loops"
+print two_loops
 #TEST_NAME="double until"
 #print double_until.sh
 
@@ -192,6 +212,9 @@ print ./simple_echo.sh
 
 #TEST_NAME="until !false"
 #print until_not_false.sh
+
+TEST_NAME="negation_while_until"
+print negation_while_until
 
 TEST_NAME="simple pipe"
 print simple_pipe.sh
@@ -381,6 +404,9 @@ print subshell.sh
 
 TEST_NAME="subshell2.sh"
 print subshell2.sh
+
+TEST_NAME="quote_var1"
+print quote_var1
 
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
