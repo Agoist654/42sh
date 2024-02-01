@@ -39,7 +39,7 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
     assert(ast->type == AST_RULE_UNTIL);
     while (ast->ast_union.ast_rule_until.cond->ftable->exec(
                ast->ast_union.ast_rule_until.cond, farg)
-           == 0)
+           != 0)
     {
         ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
             ast->ast_union.ast_rule_until.then, farg);

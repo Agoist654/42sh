@@ -370,6 +370,18 @@ print sq_echo_mix2
 TEST_NAME="quote_command"
 print quote_command
 
+TEST_NAME="simple_subshell.sh"
+print simple_subshell.sh
+
+TEST_NAME="simple_subshell2.sh"
+print simple_subshell2.sh
+
+TEST_NAME="subshell.sh"
+print subshell.sh
+
+TEST_NAME="subshell2.sh"
+print subshell2.sh
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 
