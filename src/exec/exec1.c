@@ -249,14 +249,14 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
 }
 
 static
-pid_t subshell_exec(struct ast *ast)
+pid_t subshell_exec(struct ast *ast, char **farg)
 {
     int pid = fork();
     if (pid == 0)
     {
         //if (ftell(stream) >= 0)
         //    fclose(stream);
-        int res = ast_compound_list_exec(ast);
+        int res = ast_compound_list_exec(ast, farg);
 //        ast->ast_union.ast_compound_list.and_or->ftable->exec(ast->ast_union.ast_compound_list.and_or);
         exit(res);
     }
@@ -272,7 +272,7 @@ int ast_shell_command_exec(struct ast *ast, char **farg)
     if (ast->ast_union.ast_shell_command.issubshell == 1)
     {
         //struct hash_map *save_hm = hash_map_copy(get_hm());
-        pid_t pid = subshell_exec(ast->ast_union.ast_shell_command.rule_if);
+        pid_t pid = subshell_exec(ast->ast_union.ast_shell_command.rule_if, farg);
         //printf("BEFOR FORK\n");
         //hash_map_dump(get_hm());
         waitpid(pid, &res, 0);
