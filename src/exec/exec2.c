@@ -27,6 +27,9 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
                ast->ast_union.ast_rule_while.cond, farg)
            == 0 && !error->e)
     {
+        ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
+            ast->ast_union.ast_rule_while.then, farg);
+
         if (error->c)
         {
             error->c--;
@@ -37,8 +40,6 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
-        ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
-            ast->ast_union.ast_rule_while.then, farg);
     }
     error->depth -= 1;
     return ret_val;
@@ -56,6 +57,8 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
                ast->ast_union.ast_rule_until.cond, farg)
            != 0 && !error->e)
     {
+        ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
+            ast->ast_union.ast_rule_until.then, farg);
         if (error->c)
         {
             error->c--;
@@ -66,8 +69,6 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
-        ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
-            ast->ast_union.ast_rule_until.then, farg);
     }
     error->depth--;
     return ret_val;
@@ -117,6 +118,14 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
     // char **expanded_argv = pre_expand(ast->ast_union.ast_rule_for.argv);
     for (int k = 0; ast->ast_union.ast_rule_for.argv[k] != NULL; k++)
     {
+        char *key = strdup(ast->ast_union.ast_rule_for.var);
+        char *hash_key = strdup(key);
+        char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
+        char *hash_value = strdup(value);
+        hash_map_insert(get_hm(), hash_key, hash_value, NULL);
+        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list, farg);
+        free(value);
+        free(key);
         if (error->c)
         {
             error->c--;
@@ -127,14 +136,6 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
-        char *key = strdup(ast->ast_union.ast_rule_for.var);
-        char *hash_key = strdup(key);
-        char *value = expansion(strdup(ast->ast_union.ast_rule_for.argv[k]), farg);
-        char *hash_value = strdup(value);
-        hash_map_insert(get_hm(), hash_key, hash_value, NULL);
-        res = ast_compound_list_exec(ast->ast_union.ast_rule_for.compound_list, farg);
-        free(value);
-        free(key);
     }
     error->depth--;
 
