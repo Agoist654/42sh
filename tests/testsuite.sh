@@ -417,6 +417,9 @@ print if_continue.sh
 TEST_NAME="pipe.sh"
 print pipe.sh
 
+TEST_NAME="quoted_builtin"
+print quoted_builtin
+
 #TEST_NAME="complexe_subshell.sh"
 #print complexe_subshell.sh
 

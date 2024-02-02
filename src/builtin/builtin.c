@@ -112,7 +112,7 @@ int unset_f(char **argv)
     return unset_ret(argv, 1);
 }
 
-void print(char *argv, size_t len)
+static void print(char *argv, size_t len)
 {
     for (size_t dep = 0; dep < len; dep++)
     {
@@ -133,7 +133,7 @@ void print(char *argv, size_t len)
     }
 }
 
-void e_print(char *argv, size_t len)
+static void e_print(char *argv, size_t len)
 {
     for (size_t dep = 0; dep < len; dep++)
     {
