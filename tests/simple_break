@@ -1,0 +1,6 @@
+while true;
+do
+    echo 1;
+    break 3;
+    echo 2;
+done

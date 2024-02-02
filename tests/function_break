@@ -1,6 +1,13 @@
 func()
 {
-    break
+    echo q;
+    while true;
+    do
+        echo a;
+        break;
+        echo d;
+        done;
+    echo f;
 }
 
-echo func
+func

@@ -1,0 +1,7 @@
+func()
+{
+    echo a;
+}
+func
+unset -f func
+func

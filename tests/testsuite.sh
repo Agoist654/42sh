@@ -445,6 +445,27 @@ print exit_without_arg
 TEST_NAME="exit_forloop"
 print exit_forloop
 
+TEST_NAME="realloc"
+print realloc
+
+TEST_NAME="realloc_add_redir"
+print realloc_add_redir
+
+TEST_NAME="simple_break"
+print simple_break
+
+TEST_NAME="simple_export_unset"
+print simple_export_unset
+
+TEST_NAME="unset_vf"
+print unset_vf
+
+TEST_NAME="unset_f"
+print unset_f
+
+TEST_NAME="unset_v"
+print unset_v
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 

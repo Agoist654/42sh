@@ -1,0 +1,2 @@
+export a=1;
+unset -v a
