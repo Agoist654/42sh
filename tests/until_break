@@ -1,0 +1,5 @@
+echo toto;
+until break;
+do
+echo 'do not print';
+done

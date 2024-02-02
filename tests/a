@@ -1,1 +1,1 @@
-a=2; echo $a
+if 'true' ; then echo yep, still works; fi

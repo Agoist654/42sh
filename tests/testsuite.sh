@@ -420,15 +420,30 @@ print pipe.sh
 TEST_NAME="quoted_builtin"
 print quoted_builtin
 
+#have prob, it execve the builtin true and not our true_f
+TEST_NAME="a"
+print a
+
 #TEST_NAME="complexe_subshell.sh"
 #print complexe_subshell.sh
 
 TEST_NAME="simple_continue1.sh"
 print simple_continue1.sh
 
+TEST_NAME="until_break"
+print until_break
+
+TEST_NAME="while_break_cond"
+print while_break_cond
 
 TEST_NAME="simple_redir.sh"
 print simple_redir.sh
+
+TEST_NAME="exit_without_arg"
+print exit_without_arg
+
+TEST_NAME="exit_forloop"
+print exit_forloop
 
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote

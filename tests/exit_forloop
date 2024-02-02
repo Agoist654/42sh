@@ -1,0 +1,7 @@
+for k in e x i t;
+do
+    echo $k;
+    if [ $k="x" ];
+    then exit;
+    fi;
+done
