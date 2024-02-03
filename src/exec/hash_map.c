@@ -266,6 +266,8 @@ bool hash_map_remove(struct hash_map *hash_map, const char *key)
     if (str_equal(list->key, key))
     {
         hash_map->data[ind] = list->next;
+        free(list->key);
+        free(list->value);
         free(list);
         return true;
     }

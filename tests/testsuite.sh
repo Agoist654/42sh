@@ -458,13 +458,19 @@ TEST_NAME="simple_export_unset"
 print simple_export_unset
 
 TEST_NAME="unset_vf"
-print unset_vf
+printnoerr unset_vf
 
 TEST_NAME="unset_f"
-print unset_f
+printnoerr unset_f
 
 TEST_NAME="unset_v"
 print unset_v
+
+TEST_NAME="parse_prefix"
+print parse_prefix
+
+TEST_NAME="add_redir_cmd"
+print add_redir_cmd
 
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote

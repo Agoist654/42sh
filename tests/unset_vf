@@ -1,2 +1,4 @@
 export a=1;
-unset -vf a
+echo $a;
+unset -vf a;
+echo $a

@@ -1,0 +1,4 @@
+for i in 1 2 3;do
+    echo titi
+done > asss > ssss > sssd > sssf > sssg > sssh > sssj > sssk > sssl > sssz
+rm -f asss ssss sssd sssf sssg sssh sssj sssk sssl sssz
