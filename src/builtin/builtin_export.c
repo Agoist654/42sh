@@ -48,13 +48,19 @@ int export_f(char **argv)
 static int unset_ret(char **argv, size_t name, char option)
 {
     char *key = get_key(argv[name]);
-    int ret = unsetenv(key);
     if (option == 'f')
-        ret = hash_map_fun_remove(get_fun_hm(), key);
+        hash_map_fun_remove(get_fun_hm(), key);
     else
-        ret = hash_map_remove(get_hm(), key);
-    if (ret == 0)
-        return 1;
+    {
+        if (getenv(key) != NULL)
+            unsetenv(key);
+        else
+        {
+            int ret = hash_map_remove(get_hm(), key);
+            if (ret == 0)
+                return 1;
+        }
+    }
     return 0;
 }
 
@@ -67,8 +73,6 @@ int unset_f(char **argv)
     {
         for (size_t tmp = 1; tmp < strlen(argv[1]); tmp++)
         {
-            if (option_v && option_f)
-                return 1;
             if (argv[1][tmp] == 'v')
                 option_v = 1;
             else if (argv[1][tmp] == 'f')
@@ -76,6 +80,8 @@ int unset_f(char **argv)
             else
                 return 1;
         }
+        if (option_v && option_f)
+            return 1;
         if (option_v)
             return unset_ret(argv, 2, 'v');
         if (option_f)

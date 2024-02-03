@@ -1,0 +1,14 @@
+acu=1;
+cua=2;
+cau=3;
+uac=4;
+echo ${acu};
+echo ${cua};
+echo $cau;
+echo $uac;
+acu=1 unset acu;
+unset uac;
+echo ${acu};
+echo ${cua};
+echo $cau;
+echo $uac;

@@ -1,0 +1,29 @@
+ACU()
+{
+    echo 1;
+}
+
+CAU()
+{
+    echo 2;
+}
+
+CUA()
+{
+    echo 3;
+}
+
+UAC()
+{
+    echo 4;
+}
+ACU;
+CAU;
+CUA;
+UAC;
+unset -f UAC;
+unset -f ACU;
+ACU;
+CAU;
+CUA;
+UAC;

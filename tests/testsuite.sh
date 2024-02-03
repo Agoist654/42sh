@@ -472,6 +472,15 @@ print parse_prefix
 TEST_NAME="add_redir_cmd"
 print add_redir_cmd
 
+TEST_NAME="list_rmv"
+printnoerr list_rmv
+
+TEST_NAME="list_rmv_var"
+printnoerr list_rmv_var
+
+TEST_NAME="list_var_rm"
+printnoerr list_var_rm
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 

@@ -190,36 +190,6 @@ void hash_map_free(struct hash_map *hash_map)
     return;
 }
 
-static void print_list(struct pair_list *list)
-{
-    if (list == NULL)
-    {
-        return;
-    }
-    printf("%s: %s", list->key, list->value);
-    list = list->next;
-    while (list != NULL)
-    {
-        printf(", %s: %s", list->key, list->value);
-        list = list->next;
-    }
-    printf("\n");
-    return;
-}
-
-void hash_map_dump(struct hash_map *hash_map)
-{
-    if (hash_map == NULL)
-    {
-        return;
-    }
-    for (size_t i = 0; i < hash_map->size; i++)
-    {
-        print_list(hash_map->data[i]);
-    }
-    return;
-}
-
 char *hash_map_get(const struct hash_map *hash_map, const char *key)
 {
     if (hash_map == NULL || hash_map->size == 0)
@@ -243,6 +213,8 @@ static bool list_remove(struct pair_list *list, const char *key)
         {
             struct pair_list *cpy = list->next;
             list->next = list->next->next;
+            free(cpy->key);
+            free(cpy->value);
             free(cpy);
             return true;
         }
