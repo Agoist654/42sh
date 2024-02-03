@@ -2,6 +2,8 @@ lib_LIBRARIES = libbuilt.a
 
 libbuilt_a_SOURCES = \
 	builtin.c \
+	builtin_echo.c \
+	builtin_export.c \
 	builtin.h \
 	tf.c
 
