@@ -347,7 +347,10 @@ static struct ast *parse_simple_command(struct lexer *lexer)
 {
     struct ast *res = ast_simple_command_init();
     if (!res)
-        goto error;
+    {
+        error.res = -42;
+        return NULL;
+    }
     size_t nb_arg = 0;
     size_t nb_redir = 0;
     size_t nb_ass = 0;
@@ -370,7 +373,10 @@ static struct ast *parse_simple_command(struct lexer *lexer)
         realloc_redir(res, nb_redir);
         struct element *elt = parse_element(lexer);
         if (!elt)
-            goto error;
+        {
+            error.res = -42;
+            return res;
+        }
         if (elt->type == WORD)
             res->ast_union.ast_simple_command.argv[nb_arg++] =
                 elt->element_union.word;
@@ -383,12 +389,6 @@ static struct ast *parse_simple_command(struct lexer *lexer)
     res->ast_union.ast_simple_command.redirection[nb_redir] = NULL;
     res->ast_union.ast_simple_command.ass_word[nb_ass] = NULL;
     return res;
-error:
-    error.msg = "ast_pipeline init\n";
-    error.res = -42;
-    if (res)
-        return res;
-    return NULL;
 }
 
 static struct ast *parse_fundec(struct lexer *lexer)
