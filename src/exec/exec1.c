@@ -85,7 +85,8 @@ int ast_pipeline_exec(struct ast *ast, char **argv)
     if (ast->ast_union.ast_pipeline.next == NULL)
         ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
             ast->ast_union.ast_pipeline.command, argv);
-    if (ast->ast_union.ast_pipeline.next != NULL && !(error->e || (error->depth && (error->c || error->b))))
+    if (ast->ast_union.ast_pipeline.next != NULL
+        && !(error->e || (error->depth && (error->c || error->b))))
     {
         ret_value = exec_pipe(ast, argv);
     }
@@ -199,7 +200,8 @@ static pid_t myexecvp(char **expanded_argv)
     return pid;
 }
 
-static int exec_fun(struct ast *fun, char **expanded_argv, struct dlist *dlist, int res)
+static int exec_fun(struct ast *fun, char **expanded_argv, struct dlist *dlist,
+                    int res)
 {
     int res_tmp = fun->ftable->exec(fun, expanded_argv);
     if (res_tmp >= 0)

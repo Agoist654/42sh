@@ -450,6 +450,8 @@ static void add_redir_command(struct ast *res, struct lexer *lexer)
             return;
         }
     }
+    if (res->ast_union.ast_command.redirection != NULL)
+        res->ast_union.ast_command.redirection[nb_redir] = NULL;
 }
 
 static struct ast *parse_command(struct lexer *lexer)

@@ -292,32 +292,22 @@ static void ast_fundec_destroy(struct ast *ast)
     return;
 }
 
-static struct ftable ftable[] = { { .destroy = &ast_list_destroy,
-                                    .exec = &ast_list_exec },
-                                  { .destroy = &ast_rule_if_destroy,
-                                    .exec = &ast_rule_if_exec },
-                                  { .destroy = &ast_simple_command_destroy,
-                                    .exec = &ast_simple_command_exec },
-                                  { .destroy = &ast_else_clause_destroy,
-                                    .exec = &ast_else_clause_exec },
-                                  { .destroy = &ast_shell_command_destroy,
-                                    .exec = &ast_shell_command_exec },
-                                  { .destroy = &ast_and_or_destroy,
-                                    .exec = &ast_and_or_exec },
-                                  { .destroy = &ast_pipeline_destroy,
-                                    .exec = &ast_pipeline_exec },
-                                  { .destroy = &ast_command_destroy,
-                                    .exec = &ast_command_exec },
-                                  { .destroy = &ast_compound_list_destroy,
-                                    .exec = &ast_compound_list_exec },
-                                  { .destroy = &ast_rule_while_destroy,
-                                    .exec = &ast_rule_while_exec },
-                                  { .destroy = &ast_rule_until_destroy,
-                                    .exec = &ast_rule_until_exec },
-                                  { .destroy = &ast_rule_for_destroy,
-                                    .exec = &ast_rule_for_exec },
-                                  { .destroy = &ast_fundec_destroy,
-                                    .exec = &ast_fundec_exec } };
+static struct ftable ftable[] = {
+    { .destroy = &ast_list_destroy, .exec = &ast_list_exec },
+    { .destroy = &ast_rule_if_destroy, .exec = &ast_rule_if_exec },
+    { .destroy = &ast_simple_command_destroy,
+      .exec = &ast_simple_command_exec },
+    { .destroy = &ast_else_clause_destroy, .exec = &ast_else_clause_exec },
+    { .destroy = &ast_shell_command_destroy, .exec = &ast_shell_command_exec },
+    { .destroy = &ast_and_or_destroy, .exec = &ast_and_or_exec },
+    { .destroy = &ast_pipeline_destroy, .exec = &ast_pipeline_exec },
+    { .destroy = &ast_command_destroy, .exec = &ast_command_exec },
+    { .destroy = &ast_compound_list_destroy, .exec = &ast_compound_list_exec },
+    { .destroy = &ast_rule_while_destroy, .exec = &ast_rule_while_exec },
+    { .destroy = &ast_rule_until_destroy, .exec = &ast_rule_until_exec },
+    { .destroy = &ast_rule_for_destroy, .exec = &ast_rule_for_exec },
+    { .destroy = &ast_fundec_destroy, .exec = &ast_fundec_exec }
+};
 
 struct ast *ast_init(enum ast_type type)
 {

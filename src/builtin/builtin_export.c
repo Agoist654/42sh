@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "builtin.h"
-#include "exec/hash_map_fun.h"
 #include "exec/hash_map.h"
+#include "exec/hash_map_fun.h"
 
 static char *get_value(char *buffer)
 {
