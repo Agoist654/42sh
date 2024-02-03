@@ -481,6 +481,18 @@ printnoerr list_rmv_var
 TEST_NAME="list_var_rm"
 printnoerr list_var_rm
 
+TEST_NAME="errwhile"
+printnoerr errwhile
+
+TEST_NAME="erruntil"
+printnoerr erruntil
+
+TEST_NAME="errif"
+printnoerr errif
+
+TEST_NAME="errfor"
+printnoerr errfor
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 

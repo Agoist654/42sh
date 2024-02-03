@@ -1,0 +1,5 @@
+if false;
+then
+echo 1;
+else
+fi
