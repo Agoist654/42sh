@@ -85,7 +85,7 @@ int ast_pipeline_exec(struct ast *ast, char **argv)
     if (ast->ast_union.ast_pipeline.next == NULL)
         ret_value = ast->ast_union.ast_pipeline.command->ftable->exec(
             ast->ast_union.ast_pipeline.command, argv);
-    if (ast->ast_union.ast_pipeline.next != NULL)
+    if (ast->ast_union.ast_pipeline.next != NULL && !(error->e || (error->depth && (error->c || error->b))))
     {
         ret_value = exec_pipe(ast, argv);
     }
@@ -199,6 +199,16 @@ static pid_t myexecvp(char **expanded_argv)
     return pid;
 }
 
+static int exec_fun(struct ast *fun, char **expanded_argv, struct dlist *dlist, int res)
+{
+    int res_tmp = fun->ftable->exec(fun, expanded_argv);
+    if (res_tmp >= 0)
+        res = res_tmp;
+    restore_redirection(dlist);
+    post_expand(expanded_argv);
+    return res;
+}
+
 int ast_simple_command_exec(struct ast *ast, char **farg)
 {
     if (ast == NULL)
@@ -230,18 +240,11 @@ int ast_simple_command_exec(struct ast *ast, char **farg)
     struct ast *fun = hash_map_fun_get(get_fun_hm(), expanded_argv[0]);
     if (fun != NULL)
     {
-        int res_tmp = fun->ftable->exec(fun, expanded_argv);
-        if (res_tmp >= 0)
-            res = res_tmp;
-        restore_redirection(dlist);
-        post_expand(expanded_argv);
-        return res;
+        return exec_fun(fun, expanded_argv, dlist, res);
     }
     for (int k = 0; k < NB_BUILTINS; k++)
     {
-        if (strcmp(ast->ast_union.ast_simple_command.argv[0],
-                   builtins[k].command_name)
-            == 0)
+        if (strcmp(expanded_argv[0], builtins[k].command_name) == 0)
         {
             res = builtins[k].builtin(expanded_argv);
             // ast->ast_union.ast_simple_command.argv);

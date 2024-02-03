@@ -160,13 +160,11 @@ union prefix_union
 
 struct ast;
 typedef void (*destroy_f)(struct ast *ast);
-typedef void (*print_f)(struct ast *ast);
 typedef int (*exec_f)(struct ast *ast, char **);
 
 struct ftable
 {
     destroy_f destroy;
-    print_f print;
     exec_f exec;
 };
 
@@ -197,7 +195,6 @@ struct redirection
 };
 
 void ast_list_destroy(struct ast *ast);
-void ast_list_print(struct ast *ast);
 struct ast *ast_init(enum ast_type type);
 void redirection_destroy(struct redirection *redir);
 

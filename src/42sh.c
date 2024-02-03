@@ -34,5 +34,7 @@ int main(int argc, char *argv[])
     close_error();
     hash_map_free(get_hm());
     hash_map_fun_free(get_fun_hm());
+    if (res < 0)
+        return !res;
     return res;
 }

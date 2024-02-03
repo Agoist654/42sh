@@ -28,6 +28,16 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
                == 0
            && !error->e)
     {
+        if (error->b)
+        {
+            error->b--;
+            break;
+        }
+        if (error->c)
+        {
+            error->c--;
+            continue;
+        }
         ret_val = ast->ast_union.ast_rule_while.then->ftable->exec(
             ast->ast_union.ast_rule_while.then, farg);
 
@@ -41,6 +51,8 @@ int ast_rule_while_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
+        if (error->e)
+            break;
     }
     error->depth -= 1;
     return ret_val;
@@ -59,6 +71,16 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
                != 0
            && !error->e)
     {
+        if (error->b)
+        {
+            error->b--;
+            break;
+        }
+        if (error->c)
+        {
+            error->c--;
+            continue;
+        }
         ret_val = ast->ast_union.ast_rule_until.then->ftable->exec(
             ast->ast_union.ast_rule_until.then, farg);
         if (error->c)
@@ -71,6 +93,8 @@ int ast_rule_until_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
+        if (error->e)
+            break;
     }
     error->depth--;
     return ret_val;
@@ -140,6 +164,8 @@ int ast_rule_for_exec(struct ast *ast, char **farg)
             error->b--;
             break;
         }
+        if (error->e)
+            break;
     }
     error->depth--;
 
