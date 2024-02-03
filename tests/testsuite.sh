@@ -30,6 +30,26 @@ rm "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
     diff -u  "$TES_RES" "$REF_RES"
 }
 
+printnodiff(){
+
+    echo "as file================================================\n"
+
+rm "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
+    touch "$REF_ERR" "$REF_OUT" "$TES_ERR"  "$TES_OUT" "$TES_RES" "$REF_RES"
+
+    bash --posix tests/$@ 2> "$REF_ERR" >"$REF_OUT"
+    echo $? > "$REF_RES"
+
+    ./src/42sh tests/$@ 2> "$TES_ERR" > "$TES_OUT"
+    echo $? > "$TES_RES"
+
+    echo "$TEST_NAME": \>"$@"\<
+    #diff -u  "$TES_OUT" "$REF_OUT"
+    #diff -u  "$TES_ERR" "$REF_ERR"
+    #diff -u  "$TES_RES" "$REF_RES"
+}
+
+
 printin(){
 
     echo "as stdin================================================\n"
@@ -424,8 +444,8 @@ print quoted_builtin
 TEST_NAME="a"
 print a
 
-#TEST_NAME="complexe_subshell.sh"
-#print complexe_subshell.sh
+TEST_NAME="complexe_subshell.sh"
+printnodiff complexe_subshell.sh
 
 TEST_NAME="simple_continue1.sh"
 print simple_continue1.sh
