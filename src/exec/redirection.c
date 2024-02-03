@@ -243,17 +243,6 @@ redirection_f redirections[/*NB_REDIRECTION*/] = {
     //[TOKEN_REDIRECTION_] =
 };
 
-// static
-int isnumber(char *word)
-{
-    for (size_t k = 0; k < strlen(word); k++)
-    {
-        if (!isdigit(word[k]))
-            return 0;
-    }
-    return 1;
-}
-
 int exec_redirection(struct dlist *dlist, struct redirection *redir)
 {
     int io_number_int = 0;
