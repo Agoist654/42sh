@@ -81,6 +81,7 @@ static char *tokens[NB_TOKENS] = {
     [TOKEN_REDIRECTION_LEFT_RIGHT] = "<>"
 
 };
+
 static struct token token_error = { .type = TOKEN_ERROR,
                                     .buffer = NULL,
                                     .len = BUFFER_SIZE };

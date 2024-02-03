@@ -493,6 +493,11 @@ printnoerr errif
 TEST_NAME="errfor"
 printnoerr errfor
 
+TEST_NAME="left_redir"
+print left_redir.sh
+
+
+
 #TEST_NAME="bad_unterminated_quote"
 #print bad_unterminated_quote
 
