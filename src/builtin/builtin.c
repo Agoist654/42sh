@@ -36,7 +36,7 @@ struct error *get_err(void)
     return error;
 }
 
-int is_number(char *str)
+static int is_number(char *str)
 {
     if (str == NULL)
         return 0;
