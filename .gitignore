@@ -16,3 +16,7 @@ install-sh
 42sh
 main.c
 missing
+*.gnco
+*.gcno
+*.gcda
+*.html
